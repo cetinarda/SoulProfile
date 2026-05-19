@@ -1,4 +1,6 @@
-import { PageLayout, Section, P, Bullet } from '../components/PageLayout';
+import { PageLayout, Section, Bullet } from '@/components/PageLayout';
+
+export const metadata = { title: 'Veri Hakların — SoulProfile' };
 
 export default function DataRights() {
   return (
@@ -18,27 +20,25 @@ export default function DataRights() {
       </Section>
 
       <Section heading="Nasıl Talep Açılır">
-        <P>
+        <p>
           Uygulama içinden: Profil → Gizlilik → "Verilerimi indir" veya "Hesabımı sil".
-        </P>
-        <P>
+        </p>
+        <p>
           E-posta ile: privacy@soulprofile.life adresine kayıtlı e-postandan talebini yazarsın.
-          Kimliğini doğrulamak için ek bilgi isteyebiliriz.
-        </P>
+        </p>
       </Section>
 
       <Section heading="Yanıt Süresi">
-        <P>
+        <p>
           KVKK kapsamında en geç 30 gün, GDPR kapsamında en geç 1 ay içinde sana yanıt veririz.
-          Karmaşık talepler 2 aya kadar uzayabilir; bu durumda gerekçeyi bildiririz.
-        </P>
+        </p>
       </Section>
 
       <Section heading="Şikâyet Hakkın">
-        <P>
+        <p>
           Türkiye'de Kişisel Verileri Koruma Kurumu'na (KVKK), AB'de ilgili ulusal veri koruma
           otoritesine şikâyette bulunma hakkın saklıdır.
-        </P>
+        </p>
       </Section>
     </PageLayout>
   );

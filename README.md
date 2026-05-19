@@ -3,82 +3,102 @@
 > Sen sadece insan değilsin — galaktik bir karnen var.
 
 Doğum bilgilerinden astroloji + Human Design + numeroloji + yıldız ırkı kökeni
-içeren **Galaktik Karne** üreten web + iOS uygulaması. Karne profil fotoğrafına
-basılır, görsel olarak indirilebilir veya Instagram story formatında paylaşılabilir.
+içeren **Galaktik Karne** üreten web uygulaması. Karne profil fotoğrafına basılır,
+PNG olarak indirilebilir veya Web Share API ile paylaşılabilir.
 
-## Özellikler (MVP)
+## Özellikler
 
 - ✦ **Yıldız Kökeni:** Pleiadyalı, Siryan, Arkturian, Andromedan, Lyran, Orion,
-  Venüsyen, Hadarian, Mintakan, Galaktik Federasyon Elçisi arketipleri.
+  Venüsyen, Hadarian, Mintakan, Galaktik Federasyon Elçisi.
 - 🌙 **Astroloji:** Güneş, Ay, Yükselen, 10 gezegen, Kuzey/Güney Ay Düğümü, 12 ev.
-- ◇ **Human Design:** Tip, Strateji, Otorite, Profil, Enkarnasyon Kapısı, tanımlı merkezler.
-- ⌖ **Numeroloji:** Yaşam Yolu (master numbers dahil), İfade, Ruh Arzusu, Kişisel Yıl.
-- ☼ **3 Görev:** Kuzey Düğüm + Yaşam Yolu + Human Design'dan sentezlenmiş çağrı.
-- 📸 **Karne görseli:** 9:16 storyformat, fotoğraflı, paylaşılabilir + galeriye kaydedilebilir.
-- 💎 **Premium teaser:** Haftalık/aylık döngüsel karneler (yakında).
+- ◇ **Human Design:** Tip, Strateji, Otorite, Profil, Enkarnasyon Kapısı.
+- ⌖ **Numeroloji:** Yaşam Yolu (master 11/22/33), İfade, Ruh Arzusu, Kişisel Yıl.
+- ☼ **3 Görev:** Kuzey Düğüm + Yaşam Yolu + Human Design sentezi.
+- 📸 **Paylaşılabilir karne:** 9:16 storyformat PNG, indir + paylaş.
 
-## Teknoloji
+## Yığın
 
-- **Expo SDK 52** (React Native + Web tek kod tabanı)
-- **Expo Router** (file-based routing, typed routes)
-- **astronomy-engine** (saf JS gezegen efemerisi — iOS + Web)
+- **Next.js 14** App Router (static export'lu — Netlify dostu)
+- **React 18 + TypeScript**
+- **Tailwind CSS v3** (özel galaktik renk paleti + starfield CSS)
+- **astronomy-engine** (saf JS, gezegen efemerisi)
 - **Custom Human Design engine** (64 kapı, 36 kanal, 9 merkez)
-- **Supabase** (auth, profiles, reports, subscriptions, RLS)
-- **Anthropic Claude API** (kişiselleştirilmiş anlatım üretimi, fallback'li)
-- **expo-image-picker + react-native-view-shot** (fotoğraf + karne PNG export)
-- **expo-sharing + expo-media-library** (paylaş + galeriye kaydet)
+- **html-to-image** (karne PNG export)
+- **Supabase** (auth + Postgres + RLS)
+- **Anthropic Claude API** (anlatım üretimi, fallback'li)
 - **Zustand** (state)
 
 ## Hızlı başlangıç
 
 ```bash
 npm install
-cp .env.example .env  # Supabase + Anthropic key'leri ekle
-npm run web           # tarayıcıda
-npm run ios           # iOS Simulator (Xcode kurulu olmalı)
+cp .env.example .env.local
+# .env.local'a Supabase + Anthropic key'leri ekle
+npm run dev          # http://localhost:3000
+npm run build        # production build
+npm start            # production server
 ```
-
-Detay: [docs/SETUP.md](docs/SETUP.md)
 
 ## Proje yapısı
 
 ```
-app/                  # Expo Router ekranları
-  _layout.tsx
-  index.tsx           # Welcome
-  birth.tsx           # Doğum formu (fotoğraf, geocoding)
-  report.tsx          # Karne + paylaş/indir
+app/                  Next.js App Router sayfaları
+  layout.tsx          Root layout (TopBar + Footer)
+  page.tsx            Welcome
+  birth/page.tsx      Doğum formu (fotoğraf + geocoding)
+  report/page.tsx     Karne + paylaş/indir
+  privacy/, terms/, cookie/, data/, support/, contact/, about/, glossary/, premium/
 components/
+  TopBar.tsx          Sticky web header
+  Footer.tsx          3 sütunlu footer + disclaimer
   CosmicBackground.tsx
-  ReportCard.tsx      # 9:16 paylaşılabilir karne görseli
+  ReportCard.tsx      9:16 paylaşılabilir karne (html-to-image ile capture)
+  PageLayout.tsx      Yasal/info sayfaları için ortak şablon
 lib/
-  astrology/          # astronomy-engine wrapper, ASC/MC, NN/SN
-  human-design/       # 64 gates, channels, type/authority logic
-  numerology/         # life path, expression, personal year
-  galactic/           # star race archetypes
-  missions/           # 3 mission synthesis
-  narrative/          # Claude API + fallback
-  report/             # orchestrator
-  content/            # numerology, astrology, chakra, glossary
-  biorhythm/          # 3-cycle biorhythm
-  geocoding/          # open-meteo public API
-  share/              # cross-platform share/save
-  supabase/           # client
-  store.ts            # zustand
-  theme.ts
-  types.ts
-supabase/
-  migrations/0001_init.sql
-marketing/
-  GO_TO_MARKET.md
-  CONTENT_CALENDAR.md
-  BRAND_BIBLE.md       (agent üretiyor)
-  INFLUENCER_OUTREACH.md (agent üretiyor)
-  ASO_AND_PAID.md      (agent üretiyor)
-docs/
-  SETUP.md
-  PREMIUM_ROADMAP.md
+  astrology/          Gezegenler + ASC/MC + Kuzey/Güney Düğüm
+  human-design/       64 kapı + kanal + merkez
+  numerology/         Yaşam Yolu (master sayılarla) + Kişisel Yıl + İfade
+  galactic/           Yıldız ırkı arketipleri
+  missions/           3 görev sentezi
+  narrative/          Claude prompt + fallback
+  biorhythm/          23/28/33 günlük döngüler
+  geocoding/          Open-Meteo (anahtar gerektirmez)
+  share/              html-to-image + Web Share API
+  supabase/           İstemci
+  content/            Sözlük + numeroloji/astroloji metinleri
+  report/             Orchestrator
+  store.ts            Zustand
+  theme.ts, types.ts
+supabase/migrations/  RLS'li profiles + reports + subscriptions
+marketing/            GTM + Brand Bible + ASO+Paid + Influencer Outreach
+docs/                 SETUP + PREMIUM_ROADMAP
 ```
+
+## Deploy (Netlify)
+
+`netlify.toml` ile pre-konfigüre. Push'ta otomatik build:
+
+```toml
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+```
+
+Environment variables (Netlify Site settings → Environment):
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_ANTHROPIC_API_KEY`
+
+## iOS App (yol haritası)
+
+Bu repo şu an web odaklı. iOS uygulaması için:
+1. `mobile/` dizini olarak ayrı Expo workspace ekle
+2. `lib/` (pure JS) dosyalarını mobile/lib'e symlink veya monorepo paket olarak paylaş
+3. ReportCard'ı `react-native` + `react-native-view-shot` ile yeniden yaz
+4. Web Share yerine `expo-sharing`, `expo-image-picker`, `expo-media-library`
 
 ## Lisans
 

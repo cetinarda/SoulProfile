@@ -1,11 +1,10 @@
-import { PageLayout, Section, P, Bullet } from '../components/PageLayout';
+import { PageLayout, Section, Bullet } from '@/components/PageLayout';
+
+export const metadata = { title: 'İletişim — SoulProfile' };
 
 export default function Contact() {
   return (
-    <PageLayout
-      kicker="İLETİŞİM"
-      title="Yıldız çocuk, seni dinliyoruz"
-    >
+    <PageLayout kicker="İLETİŞİM" title="Yıldız çocuk, seni dinliyoruz">
       <Section heading="E-Posta">
         <Bullet>Genel: hello@soulprofile.life</Bullet>
         <Bullet>Destek: support@soulprofile.life</Bullet>
@@ -20,8 +19,8 @@ export default function Contact() {
       </Section>
 
       <Section heading="Adres">
-        <P>SoulProfile · Galaktik Yazılım Yayıncılık A.Ş.</P>
-        <P>İstanbul, Türkiye</P>
+        <p>SoulProfile · Galaktik Yazılım Yayıncılık A.Ş.</p>
+        <p>İstanbul, Türkiye</p>
       </Section>
     </PageLayout>
   );

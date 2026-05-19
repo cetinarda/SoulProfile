@@ -1,5 +1,4 @@
 import Anthropic from '@anthropic-ai/sdk';
-import Constants from 'expo-constants';
 import type { GalacticReport, Mission } from '../types';
 import { buildSystemPrompt, buildUserPrompt } from './prompt';
 import { SIGN_NAMES_TR } from '../content/astrology-content';
@@ -7,10 +6,7 @@ import { LIFE_PATH_MEANINGS, PERSONAL_YEAR_MEANINGS } from '../content/numerolog
 import { NORTH_NODE_GUIDE, SOUTH_NODE_RELEASE } from '../content/astrology-content';
 
 function getAnthropicKey(): string | undefined {
-  return (
-    process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY ||
-    (Constants.expoConfig?.extra as { anthropicApiKey?: string } | undefined)?.anthropicApiKey
-  );
+  return process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY;
 }
 
 function fallbackNarrative(report: Omit<GalacticReport, 'narrative' | 'summary'>): string {
@@ -30,7 +26,8 @@ function fallbackNarrative(report: Omit<GalacticReport, 'narrative' | 'summary'>
 }
 
 function buildSummary(report: Omit<GalacticReport, 'narrative' | 'summary'>): string {
-  return `${report.origin.race} kökenli, ${SIGN_NAMES_TR[report.chart.planets.find((p) => p.name === 'Sun')!.sign]} Güneş · ${SIGN_NAMES_TR[report.chart.ascendantSign]} Yükselen · ${report.humanDesign.type} · Yaşam Yolu ${report.numerology.lifePath}`;
+  const sun = report.chart.planets.find((p) => p.name === 'Sun')!;
+  return `${report.origin.race} kökenli · ${SIGN_NAMES_TR[sun.sign]} Güneş · ${SIGN_NAMES_TR[report.chart.ascendantSign]} Yükselen · ${report.humanDesign.type} · Yaşam Yolu ${report.numerology.lifePath}`;
 }
 
 export async function generateNarrative(

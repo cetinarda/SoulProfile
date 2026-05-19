@@ -1,21 +1,14 @@
 [build]
-  # Netlify auto-runs `npm install` with NPM_FLAGS before this command.
-  # We only need to export. Using `npm install` instead of `npm ci` since the
-  # lockfile may not include all platform-specific transitive deps (notably
-  # webpack + @babel/preset-env that Expo's web export pulls in).
-  command = "npx expo export --platform web"
-  publish = "dist"
+  command = "npm run build"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_FLAGS = "--legacy-peer-deps"
+  NEXT_TELEMETRY_DISABLED = "1"
 
-# Expo Router static export uses client-side routing.
-# Redirect all unknown paths to index.html so deep links resolve.
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Netlify'ın resmi Next.js plugin'i otomatik kuruludur — bu blok ile sabitliyoruz.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 [[headers]]
   for = "/*"
@@ -23,8 +16,3 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-
-[[headers]]
-  for = "/_expo/static/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"

@@ -1,19 +1,12 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
-import { colors, gradients, radii, spacing } from '../lib/theme';
-import { SIGN_GLYPHS, SIGN_NAMES_TR } from '../lib/content/astrology-content';
-import { LIFE_PATH_MEANINGS } from '../lib/content/numerology-content';
-import type { GalacticReport } from '../lib/types';
+import Image from 'next/image';
+import { forwardRef } from 'react';
+import type { GalacticReport } from '@/lib/types';
+import { SIGN_GLYPHS, SIGN_NAMES_TR } from '@/lib/content/astrology-content';
+import { LIFE_PATH_MEANINGS } from '@/lib/content/numerology-content';
 
-export const REPORT_CARD_WIDTH = 1080;
-export const REPORT_CARD_HEIGHT = 1920;
+type Props = { report: GalacticReport };
 
-type Props = {
-  report: GalacticReport;
-};
-
-export function ReportCard({ report }: Props) {
+export const ReportCard = forwardRef<HTMLDivElement, Props>(function ReportCard({ report }, ref) {
   const sun = report.chart.planets.find((p) => p.name === 'Sun')!;
   const moon = report.chart.planets.find((p) => p.name === 'Moon')!;
   const nn = report.chart.planets.find((p) => p.name === 'NorthNode')!;
@@ -21,255 +14,107 @@ export function ReportCard({ report }: Props) {
   const lp = LIFE_PATH_MEANINGS[report.numerology.lifePath];
 
   return (
-    <View style={styles.card}>
-      <LinearGradient colors={gradients.galaxy} style={StyleSheet.absoluteFill} />
-      <BackgroundStars />
+    <div
+      ref={ref}
+      className="relative aspect-[9/16] w-full max-w-md overflow-hidden rounded-[28px] bg-galaxy p-6 text-ink card-glow"
+      style={{ fontFamily: 'var(--font-sans), Inter, sans-serif' }}
+    >
+      <div className="starfield" />
+      <div className="absolute inset-x-0 top-0 h-1/3 bg-[radial-gradient(40%_60%_at_50%_0%,rgba(124,92,255,0.45),transparent_70%)]" />
 
-      <View style={styles.header}>
-        <Text style={styles.brand}>SOULPROFILE</Text>
-        <Text style={styles.brandSub}>Galaktik Karne</Text>
-      </View>
+      <div className="relative flex h-full flex-col">
+        <div className="text-center">
+          <p className="text-[10px] font-bold tracking-[0.5em] text-gold">SOULPROFILE</p>
+          <p className="font-display text-xl text-ink">Galaktik Karne</p>
+        </div>
 
-      <View style={styles.photoFrame}>
-        {report.birth.photoUri ? (
-          <Image source={{ uri: report.birth.photoUri }} style={styles.photo} />
-        ) : (
-          <View style={[styles.photo, styles.photoPlaceholder]}>
-            <Text style={styles.photoGlyph}>{report.origin.emoji}</Text>
-          </View>
-        )}
-        <View style={styles.photoRing} />
-      </View>
+        <div className="mt-5 flex flex-col items-center">
+          <div className="relative h-28 w-28 overflow-hidden rounded-full border-2 border-gold bg-panel">
+            {report.birth.photoUri ? (
+              <Image
+                src={report.birth.photoUri}
+                alt={report.birth.fullName}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-4xl text-gold">
+                {report.origin.emoji}
+              </div>
+            )}
+          </div>
+          <h2 className="mt-3 font-display text-2xl text-ink">{report.birth.fullName}</h2>
+          <p className="mt-1 text-sm font-bold tracking-wide text-gold">
+            {report.origin.emoji} {report.origin.race}
+          </p>
+          <p className="text-[11px] text-starlight">{report.origin.starSystem}</p>
+          <p className="mt-1 text-[11px] italic text-muted">"{report.origin.archetype}"</p>
+        </div>
 
-      <Text style={styles.name}>{report.birth.fullName}</Text>
-      <Text style={styles.origin}>
-        {report.origin.emoji}  {report.origin.race}
-      </Text>
-      <Text style={styles.starSystem}>{report.origin.starSystem}</Text>
-      <Text style={styles.archetype}>"{report.origin.archetype}"</Text>
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          <BigCell label="Güneş" value={SIGN_NAMES_TR[sun.sign]} glyph={SIGN_GLYPHS[sun.sign]} />
+          <BigCell label="Ay" value={SIGN_NAMES_TR[moon.sign]} glyph={SIGN_GLYPHS[moon.sign]} />
+          <BigCell
+            label="Yükselen"
+            value={SIGN_NAMES_TR[report.chart.ascendantSign]}
+            glyph={SIGN_GLYPHS[report.chart.ascendantSign]}
+          />
+        </div>
 
-      <View style={styles.bigGrid}>
-        <BigCell label="Güneş" value={SIGN_NAMES_TR[sun.sign]} glyph={SIGN_GLYPHS[sun.sign]} />
-        <BigCell label="Ay" value={SIGN_NAMES_TR[moon.sign]} glyph={SIGN_GLYPHS[moon.sign]} />
-        <BigCell
-          label="Yükselen"
-          value={SIGN_NAMES_TR[report.chart.ascendantSign]}
-          glyph={SIGN_GLYPHS[report.chart.ascendantSign]}
-        />
-      </View>
+        <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+          <p className="text-[9px] font-bold tracking-[0.25em] text-gold">HUMAN DESIGN</p>
+          <p className="mt-1 font-display text-xl text-ink">{report.humanDesign.type}</p>
+          <p className="text-[10px] leading-snug text-muted">
+            {report.humanDesign.strategy} · {report.humanDesign.authority} · {report.humanDesign.profile}
+          </p>
+        </div>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Human Design</Text>
-        <Text style={styles.hdType}>{report.humanDesign.type}</Text>
-        <Text style={styles.hdMeta}>
-          {report.humanDesign.strategy} · {report.humanDesign.authority} · {report.humanDesign.profile}
-        </Text>
-      </View>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <MiniCell label="Yaşam Yolu" value={report.numerology.lifePath} sub={lp?.title ?? ''} />
+          <MiniCell label="Kişisel Yıl" value={report.numerology.personalYear} sub="Şu anki döngü" />
+        </div>
 
-      <View style={styles.row}>
-        <View style={styles.miniCell}>
-          <Text style={styles.miniLabel}>Yaşam Yolu</Text>
-          <Text style={styles.miniValue}>{report.numerology.lifePath}</Text>
-          <Text style={styles.miniSub}>{lp?.title}</Text>
-        </View>
-        <View style={styles.miniCell}>
-          <Text style={styles.miniLabel}>Kişisel Yıl</Text>
-          <Text style={styles.miniValue}>{report.numerology.personalYear}</Text>
-          <Text style={styles.miniSub}>Şu anki döngü</Text>
-        </View>
-      </View>
+        <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+          <p className="text-[9px] font-bold tracking-[0.25em] text-gold">KUZEY AY DÜĞÜMÜ · GÖREV</p>
+          <p className="mt-1 text-[11px] font-bold text-ink">
+            {SIGN_GLYPHS[nn.sign]} {SIGN_NAMES_TR[nn.sign]} · {nn.house}. ev
+          </p>
+          <p className="mt-1 text-[10px] leading-snug text-muted">{report.northNodeMessage}</p>
+        </div>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Kuzey Ay Düğümü · Görev</Text>
-        <Text style={styles.nodeSign}>
-          {SIGN_GLYPHS[nn.sign]} {SIGN_NAMES_TR[nn.sign]} · {nn.house}. ev
-        </Text>
-        <Text style={styles.nodeBody}>{report.northNodeMessage}</Text>
-      </View>
+        <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+          <p className="text-[9px] font-bold tracking-[0.25em] text-gold">GÜNEY AY DÜĞÜMÜ · BIRAK</p>
+          <p className="mt-1 text-[11px] font-bold text-ink">
+            {SIGN_GLYPHS[sn.sign]} {SIGN_NAMES_TR[sn.sign]} · {sn.house}. ev
+          </p>
+          <p className="mt-1 text-[10px] leading-snug text-muted">{report.southNodeMessage}</p>
+        </div>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Güney Ay Düğümü · Bırak</Text>
-        <Text style={styles.nodeSign}>
-          {SIGN_GLYPHS[sn.sign]} {SIGN_NAMES_TR[sn.sign]} · {sn.house}. ev
-        </Text>
-        <Text style={styles.nodeBody}>{report.southNodeMessage}</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>3 Görev</Text>
-        {report.missions.map((m, i) => (
-          <View key={i} style={styles.missionRow}>
-            <Text style={styles.missionNumber}>0{i + 1}</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.missionTitle}>{m.title}</Text>
-              <Text style={styles.missionDesc}>{m.description}</Text>
-            </View>
-          </View>
-        ))}
-      </View>
-
-      <Text style={styles.footer}>soulprofile.life</Text>
-    </View>
+        <p className="mt-auto pt-4 text-center text-[9px] tracking-[0.35em] text-faint">
+          soulprofile.life
+        </p>
+      </div>
+    </div>
   );
-}
+});
 
 function BigCell({ label, value, glyph }: { label: string; value: string; glyph: string }) {
   return (
-    <View style={styles.bigCell}>
-      <Text style={styles.bigGlyph}>{glyph}</Text>
-      <Text style={styles.bigLabel}>{label}</Text>
-      <Text style={styles.bigValue}>{value}</Text>
-    </View>
+    <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-center">
+      <div className="text-lg text-gold">{glyph}</div>
+      <div className="mt-1 text-[9px] tracking-widest text-muted">{label}</div>
+      <div className="text-[11px] font-bold text-ink">{value}</div>
+    </div>
   );
 }
 
-function BackgroundStars() {
-  const stars = Array.from({ length: 70 }, (_, i) => ({
-    cx: `${(i * 53) % 100}%`,
-    cy: `${(i * 37) % 100}%`,
-    r: ((i * 7) % 4) * 0.7 + 0.5,
-    o: ((i * 13) % 10) * 0.07 + 0.2,
-  }));
+function MiniCell({ label, value, sub }: { label: string; value: number; sub: string }) {
   return (
-    <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
-      <Defs>
-        <RadialGradient id="nebula" cx="50%" cy="15%" r="55%">
-          <Stop offset="0%" stopColor="#7c5cff" stopOpacity="0.4" />
-          <Stop offset="100%" stopColor="transparent" stopOpacity="0" />
-        </RadialGradient>
-      </Defs>
-      <Circle cx="50%" cy="14%" r="320" fill="url(#nebula)" />
-      {stars.map((s, i) => (
-        <Circle key={i} cx={s.cx as never} cy={s.cy as never} r={s.r} fill="white" opacity={s.o} />
-      ))}
-    </Svg>
+    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+      <div className="text-[9px] tracking-widest text-muted">{label}</div>
+      <div className="font-display text-3xl leading-none text-gold">{value}</div>
+      <div className="mt-1 text-[10px] text-muted">{sub}</div>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    width: '100%',
-    aspectRatio: 9 / 16,
-    borderRadius: radii.xl,
-    overflow: 'hidden',
-    padding: spacing(6),
-    backgroundColor: '#04020f',
-  },
-  header: { alignItems: 'center', marginTop: spacing(2) },
-  brand: { color: colors.gold, fontFamily: 'Inter-Bold', letterSpacing: 5, fontSize: 11 },
-  brandSub: {
-    color: colors.text,
-    fontFamily: 'CormorantGaramond',
-    fontSize: 22,
-    marginTop: 4,
-  },
-  photoFrame: {
-    alignSelf: 'center',
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    marginTop: spacing(4),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  photo: { width: 150, height: 150, borderRadius: 75 },
-  photoPlaceholder: { backgroundColor: colors.panel, alignItems: 'center', justifyContent: 'center' },
-  photoGlyph: { color: colors.gold, fontSize: 56 },
-  photoRing: {
-    position: 'absolute',
-    width: 162,
-    height: 162,
-    borderRadius: 81,
-    borderWidth: 1.5,
-    borderColor: colors.gold,
-  },
-  name: {
-    color: colors.text,
-    fontFamily: 'CormorantGaramond',
-    fontSize: 28,
-    textAlign: 'center',
-    marginTop: spacing(3),
-  },
-  origin: {
-    color: colors.gold,
-    fontFamily: 'Inter-Bold',
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: spacing(2),
-    letterSpacing: 1,
-  },
-  starSystem: { color: colors.starlight, textAlign: 'center', fontSize: 12, marginTop: 4 },
-  archetype: {
-    color: colors.textMuted,
-    textAlign: 'center',
-    fontSize: 12,
-    fontStyle: 'italic',
-    marginTop: 4,
-  },
-  bigGrid: { flexDirection: 'row', gap: spacing(2), marginTop: spacing(5) },
-  bigCell: {
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: radii.md,
-    padding: spacing(3),
-    borderWidth: 1,
-    borderColor: colors.panelBorder,
-    alignItems: 'center',
-  },
-  bigGlyph: { color: colors.gold, fontSize: 22 },
-  bigLabel: { color: colors.textMuted, fontSize: 10, marginTop: 4, letterSpacing: 1 },
-  bigValue: { color: colors.text, fontFamily: 'Inter-Bold', fontSize: 13, marginTop: 2 },
-  section: {
-    marginTop: spacing(4),
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: radii.lg,
-    padding: spacing(4),
-    borderWidth: 1,
-    borderColor: colors.panelBorder,
-  },
-  sectionTitle: {
-    color: colors.gold,
-    fontSize: 10,
-    letterSpacing: 2,
-    fontFamily: 'Inter-Bold',
-    textTransform: 'uppercase',
-  },
-  hdType: { color: colors.text, fontFamily: 'CormorantGaramond', fontSize: 22, marginTop: 6 },
-  hdMeta: { color: colors.textMuted, fontSize: 11, marginTop: 4, lineHeight: 17 },
-  row: { flexDirection: 'row', gap: spacing(2), marginTop: spacing(3) },
-  miniCell: {
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: radii.md,
-    padding: spacing(3),
-    borderWidth: 1,
-    borderColor: colors.panelBorder,
-  },
-  miniLabel: { color: colors.textMuted, fontSize: 10, letterSpacing: 1.5 },
-  miniValue: {
-    color: colors.gold,
-    fontFamily: 'CormorantGaramond',
-    fontSize: 36,
-    marginTop: 2,
-    lineHeight: 38,
-  },
-  miniSub: { color: colors.textMuted, fontSize: 11 },
-  nodeSign: { color: colors.text, fontFamily: 'Inter-Bold', fontSize: 13, marginTop: 4 },
-  nodeBody: { color: colors.textMuted, fontSize: 11, lineHeight: 17, marginTop: 4 },
-  missionRow: { flexDirection: 'row', gap: spacing(3), marginTop: spacing(3) },
-  missionNumber: {
-    color: colors.gold,
-    fontFamily: 'CormorantGaramond',
-    fontSize: 22,
-    width: 36,
-  },
-  missionTitle: { color: colors.text, fontFamily: 'Inter-Bold', fontSize: 12 },
-  missionDesc: { color: colors.textMuted, fontSize: 10, lineHeight: 16, marginTop: 2 },
-  footer: {
-    color: colors.textFaint,
-    textAlign: 'center',
-    fontSize: 10,
-    marginTop: spacing(5),
-    letterSpacing: 3,
-  },
-});

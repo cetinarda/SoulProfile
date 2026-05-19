@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+html, body {
+  background: #05060f;
+  color: #f4f1ff;
+  font-family: var(--font-sans);
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+.starfield {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, white 50%, transparent 100%),
+    radial-gradient(1px 1px at 70% 50%, white 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 40% 80%, white 50%, transparent 100%),
+    radial-gradient(1px 1px at 85% 20%, white 50%, transparent 100%),
+    radial-gradient(1px 1px at 10% 70%, white 50%, transparent 100%),
+    radial-gradient(2px 2px at 55% 15%, white 50%, transparent 100%),
+    radial-gradient(1px 1px at 90% 75%, white 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 30% 60%, white 50%, transparent 100%),
+    radial-gradient(1px 1px at 65% 95%, white 50%, transparent 100%);
+  background-repeat: repeat;
+  background-size: 600px 600px;
+  opacity: 0.55;
+}
+
+.nebula-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(50% 35% at 50% 18%, rgba(124, 92, 255, 0.35), transparent 70%);
+}
+
+.card-glow {
+  box-shadow:
+    0 0 0 1px rgba(245, 208, 97, 0.18),
+    0 30px 80px -30px rgba(124, 92, 255, 0.5);
+}
+
+input, textarea {
+  font-family: inherit;
+}

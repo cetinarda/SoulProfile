@@ -3,7 +3,7 @@ import {
   EclipticGeoMoon,
   GeoVector,
   Ecliptic,
-  AstroTime,
+  MakeTime,
   SiderealTime,
 } from 'astronomy-engine';
 import type { Chart, PlanetName, PlanetPosition, ZodiacSign } from '../types';
@@ -50,21 +50,21 @@ function degreeInSign(longitude: number): number {
 }
 
 function eclipticLongitude(body: Body, date: Date): number {
-  const time = AstroTime.MakeTime(date);
+  const time = MakeTime(date);
   const vec = GeoVector(body, time, true);
   const ecl = Ecliptic(vec);
   return normalize(ecl.elon);
 }
 
 function moonLongitude(date: Date): number {
-  const time = AstroTime.MakeTime(date);
+  const time = MakeTime(date);
   const moon = EclipticGeoMoon(time);
   return normalize(moon.lon);
 }
 
 function meanNodeLongitude(date: Date): number {
   // Meeus, Astronomical Algorithms, Ch. 47. Mean longitude of ascending node (Mean Node).
-  const JD = AstroTime.MakeTime(date).tt + 2451545.0;
+  const JD = MakeTime(date).tt + 2451545.0;
   const T = (JD - 2451545.0) / 36525;
   const omega =
     125.04452 - 1934.136261 * T + 0.0020708 * T * T + (T * T * T) / 450000;
@@ -72,7 +72,7 @@ function meanNodeLongitude(date: Date): number {
 }
 
 function obliquity(date: Date): number {
-  const JD = AstroTime.MakeTime(date).tt + 2451545.0;
+  const JD = MakeTime(date).tt + 2451545.0;
   const T = (JD - 2451545.0) / 36525;
   const eps =
     23.43929111 -
@@ -81,7 +81,7 @@ function obliquity(date: Date): number {
 }
 
 function gmstHours(date: Date): number {
-  const time = AstroTime.MakeTime(date);
+  const time = MakeTime(date);
   return SiderealTime(time);
 }
 

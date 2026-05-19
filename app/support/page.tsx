@@ -1,4 +1,6 @@
-import { PageLayout, Section, P, Bullet } from '../components/PageLayout';
+import { PageLayout, Section, Bullet } from '@/components/PageLayout';
+
+export const metadata = { title: 'Destek — SoulProfile' };
 
 export default function Support() {
   return (
@@ -9,30 +11,30 @@ export default function Support() {
     >
       <Section heading="Sıkça Sorulanlar">
         <Bullet>
-          <Bullet>Doğum saatimi bilmiyorum, sorun olur mu?</Bullet> Hayır. Yükselen Burç ve Human
+          <strong>Doğum saatimi bilmiyorum, sorun olur mu?</strong> Hayır. Yükselen Burç ve Human
           Design otoritesi tam doğru olmayabilir; karnenin geri kalanı çalışır. Form'da "Saat
           biliniyor" anahtarını kapat.
         </Bullet>
         <Bullet>
-          <Bullet>Verim güvende mi?</Bullet> Evet. Doğum verin EU bölgesinde şifreli saklanır,
-          istediğin zaman silinir. Detay: Gizlilik Politikası.
+          <strong>Verim güvende mi?</strong> Evet. Doğum verin EU bölgesinde şifreli saklanır,
+          istediğin zaman silinir.
         </Bullet>
         <Bullet>
-          <Bullet>Aboneliğimi nasıl iptal ederim?</Bullet> iOS: Ayarlar → Apple ID → Abonelikler.
+          <strong>Aboneliğimi nasıl iptal ederim?</strong> iOS: Ayarlar → Apple ID → Abonelikler.
           Web: Profil → Abonelik → İptal.
         </Bullet>
         <Bullet>
-          <Bullet>Karnem yanlış mı çıktı?</Bullet> Doğum tarihi/saati/yeri girişini kontrol et.
+          <strong>Karnem yanlış mı çıktı?</strong> Doğum tarihi/saati/yeri girişini kontrol et.
           Yer otokompletinden seçtiğin koordinat ve saat dilimi kritik.
         </Bullet>
         <Bullet>
-          <Bullet>İade alabilir miyim?</Bullet> Apple/Play satın alımlarında kendi mağaza
-          politikaları geçerli. Web ödemelerinde 14 gün cayma hakkın var.
+          <strong>İade alabilir miyim?</strong> Web ödemelerinde 14 gün cayma hakkın var.
+          App Store/Play satın alımlarında platform politikaları geçerli.
         </Bullet>
       </Section>
 
       <Section heading="Bize Ulaş">
-        <P>Yanıt süremiz iş günleri içinde 24 saatten azdır.</P>
+        <p>Yanıt süremiz iş günleri içinde 24 saatten azdır.</p>
         <Bullet>Genel: hello@soulprofile.life</Bullet>
         <Bullet>Gizlilik / Veri Talepleri: privacy@soulprofile.life</Bullet>
         <Bullet>Yasal / İş Birliği: legal@soulprofile.life</Bullet>
