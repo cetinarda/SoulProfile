@@ -1,5 +1,9 @@
 [build]
-  command = "npm ci && npx expo export --platform web"
+  # Netlify auto-runs `npm install` with NPM_FLAGS before this command.
+  # We only need to export. Using `npm install` instead of `npm ci` since the
+  # lockfile may not include all platform-specific transitive deps (notably
+  # webpack + @babel/preset-env that Expo's web export pulls in).
+  command = "npx expo export --platform web"
   publish = "dist"
 
 [build.environment]
