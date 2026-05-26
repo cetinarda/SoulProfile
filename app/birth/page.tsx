@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
+import { CosmicLoader } from '@/components/CosmicLoader';
 import { useSoulStore } from '@/lib/store';
 import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
 import { buildGalacticReport } from '@/lib/report';
@@ -94,6 +95,7 @@ export default function BirthPage() {
 
   return (
     <div className="relative min-h-[80vh] py-14 md:py-20">
+      {loading ? <CosmicLoader /> : null}
       <CosmicBackground variant="aurora" />
       <div className="mx-auto max-w-xl px-6">
         <p className="text-xs font-bold uppercase tracking-[0.5em] text-gold">DOĞUM BİLGİLERİN</p>

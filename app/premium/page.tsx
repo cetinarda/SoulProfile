@@ -7,6 +7,7 @@ import { PageLayout } from '@/components/PageLayout';
 import { daysUntilPromoEnd, isLaunchPromoActive } from '@/lib/feature-flags';
 import { SKUS } from '@/lib/payments/skus';
 import { startCheckout } from '@/lib/payments/checkout';
+import { isCapacitorNative } from '@/lib/platform';
 
 export default function PremiumPage() {
   const promoActive = isLaunchPromoActive();
@@ -16,6 +17,11 @@ export default function PremiumPage() {
 
   async function buy(skuKey: string) {
     setError(null);
+    if (isCapacitorNative()) {
+      // iOS/Android: RevenueCat IAP akışına yönlendirilecek (gelecekte).
+      setError('Native ödeme akışı henüz hazır değil. Lansman boyunca tüm premium ücretsiz.');
+      return;
+    }
     setWorking(skuKey);
     try {
       await startCheckout(skuKey as never);
