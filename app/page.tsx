@@ -20,13 +20,14 @@ export default function Welcome() {
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.5em] text-gold">SOULPROFILE</p>
             <h1 className="mt-4 font-display text-5xl leading-[1.05] text-ink md:text-6xl">
-              Galaktik <br />
-              Karnen <br />
-              <span className="text-gold">seni bekliyor</span>
+              Doğduğunda <br />
+              yıldızlar sana <br />
+              <span className="text-gold">ne söylüyordu?</span>
             </h1>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-muted md:text-lg">
-              Doğum bilgilerinden astroloji, Human Design, numeroloji ve yıldız ırkı kökenini
-              içeren kozmik bir karne hazırlıyoruz. Sen sadece insan değilsin.
+              Batı astrolojisi, Vedik harita, Çin yıldız çarkı, Maya Tzolkin, Kelt ağacı, Human
+              Design, numeroloji ve yıldız ırkı bilgeliklerinin sentezinden çıkan tek bir kozmik
+              kimliğin. Sen sadece insan değilsin.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link

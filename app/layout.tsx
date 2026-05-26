@@ -18,17 +18,18 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: 'SoulProfile — Galaktik Karnen',
+  title: 'SoulProfile — Doğduğunda yıldızlar sana ne söylüyordu?',
   description:
-    'Doğum bilgilerinden astroloji, Human Design, numeroloji ve yıldız ırkı kökenini içeren galaktik karneni keşfet. Sen sadece insan değilsin.',
+    'Batı astrolojisi, Vedik harita, Çin yıldız çarkı, Maya Tzolkin, Kelt ağacı, Human Design, numeroloji ve yıldız ırkı sentezi. Sen sadece insan değilsin.',
   keywords: [
-    'astroloji', 'human design', 'numeroloji', 'doğum haritası',
-    'yıldız ırkı', 'kuzey ay düğümü', 'starseed', 'galaktik karne',
+    'astroloji', 'vedik astroloji', 'çin astrolojisi', 'maya takvimi',
+    'human design', 'numeroloji', 'doğum haritası', 'yıldız ırkı',
+    'kuzey ay düğümü', 'starseed', 'galaktik karne', 'kozmik kimlik',
   ],
   openGraph: {
-    title: 'SoulProfile — Galaktik Karnen',
+    title: 'Doğduğunda yıldızlar sana ne söylüyordu?',
     description:
-      'Yıldız kökenini, astrolojik haritanı, Human Design tipini ve bu yaşamdaki görevlerini içeren bir karne.',
+      'Çok-sistem astrolojiden sentezlenen tek bir kozmik kimliğin. Batı + Vedik + Çin + Maya + Kelt + Human Design + Numeroloji + Yıldız Irkı.',
     type: 'website',
     locale: 'tr_TR',
   },
