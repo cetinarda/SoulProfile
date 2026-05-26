@@ -6,6 +6,7 @@ const SECTIONS = [
     links: [
       { href: '/', label: 'Ana Sayfa' },
       { href: '/birth', label: 'Karne Oluştur' },
+      { href: '/history', label: 'Geçmişin' },
       { href: '/premium', label: 'Premium' },
       { href: '/glossary', label: 'Kavramlar' },
     ],
@@ -16,6 +17,7 @@ const SECTIONS = [
       { href: '/about', label: 'Hakkımızda' },
       { href: '/support', label: 'Destek' },
       { href: '/contact', label: 'İletişim' },
+      { href: '/settings', label: 'Ayarlar' },
     ],
   },
   {

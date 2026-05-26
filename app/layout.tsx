@@ -19,20 +19,55 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: 'SoulProfile — Doğduğunda yıldızlar sana ne söylüyordu?',
+  metadataBase: new URL('https://soulprofile.life'),
+  title: {
+    default: 'SoulProfile — Doğduğunda yıldızlar sana ne söylüyordu?',
+    template: '%s · SoulProfile',
+  },
   description:
-    'Batı astrolojisi, Vedik harita, Çin yıldız çarkı, Maya Tzolkin, Kelt ağacı, Human Design, numeroloji ve yıldız ırkı sentezi. Sen sadece insan değilsin.',
+    'Batı astrolojisi, Vedik harita, Çin yıldız çarkı, Maya Tzolkin, Norse rune, Tarot, Human Design, numeroloji ve yıldız ırkı sentezi. Sen sadece insan değilsin.',
   keywords: [
     'astroloji', 'vedik astroloji', 'çin astrolojisi', 'maya takvimi',
     'human design', 'numeroloji', 'doğum haritası', 'yıldız ırkı',
     'kuzey ay düğümü', 'starseed', 'galaktik karne', 'kozmik kimlik',
+    'tarot doğum kartı', 'norse rune',
   ],
+  applicationName: 'SoulProfile',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    title: 'SoulProfile',
+    statusBarStyle: 'black-translucent',
+  },
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico' },
+    ],
+    apple: '/apple-touch-icon.png',
+    shortcut: '/icon.svg',
+  },
   openGraph: {
     title: 'Doğduğunda yıldızlar sana ne söylüyordu?',
     description:
-      'Çok-sistem astrolojiden sentezlenen tek bir kozmik kimliğin. Batı + Vedik + Çin + Maya + Kelt + Human Design + Numeroloji + Yıldız Irkı.',
+      'Çok-sistem astrolojiden sentezlenen tek bir kozmik kimliğin. Batı + Vedik + Çin + Maya + Norse + Tarot + Human Design + Numeroloji + Yıldız Irkı.',
     type: 'website',
     locale: 'tr_TR',
+    siteName: 'SoulProfile',
+    images: [
+      {
+        url: '/og-image.svg',
+        width: 1200,
+        height: 630,
+        alt: 'SoulProfile — Galaktik Karnen',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Doğduğunda yıldızlar sana ne söylüyordu?',
+    description: 'Çok-sistem kozmik kimliğin bir karnede.',
+    images: ['/og-image.svg'],
   },
 };
 

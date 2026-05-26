@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#3b0d6b"/>
+      <stop offset="55%" stop-color="#15043a"/>
+      <stop offset="100%" stop-color="#02030a"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f5d061" stop-opacity="1"/>
+      <stop offset="55%" stop-color="#f5d061" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#f5d061" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="nebula" cx="50%" cy="20%" r="55%">
+      <stop offset="0%" stop-color="#7c5cff" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#7c5cff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5d061"/>
+      <stop offset="100%" stop-color="#ff7ad9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded square background (iOS-compatible) -->
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+  <rect width="1024" height="1024" rx="220" fill="url(#nebula)"/>
+
+  <!-- Star field (subtle dots) -->
+  <g fill="white">
+    <circle cx="180" cy="200" r="2" opacity="0.5"/>
+    <circle cx="320" cy="160" r="1.5" opacity="0.4"/>
+    <circle cx="800" cy="220" r="2.5" opacity="0.6"/>
+    <circle cx="900" cy="380" r="1.5" opacity="0.4"/>
+    <circle cx="140" cy="780" r="2" opacity="0.5"/>
+    <circle cx="240" cy="880" r="2" opacity="0.45"/>
+    <circle cx="700" cy="850" r="3" opacity="0.7"/>
+    <circle cx="850" cy="780" r="1.5" opacity="0.4"/>
+    <circle cx="540" cy="180" r="2" opacity="0.5"/>
+    <circle cx="420" cy="280" r="1.5" opacity="0.35"/>
+    <circle cx="620" cy="320" r="1.5" opacity="0.4"/>
+    <circle cx="320" cy="720" r="1.5" opacity="0.35"/>
+    <circle cx="780" cy="640" r="1.5" opacity="0.4"/>
+    <circle cx="180" cy="540" r="1.5" opacity="0.35"/>
+  </g>
+
+  <!-- Outer halo -->
+  <circle cx="512" cy="520" r="380" fill="url(#halo)" opacity="0.45"/>
+
+  <!-- Cosmic ring (oblique) -->
+  <ellipse cx="512" cy="520" rx="340" ry="60" fill="none" stroke="url(#ring)" stroke-width="3" opacity="0.55" transform="rotate(-18 512 520)"/>
+  <ellipse cx="512" cy="520" rx="260" ry="46" fill="none" stroke="#f5d061" stroke-width="2" opacity="0.4" transform="rotate(-18 512 520)"/>
+
+  <!-- Central 8-pointed star -->
+  <g transform="translate(512 520)">
+    <path d="M 0 -210 L 28 -28 L 210 0 L 28 28 L 0 210 L -28 28 L -210 0 L -28 -28 Z" fill="#f5d061"/>
+    <path d="M 0 -160 L 18 -18 L 160 0 L 18 18 L 0 160 L -18 18 L -160 0 L -18 -18 Z" fill="#fff5d6" opacity="0.85"/>
+    <circle r="40" fill="#f5d061"/>
+    <circle r="22" fill="#fff5d6"/>
+  </g>
+
+  <!-- Small orbiting planet -->
+  <circle cx="820" cy="520" r="22" fill="#ff7ad9" opacity="0.9" transform="rotate(-18 512 520)"/>
+  <circle cx="200" cy="520" r="14" fill="#9dd9ff" opacity="0.85" transform="rotate(-18 512 520)"/>
+</svg>

@@ -6,10 +6,9 @@ import { useState } from 'react';
 import clsx from 'clsx';
 
 const NAV_LINKS = [
-  { href: '/', label: 'Ana Sayfa' },
   { href: '/birth', label: 'Karne Oluştur' },
+  { href: '/history', label: 'Geçmişin' },
   { href: '/glossary', label: 'Kavramlar' },
-  { href: '/about', label: 'Hakkımızda' },
   { href: '/premium', label: 'Premium' },
 ];
 

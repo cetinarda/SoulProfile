@@ -7,6 +7,7 @@ import { CosmicBackground } from '@/components/CosmicBackground';
 import { useSoulStore } from '@/lib/store';
 import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
 import { buildGalacticReport } from '@/lib/report';
+import { saveReport } from '@/lib/supabase/reports';
 
 export default function BirthPage() {
   const router = useRouter();
@@ -81,6 +82,7 @@ export default function BirthPage() {
         photoUri: birth.photoUri,
       });
       setReport(report);
+      saveReport(report).catch((e) => console.warn('[birth] save failed', e));
       router.push('/report');
     } catch (e) {
       console.error(e);
