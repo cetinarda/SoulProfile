@@ -89,6 +89,14 @@ export type Mission = {
   description: string;
 };
 
+export type MultiSystem = {
+  maya: import('./systems/maya').MayaResult;
+  vedic: import('./systems/vedic').VedicResult;
+  chinese: import('./systems/chinese').ChineseResult;
+  norse: import('./systems/norse').NorseResult;
+  tarot: import('./systems/tarot').TarotResult;
+};
+
 export type GalacticReport = {
   id: string;
   createdAt: string;
@@ -97,6 +105,7 @@ export type GalacticReport = {
   numerology: Numerology;
   humanDesign: HumanDesign;
   origin: StarOrigin;
+  systems: MultiSystem;
   missions: Mission[];
   northNodeMessage: string;
   southNodeMessage: string;

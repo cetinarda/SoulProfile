@@ -5,6 +5,11 @@ import { buildMissions } from '../missions';
 import { generateNarrative } from '../narrative';
 import { buildNumerology } from '../numerology';
 import { NORTH_NODE_GUIDE, SOUTH_NODE_RELEASE } from '../content/astrology-content';
+import { calculateMaya } from '../systems/maya';
+import { calculateVedic } from '../systems/vedic';
+import { calculateChinese } from '../systems/chinese';
+import { calculateNorse } from '../systems/norse';
+import { calculateTarot } from '../systems/tarot';
 import type { BirthInput, GalacticReport } from '../types';
 
 function buildBirthISO(date: string, time: string, timezone: string): string {
@@ -48,6 +53,15 @@ export async function buildGalacticReport(input: BirthInput): Promise<GalacticRe
   const missions = buildMissions(chart, numerology, humanDesign);
   const nn = chart.planets.find((p) => p.name === 'NorthNode')!;
   const sn = chart.planets.find((p) => p.name === 'SouthNode')!;
+  const moonTropical = chart.planets.find((p) => p.name === 'Moon')!.longitude;
+
+  const systems = {
+    maya: calculateMaya(birthISO),
+    vedic: calculateVedic(moonTropical, birthISO),
+    chinese: calculateChinese(birthISO),
+    norse: calculateNorse(birthISO),
+    tarot: calculateTarot(input.birthDate),
+  };
 
   const partial = {
     id: `${Date.now()}`,
@@ -57,6 +71,7 @@ export async function buildGalacticReport(input: BirthInput): Promise<GalacticRe
     numerology,
     humanDesign,
     origin,
+    systems,
     missions,
     northNodeMessage: NORTH_NODE_GUIDE[nn.sign],
     southNodeMessage: SOUTH_NODE_RELEASE[sn.sign],

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import clsx from 'clsx';
 import { PageLayout } from '@/components/PageLayout';
+import { daysUntilPromoEnd, isLaunchPromoActive } from '@/lib/feature-flags';
 
 export const metadata = { title: 'Premium — SoulProfile' };
 
@@ -13,11 +14,17 @@ const PLANS = [
 ];
 
 export default function Premium() {
+  const promoActive = isLaunchPromoActive();
+  const days = daysUntilPromoEnd();
   return (
     <PageLayout
-      kicker="PREMIUM"
-      title="Karnen sadece başlangıç"
-      intro="Galaktik karne ücretsiz. Premium üyelikle haftalık ve aylık döngülere, ilişki haritana ve Solar Return analizine açılırsın."
+      kicker={promoActive ? `LANSMAN PROMOSU · ${days} GÜN` : 'PREMIUM'}
+      title={promoActive ? 'Şu an her şey ücretsiz' : 'Karnen sadece başlangıç'}
+      intro={
+        promoActive
+          ? `Lansman dönemi boyunca tüm premium içerikler herkese açık. Kalan ${days} gün — galaktik karneni al, haftalık döngülerini gör, Solar Return haritanı çıkar.`
+          : 'Galaktik karne ücretsiz. Premium üyelikle haftalık ve aylık döngülere, ilişki haritana ve Solar Return analizine açılırsın.'
+      }
     >
       <div className="grid gap-4 md:grid-cols-2">
         {PLANS.map((p) => (
@@ -40,17 +47,20 @@ export default function Premium() {
         ))}
       </div>
 
-      <div className="rounded-2xl border border-panelBorder bg-panel p-6">
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">YAKINDA</p>
+      <div className="rounded-2xl border border-gold/40 bg-gold/[0.06] p-6">
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">
+          {promoActive ? `KALAN ${days} GÜN` : 'YAKINDA'}
+        </p>
         <p className="mt-3 text-ink">
-          Premium henüz canlıda değil. Free karneni şimdi al; premium açıldığında ilk sen duy diye
-          e-posta listesine kaydolabilirsin.
+          {promoActive
+            ? 'Lansman boyunca yukarıdaki planların hepsi ücretsiz açık. Bedavadayken karneni al, premium içeriklerin tadına bak; promo bittikten sonra istediğin planda kalabilirsin.'
+            : 'Premium henüz canlıda değil. Free karneni şimdi al; premium açıldığında ilk sen duy diye e-posta listesine kaydolabilirsin.'}
         </p>
         <Link
           href="/birth"
           className="mt-4 inline-block rounded-full bg-gold px-6 py-3 text-sm font-bold text-[#1a0a40] shadow-glow"
         >
-          Free Karnemi Aç
+          {promoActive ? 'Karnemi Şimdi Aç' : 'Free Karnemi Aç'}
         </Link>
       </div>
     </PageLayout>
