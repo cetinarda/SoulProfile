@@ -3,118 +3,172 @@
 > Bu dosya bu repoda gelecek tüm Claude oturumları için referanstır.
 > Önce buraya bak.
 
-## Yığın (web-first, MVP)
+## Vizyon
 
-- **Next.js 14.2.35** App Router (Netlify ile resmi plugin)
+**"Doğduğunda yıldızlar sana ne söylüyordu?"** — 9 farklı sistemin sentezinden
+çıkan tek bir kozmik kimlik. Web ve iOS (Capacitor wrap).
+
+## Yığın (mevcut, çalışıyor)
+
+- **Next.js 14.2.35** App Router (Netlify ile `@netlify/plugin-nextjs`)
 - **React 18.3 + TypeScript**
-- **Tailwind CSS v3** + özel `galaxy` / `cosmic` / `aurora` gradyanları
+- **Tailwind CSS v3** + özel galaxy/cosmic/aurora gradyanları + starfield CSS
 - **astronomy-engine** (saf JS, native binding YOK)
-- **html-to-image** karne PNG export
-- **Supabase** auth + Postgres + RLS (EU bölgesi)
+- **three.js + @react-three/fiber + @react-three/drei** (3D solar sistem)
+- **html-to-image** (karne PNG export)
+- **Supabase** (auth + Postgres + RLS — opsiyonel, localStorage'a fallback var)
 - **Anthropic Claude API** model: `claude-sonnet-4-6`
+- **Stripe Checkout** (web ödeme, Edge runtime API route)
+- **Capacitor 6** (iOS wrap için yapılandırma hazır, paketler henüz yüklenmedi)
 - **Zustand** state
-
-> Önceki deneme Expo (RN + Web) ile yapılmıştı — Netlify deploy'unda Expo
-> Web'in transitive dep çatışmaları (webpack vs metro, @babel/preset-env vb.)
-> sürekli patladı. Pure JS Next.js'e geçtik. iOS uygulaması ileride ayrı
-> workspace olarak eklenir; tüm `lib/` paylaşımlıdır.
 
 ## Yapı
 
 ```
-app/                  # Next.js App Router sayfaları
-  layout.tsx          # TopBar + Footer
-  page.tsx            # Welcome
-  birth/page.tsx
-  report/page.tsx
-  privacy/, terms/, cookie/, data/, support/, contact/, about/, glossary/, premium/
+app/                  Next.js App Router sayfaları
+  layout.tsx          TopBar + PromoBanner + Footer
+  page.tsx            Welcome ("Doğduğunda yıldızlar sana ne söylüyordu?")
+  birth/page.tsx      Doğum formu + CosmicLoader
+  report/page.tsx     3D Solar Sistem + Yıldız Yaşam Ağacı + Karakter Stat +
+                      Karne (paylaşılabilir) + AI Anlatın (7 bölüm) +
+                      Tıklanabilir kavram kartları + Premium teaser
+  history/page.tsx    Geçmiş karneler (localStorage / Supabase)
+  settings/page.tsx   JSON export + verimi sil + abonelik
+  premium/page.tsx    SKU kartları + Stripe Checkout (iOS'ta RC IAP'a yönlendirir)
+  api/checkout/       Stripe Checkout Session create (Edge runtime)
+  privacy / terms / cookie / data / support / contact / about / glossary
+
 components/
-  TopBar.tsx, Footer.tsx, CosmicBackground.tsx, ReportCard.tsx, PageLayout.tsx
+  TopBar.tsx, Footer.tsx, PromoBanner.tsx
+  CosmicBackground.tsx (starfield CSS + gradyan)
+  CosmicLoader.tsx (20-sistem reveal yükleme ekranı)
+  PageLayout.tsx (yasal/info sayfaları ortak)
+  ReportCard.tsx (paylaşılabilir 9:16, 5 ek sistem dahil)
+  BirthChartWheel.tsx (2D zodyak çarkı, gezegen pozisyonları)
+  StarTreeOfLife.tsx (doğum→bugün animasyon, replay butonlu, 14sn ease)
+  CharacterStats.tsx (10 stat, Sun/Moon/Asc/HD/Life Path tabanlı)
+  ConceptCard.tsx (tıklayınca modal açan kavram kartı)
+  SolarSystem3D/ (Scene + planetMeta + index, three.js + r3f)
+
 lib/
-  astrology/, numerology/, human-design/, galactic/, missions/, narrative/,
-  biorhythm/, geocoding/, share/, supabase/, content/, report/,
-  store.ts, theme.ts, types.ts
-supabase/migrations/  # 0001_init.sql
-marketing/            # GTM, Brand Bible, ASO+Paid, Influencer Outreach, Content Calendar
-docs/                 # SETUP, PREMIUM_ROADMAP
+  astrology/          gezegenler + ASC (Swiss formülü ile fix) + MC + Nodes
+  astrology/timeline.ts  Yıldız Ağacı için yaşam boyu snapshots
+  human-design/       64 kapı, 36 kanal, 9 merkez, tip/strateji/otorite/profil
+  numerology/         master sayılarla life path + personal year + expression
+  galactic/           10 yıldız ırkı arketipi
+  systems/            maya, vedic, chinese, norse, tarot (5 sistem)
+  missions/           3 görev sentezi
+  narrative/          Claude prompt + parse + fallback (7 bölüm)
+  biorhythm/          23/28/33 günlük döngüler
+  geocoding/          Open-Meteo (anahtarsız)
+  share/              html-to-image + Web Share API
+  supabase/           client + reports (kayıt/listele/sil)
+  payments/           SKU tanımları + Stripe checkout helper
+  content/            numeroloji, astroloji, çakra, glossary, signs
+  report/             tüm modülleri orkestre eden builder
+  stats/              karakter stat hesabı + meta
+  concepts.ts         11 kavram için kart içeriği
+  feature-flags.ts    isLaunchPromoActive (LAUNCH_PROMO_END = 2026-09-01)
+  platform.ts         iOS Capacitor tespiti (Apple guideline 3.1.1 koruması)
+  store.ts            zustand
+  theme.ts, types.ts
+
+supabase/migrations/  0001_init.sql (profiles/reports/subscriptions)
+                      0002_payments.sql (stripe_customers + entitlements + RLS)
+
+public/
+  manifest.json       PWA manifest (Apple Web App standalone)
+  icon.svg            1024 brand mark
+  og-image.svg        1200x630 sosyal kart
+
+capacitor.config.ts   Bundle ID life.soulprofile.app, iOS yapılandırma
+
+marketing/
+  GO_TO_MARKET.md, BRAND_BIBLE.md, ASO_AND_PAID.md,
+  INFLUENCER_OUTREACH.md, CONTENT_CALENDAR.md
+
+docs/
+  SETUP.md, PREMIUM_ROADMAP.md, PRODUCT_ROADMAP.md (12 ay),
+  MULTI_SYSTEM_IDENTITY.md (20 sistem teknik spec),
+  IOS_WRAPPER.md (Capacitor kurulum + 10 iOS bug çözümü),
+  PAYMENT_INTEGRATION.md (RevenueCat + Stripe full spec, kopya-yapıştır kod),
+  APP_STORE_SUBMISSION.md (1194 satır submission paketi)
 ```
+
+## Bilinen kritik bug çözümleri
+
+### ASC (Yükselen) 180° flip bug — DÜZELTİLDİ
+`atan2(-cos, sin*cos+tan*sin)` formülü tutarlı şekilde DSC veriyordu.
+Doğru formül (flatlib/Swiss Ephemeris):
+```ts
+atan2(cos(ramc), -(sin(ramc) * cos(eps) + tan(phi) * sin(eps)))
+```
+Doğrulama: 07.04.1988 23:05 Kayseri → Yay ✓ (eski: İkizler, 180° off).
+Test: `node scripts/debug-asc.mjs` — 3 reference case (Kayseri/İstanbul/NYC).
 
 ## Yeni bir uygulama açtığımızda KAÇIRMA
 
 ### 1. Yığın seçimi
 - **Web-first deploy hedefliyorsan:** Next.js + Tailwind + React → Netlify auto-detect
-- **iOS + Web isteğin varsa ve Netlify deploy şartsa:** Önce Next.js (web), sonra ayrı Expo workspace (mobile). Aynı `lib/` paylaşılır.
-- **Expo Web + Netlify YAPMA:** Transitive dep çatışmaları (`@babel/preset-env`, `webpack` lockfile mismatch) sürekli patlar.
+- **iOS + Web isteğin varsa ve Netlify deploy şartsa:** Next.js (web) + Capacitor wrap. RN ya da Expo Web YAPMA.
+- **Expo Web + Netlify YAPMA:** Transitive dep çatışmaları her seferinde patlar.
 
 ### 2. Netlify deploy gereksinimleri
-- `netlify.toml` ekle:
-  ```toml
-  [build]
-    command = "npm run build"
-    publish = ".next"
-  [build.environment]
-    NODE_VERSION = "20"
-    NEXT_TELEMETRY_DISABLED = "1"
-  [[plugins]]
-    package = "@netlify/plugin-nextjs"
-  ```
+- `netlify.toml`: NODE_VERSION 20, `@netlify/plugin-nextjs`
 - `.nvmrc` ile Node 20 sabitle
-- `package-lock.json` `npm install`'tan SONRA üret (NOT `--package-lock-only`); commit et
-- `npm ci` yerine `npm install` veya Netlify'ın pre-install'una güven
+- `package-lock.json` HER ZAMAN `npm install` ile üret, `--package-lock-only` KULLANMA
+- API route varsa Edge runtime tercih et (`export const runtime = 'edge'`)
 
 ### 3. Web navigation + zorunlu sayfalar (App Store + Play Store + GDPR)
 Her tüketici uygulaması için BAŞTAN kur:
-- TopBar (sticky, backdrop-blur, logo + nav + CTA)
-- Footer (3 sütun: Ürün / Kurum / Yasal + brand col + disclaimer)
-- Sayfalar:
-  - `/privacy` — Gizlilik (KVKK + GDPR)
-  - `/terms` — Kullanım Koşulları
-  - `/support` — SSS + iletişim
-  - `/contact` — E-posta + sosyal + adres
-  - `/about` — Hakkımızda
-  - `/cookie` — Çerez politikası
-  - `/data` — KVKK/GDPR veri hakları
-  - `/glossary` — Kavramlar sözlüğü
+- TopBar (sticky, backdrop-blur, mobil hamburger)
+- Footer (3 sütun: Ürün/Kurum/Yasal + brand col + disclaimer)
+- Sayfalar: privacy, terms, support, contact, about, cookie, data, glossary
 
 ### 4. Yasal disclaimer
-Spiritüel/sağlık/finans kategorisinde MUTLAKA:
+Spiritüel/sağlık/finans: MUTLAKA
 > "Eğlence ve farkındalık amaçlıdır. Tıbbi/psikolojik/finansal tavsiye yerine geçmez."
 
-Footer, karne görseli alt köşesi, ToS — 3 yerde tekrar.
+Footer + karne alt köşesi + ToS — 3 yerde tekrar.
 
 ### 5. Hassas veri ele alımı
-- Doğum tarihi/saati/yeri = hassas (App Store + KVKK + GDPR)
+- Doğum tarihi/saati/yeri = hassas
 - 16 yaş altı yasak
-- Hesap silme akışı MUST HAVE
+- Hesap silme akışı MUST HAVE → `/settings`
 - JSON export (data portability) MUST HAVE
 
 ### 6. AI / Claude entegrasyonu
 - MVP için `dangerouslyAllowBrowser: true` kullanılabilir
 - Prod'a çıkmadan API key'i Supabase Edge Function arkasına taşı
-- Fallback narrative her zaman olsun
+- Fallback narrative her zaman olsun (yapılandırılmış 7 bölüm şeması)
 - Model: `claude-sonnet-4-6`. Ucuz için `claude-haiku-4-5-20251001`
 
 ### 7. Paylaşılabilir görsel (viral mekanik)
 - 9:16 storyformat (1080×1920 hedef)
 - Web: `html-to-image` `toPng()` + Web Share API + fallback download
-- iOS: `react-native-view-shot` + `expo-sharing` + `expo-media-library`
-- Görselin alt köşesine her zaman URL koy → organik geri akış
+- iOS: `@capacitor/share` + capture node
+- Karnenin alt köşesine her zaman URL koy
 
-### 8. Marketing dokümanları
+### 8. Apple App Store
+- Bundle ID: `life.soulprofile.app`
+- Capacitor wrap için `docs/IOS_WRAPPER.md` adımlarını izle
+- IAP için `docs/PAYMENT_INTEGRATION.md` + RevenueCat
+- Submission için `docs/APP_STORE_SUBMISSION.md` checklist (30 madde)
+- iOS'ta Stripe BUTONUNU GİZLE — `lib/platform.ts` ile (`isCapacitorNative()`)
+
+### 9. Marketing dokümanları
 Her tüketici uygulaması için `marketing/` altına:
-- `GO_TO_MARKET.md` — pazar fazları, viral mekanik, KPI
-- `BRAND_BIBLE.md` — voice, persona, palet, manifesto (TR + EN)
-- `ASO_AND_PAID.md` — App Store metadata + ASA/TikTok/Meta playbook
-- `INFLUENCER_OUTREACH.md` — hesap listesi + email şablonları + affiliate
-- `CONTENT_CALENDAR.md` — 30 günlük post planı
+- GO_TO_MARKET, BRAND_BIBLE, ASO_AND_PAID, INFLUENCER_OUTREACH, CONTENT_CALENDAR
 
-### 9. Test edilecek minimum senaryolar
+### 10. Test edilecek minimum senaryolar
 - Doğum saati bilinmeyen kullanıcı
 - Yurt dışı doğum (timezone otomatik gelmeli)
 - Master numara (11/22/33) düşmemeli
-- Karne PNG export çalışıyor (html-to-image quirk: external image CORS dikkat)
-- Mobile responsive (özellikle TopBar hamburger)
+- ASC: 07.04.1988 23:05 Kayseri → Yay (regresyon testi)
+- Karne PNG export (html-to-image quirk: external image CORS dikkat)
+- Mobile responsive (özellikle TopBar hamburger, 3D sahne)
 - Hesap silme akışı
+- Stripe Checkout (env değişkenleri lokal'de bile çağrılabilmeli)
 
 ## Hatalar ve Çözümler
 
@@ -123,10 +177,13 @@ Her tüketici uygulaması için `marketing/` altına:
 | `ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING` | Node 20'ye düş (`.nvmrc` + `netlify.toml`) |
 | `--no-experimental-strip-types is not allowed` | Node 20'de yok, NODE_OPTIONS'tan kaldır |
 | `npm ci` lockfile mismatch | Tam `npm install` ile lockfile üret, `--package-lock-only` KULLANMA |
-| Expo peer dep çakışması | Next.js'e geç, Expo'yu mobile-only workspace yap |
+| Expo peer dep çakışması | Next.js'e geç |
 | `sweph` native binding web'de patlıyor | `astronomy-engine` (saf JS) |
 | Anthropic SDK browser reddediyor | `dangerouslyAllowBrowser: true` (MVP) |
 | Tailwind class'lar build'de uçuyor | `tailwind.config.ts` content array'inde `lib/**/*.tsx` de olmalı |
+| ASC 180° yanlış (DSC veriyor) | flatlib formülü: `atan2(cos, -(sin*cos+tan*sin))` |
+| Capacitor config tsc hatası | tsconfig.json `exclude`'a ekle |
+| three.js Suspense crash | Her gezegeni ayrı `<Suspense>` ile sar |
 
 ## Branş kuralı
 
