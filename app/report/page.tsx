@@ -7,6 +7,7 @@ import { CosmicBackground } from '@/components/CosmicBackground';
 import { ReportCard } from '@/components/ReportCard';
 import { StarTreeOfLife } from '@/components/StarTreeOfLife';
 import { BirthChartWheel } from '@/components/BirthChartWheel';
+import { SolarSystem3D } from '@/components/SolarSystem3D';
 import { CharacterStats } from '@/components/CharacterStats';
 import { ConceptCard } from '@/components/ConceptCard';
 import { useSoulStore } from '@/lib/store';
@@ -85,14 +86,23 @@ export default function ReportPage() {
       <div className="mx-auto max-w-4xl px-4 md:px-6">
         <p className="text-center text-xs tracking-[0.3em] text-gold">{report.summary}</p>
 
-        {/* Doğum anı sabit gezegen çarkı */}
-        <section className="mt-8 rounded-3xl border border-panelBorder bg-panel/60 p-4 backdrop-blur md:p-6">
+        {/* 3D Solar Sistem — touch ile döndürülebilir */}
+        <section className="mt-8 rounded-3xl border border-gold/30 bg-panel/60 p-4 backdrop-blur md:p-6">
           <div className="mb-3 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">DOĞUM ANI GÖKYÜZÜ</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">DOĞUM ANI GÖKYÜZÜ · 3D</p>
             <p className="mt-1 font-display text-2xl text-ink">Yıldızlar sana ne söylüyordu</p>
             <p className="mt-1 text-[12px] text-muted">
               {report.birth.birthDate} · {report.birth.birthTime} · {report.birth.birthPlace}
             </p>
+          </div>
+          <SolarSystem3D chart={report.chart} />
+        </section>
+
+        {/* 2D Astrolojik harita — klasik görüm */}
+        <section className="mt-6 rounded-3xl border border-panelBorder bg-panel/60 p-4 backdrop-blur md:p-6">
+          <div className="mb-3 text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">KLASİK HARİTA</p>
+            <p className="mt-1 font-display text-xl text-ink">Astrolojik çark</p>
           </div>
           <div className="mx-auto max-w-xl">
             <BirthChartWheel chart={report.chart} />
