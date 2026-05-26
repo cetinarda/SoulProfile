@@ -93,12 +93,12 @@ function ascendant(date: Date, latitude: number, longitude: number): number {
   const phi = (latitude * Math.PI) / 180;
   const ramcRad = (ramc * Math.PI) / 180;
 
-  const y = -Math.cos(ramcRad);
-  const x = Math.sin(ramcRad) * Math.cos(epsilon) + Math.tan(phi) * Math.sin(epsilon);
-  let asc = Math.atan2(y, x);
-  let ascDeg = (asc * 180) / Math.PI;
-  ascDeg = normalize(ascDeg);
-  return ascDeg;
+  // flatlib / Swiss Ephemeris formula. Doğrulandı: 07.04.1988 23:05 Kayseri → Yay ✓
+  // tan(ASC) = cos(RAMC) / -(sin(RAMC)*cos(ε) + tan(φ)*sin(ε))
+  const y = Math.cos(ramcRad);
+  const x = -(Math.sin(ramcRad) * Math.cos(epsilon) + Math.tan(phi) * Math.sin(epsilon));
+  const ascRad = Math.atan2(y, x);
+  return normalize((ascRad * 180) / Math.PI);
 }
 
 function midheaven(date: Date, longitude: number): number {

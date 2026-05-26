@@ -97,6 +97,16 @@ export type MultiSystem = {
   tarot: import('./systems/tarot').TarotResult;
 };
 
+export type NarrativeSections = {
+  opening: string;
+  astrology: string;
+  humanDesign: string;
+  callToAction: string;
+  soulStory: string;
+  wisdoms: string[];
+  shadows: string[];
+};
+
 export type GalacticReport = {
   id: string;
   createdAt: string;
@@ -111,4 +121,5 @@ export type GalacticReport = {
   southNodeMessage: string;
   summary: string;
   narrative: string;
+  sections: NarrativeSections;
 };

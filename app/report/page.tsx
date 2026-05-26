@@ -2,13 +2,17 @@
 
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { ReportCard } from '@/components/ReportCard';
 import { StarTreeOfLife } from '@/components/StarTreeOfLife';
+import { BirthChartWheel } from '@/components/BirthChartWheel';
+import { CharacterStats } from '@/components/CharacterStats';
+import { ConceptCard } from '@/components/ConceptCard';
 import { useSoulStore } from '@/lib/store';
 import { captureNode, downloadDataUrl, shareDataUrl } from '@/lib/share';
 import { premiumOpen } from '@/lib/feature-flags';
+import { buildConceptDecks } from '@/lib/concepts';
 
 export default function ReportPage() {
   const router = useRouter();
@@ -20,6 +24,8 @@ export default function ReportPage() {
   useEffect(() => {
     setHydrated(true);
   }, []);
+
+  const concepts = useMemo(() => (report ? buildConceptDecks(report) : []), [report]);
 
   if (hydrated && !report) {
     return (
@@ -68,28 +74,53 @@ export default function ReportPage() {
   }
 
   const isPremium = premiumOpen();
-  const s = report.systems;
+  const birthISO =
+    report.birth.birthDate
+      ? `${report.birth.birthDate}T${report.birth.birthTime || '12:00'}:00Z`
+      : new Date().toISOString();
 
   return (
     <div className="relative py-12 md:py-16">
       <CosmicBackground variant="cosmic" />
-      <div className="mx-auto max-w-3xl px-6">
+      <div className="mx-auto max-w-4xl px-4 md:px-6">
         <p className="text-center text-xs tracking-[0.3em] text-gold">{report.summary}</p>
 
-        {/* Yıldız Yaşam Ağacı animasyonu */}
+        {/* Doğum anı sabit gezegen çarkı */}
         <section className="mt-8 rounded-3xl border border-panelBorder bg-panel/60 p-4 backdrop-blur md:p-6">
+          <div className="mb-3 text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">DOĞUM ANI GÖKYÜZÜ</p>
+            <p className="mt-1 font-display text-2xl text-ink">Yıldızlar sana ne söylüyordu</p>
+            <p className="mt-1 text-[12px] text-muted">
+              {report.birth.birthDate} · {report.birth.birthTime} · {report.birth.birthPlace}
+            </p>
+          </div>
+          <div className="mx-auto max-w-xl">
+            <BirthChartWheel chart={report.chart} />
+          </div>
+        </section>
+
+        {/* Yıldız Yaşam Ağacı animasyonu */}
+        <section className="mt-6 rounded-3xl border border-panelBorder bg-panel/60 p-4 backdrop-blur md:p-6">
           <div className="mb-3 text-center">
             <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">YILDIZ YAŞAM AĞACI</p>
             <p className="mt-1 font-display text-2xl text-ink">Doğumundan bugüne yıldızların izi</p>
             <p className="mt-1 text-[12px] text-muted">
-              Her nokta bir gezegen pozisyonu, her çizgi bir kesişim. Dışta doğum, içte bugün.
+              Her gezegenin yolu, her çizgi bir kesişim. Dıştan içe — doğumdan bugüne.
             </p>
           </div>
-          <StarTreeOfLife birthISO={report.createdAt && report.birth.birthDate
-            ? `${report.birth.birthDate}T${report.birth.birthTime || '12:00'}:00Z`
-            : new Date().toISOString()} />
+          <StarTreeOfLife birthISO={birthISO} />
         </section>
 
+        {/* Karakter Stat Kartı */}
+        <section className="mt-6">
+          <CharacterStats
+            chart={report.chart}
+            numerology={report.numerology}
+            humanDesign={report.humanDesign}
+          />
+        </section>
+
+        {/* Paylaşılabilir karne */}
         <div className="mt-8 flex justify-center">
           <ReportCard ref={cardRef} report={report} />
         </div>
@@ -113,55 +144,83 @@ export default function ReportPage() {
           </button>
         </div>
 
+        {/* Kozmik Anlatın — zenginleştirilmiş bölümler */}
         <article className="mt-10 rounded-2xl border border-panelBorder bg-panel p-6 md:p-8">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">Kozmik Anlatın</p>
-          <div className="mt-4 space-y-4">
-            {report.narrative.split('\n\n').map((p, i) => (
-              <p key={i} className="text-[15px] leading-relaxed text-ink">
-                {p}
-              </p>
-            ))}
+          <h2 className="mt-1 font-display text-3xl text-ink">{report.birth.fullName}, hikâyen</h2>
+
+          <div className="mt-6 space-y-4">
+            {report.sections.opening ? (
+              <p className="text-[15px] leading-relaxed text-ink">{report.sections.opening}</p>
+            ) : null}
+            {report.sections.astrology ? (
+              <p className="text-[15px] leading-relaxed text-ink">{report.sections.astrology}</p>
+            ) : null}
+            {report.sections.humanDesign ? (
+              <p className="text-[15px] leading-relaxed text-ink">{report.sections.humanDesign}</p>
+            ) : null}
+            {report.sections.callToAction ? (
+              <p className="text-[15px] leading-relaxed text-ink">{report.sections.callToAction}</p>
+            ) : null}
           </div>
+
+          {report.sections.soulStory ? (
+            <section className="mt-8 rounded-2xl border border-gold/30 bg-gold/[0.04] p-5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">RUHUN HİKÂYESİ</p>
+              <p className="mt-3 text-[15px] leading-relaxed text-ink">{report.sections.soulStory}</p>
+            </section>
+          ) : null}
+
+          {report.sections.wisdoms.length > 0 ? (
+            <section className="mt-6 rounded-2xl border border-success/30 bg-success/[0.04] p-5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-success">BİLGELİKLERİN</p>
+              <ul className="mt-3 space-y-2">
+                {report.sections.wisdoms.map((w, i) => (
+                  <li key={i} className="flex gap-3 text-[14px] leading-relaxed text-ink">
+                    <span className="text-success">✦</span>
+                    <span className="flex-1">{w}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          {report.sections.shadows.length > 0 ? (
+            <section className="mt-6 rounded-2xl border border-cosmic/40 bg-cosmic/[0.06] p-5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-cosmic">GÖLGELERİN</p>
+              <p className="mt-1 text-[11px] text-faint">
+                "Kötü huy" değil; tanışılması gereken kapılar.
+              </p>
+              <ul className="mt-3 space-y-2">
+                {report.sections.shadows.map((s, i) => (
+                  <li key={i} className="flex gap-3 text-[14px] leading-relaxed text-ink">
+                    <span className="text-cosmic">◐</span>
+                    <span className="flex-1">{s}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
         </article>
 
-        {/* Detaylı sistem kartları */}
-        <section className="mt-10 grid gap-4 md:grid-cols-2">
-          <DetailCard
-            kicker="MAYA TZOLKİN"
-            title={`Kin ${s.maya.kin}`}
-            highlight={`${s.maya.tone.tr} · ${s.maya.daySign.tr}`}
-            body={`${s.maya.daySign.power}. ${s.maya.tone.power}.`}
-          />
-          <DetailCard
-            kicker="VEDİK NAKSHATRA"
-            title={s.vedic.nakshatra.name}
-            highlight={`Pada ${s.vedic.pada} · ${s.vedic.nakshatra.deity}`}
-            body={`Sembol: ${s.vedic.nakshatra.symbol}. ${s.vedic.nakshatra.power}.`}
-          />
-          <DetailCard
-            kicker="ÇİN ZODYAK"
-            title={s.chinese.signature}
-            highlight={`${s.chinese.element.glyph} ${s.chinese.element.tr} · ${s.chinese.animal.glyph} ${s.chinese.animal.tr}`}
-            body={`${s.chinese.element.power}. ${s.chinese.animal.traits}.`}
-          />
-          <DetailCard
-            kicker="NORSE RUNE"
-            title={`${s.norse.rune.glyph} ${s.norse.rune.name}`}
-            highlight={s.norse.rune.meaning}
-            body={s.norse.rune.power}
-          />
-          <DetailCard
-            kicker="TAROT — KİŞİLİK KARTI"
-            title={`${s.tarot.personality.glyph} ${s.tarot.personality.name}`}
-            highlight={`#${s.tarot.personality.num}`}
-            body={s.tarot.personality.power}
-          />
-          <DetailCard
-            kicker="TAROT — RUH KARTI"
-            title={`${s.tarot.soul.glyph} ${s.tarot.soul.name}`}
-            highlight={`#${s.tarot.soul.num}`}
-            body={s.tarot.soul.power}
-          />
+        {/* Detaylı sistem kartları — tıklanabilir */}
+        <section className="mt-10">
+          <h2 className="mb-4 text-center font-display text-2xl text-ink">
+            Kimlik kavramların — tıkla, derinleş
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {concepts.map((c) => (
+              <ConceptCard
+                key={c.kicker + c.title}
+                kicker={c.kicker}
+                title={c.title}
+                highlight={c.highlight}
+                short={c.short}
+                details={c.details}
+                accent={c.accent}
+              />
+            ))}
+          </div>
         </section>
 
         {/* Premium showcase */}
@@ -190,26 +249,5 @@ export default function ReportPage() {
         </div>
       </div>
     </div>
-  );
-}
-
-function DetailCard({
-  kicker,
-  title,
-  highlight,
-  body,
-}: {
-  kicker: string;
-  title: string;
-  highlight: string;
-  body: string;
-}) {
-  return (
-    <article className="rounded-2xl border border-panelBorder bg-panel p-5">
-      <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">{kicker}</p>
-      <h3 className="mt-2 font-display text-2xl text-ink">{title}</h3>
-      <p className="mt-1 text-[12px] font-bold text-gold">{highlight}</p>
-      <p className="mt-3 text-sm leading-relaxed text-muted">{body}</p>
-    </article>
   );
 }

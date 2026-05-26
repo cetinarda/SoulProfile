@@ -77,7 +77,7 @@ export async function buildGalacticReport(input: BirthInput): Promise<GalacticRe
     southNodeMessage: SOUTH_NODE_RELEASE[sn.sign],
   };
 
-  const { narrative, summary } = await generateNarrative(partial);
+  const { narrative, summary, sections } = await generateNarrative(partial);
 
-  return { ...partial, narrative, summary };
+  return { ...partial, narrative, summary, sections };
 }

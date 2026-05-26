@@ -28,6 +28,7 @@ function longitudeToXY(longitude: number, age: number, totalYears: number): { x:
 
 export function StarTreeOfLife({ birthISO, size = SIZE }: Props) {
   const [revealStep, setRevealStep] = useState(0);
+  const [playKey, setPlayKey] = useState(0);
   const rafRef = useRef<number | null>(null);
 
   const { points, lines, totalYears, lifePathPoints } = useMemo(() => {
@@ -86,21 +87,24 @@ export function StarTreeOfLife({ birthISO, size = SIZE }: Props) {
   }, [lines]);
 
   useEffect(() => {
+    setRevealStep(0);
     let raf = 0;
     const start = performance.now();
-    const duration = 6000; // 6 saniyede tüm hayat web'i çizilir
+    const duration = 14000; // 14 saniyede tüm hayat web'i çizilir (yavaş + meditatif)
     const tick = (now: number) => {
       const elapsed = now - start;
-      const progress = Math.min(1, elapsed / duration);
-      setRevealStep(Math.floor(progress * totalSteps));
-      if (progress < 1) raf = requestAnimationFrame(tick);
+      // ease-in-out cubic
+      const t = Math.min(1, elapsed / duration);
+      const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      setRevealStep(Math.floor(eased * totalSteps));
+      if (t < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     rafRef.current = raf;
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [totalSteps]);
+  }, [totalSteps, playKey]);
 
   return (
     <div className="relative mx-auto" style={{ width: size, maxWidth: '100%' }}>
@@ -205,9 +209,15 @@ export function StarTreeOfLife({ birthISO, size = SIZE }: Props) {
         <circle cx={CENTER} cy={CENTER} r={10} fill="none" stroke="#f5d061" strokeOpacity="0.4" />
       </svg>
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] text-faint">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-[11px] text-faint">
         <span>Doğum → Bugün ({totalYears.toFixed(1)} yıl)</span>
-        <span className="hidden md:inline">Her nokta bir gezegen, her çizgi bir kesişim</span>
+        <button
+          type="button"
+          onClick={() => setPlayKey((k) => k + 1)}
+          className="rounded-full border border-gold/40 bg-gold/[0.06] px-3 py-1 text-[10px] font-bold tracking-wide text-gold hover:bg-gold/[0.12]"
+        >
+          ↺ Tekrar Oynat
+        </button>
         <span>{Math.floor((revealStep / totalSteps) * 100)}%</span>
       </div>
     </div>
