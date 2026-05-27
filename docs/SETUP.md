@@ -36,7 +36,7 @@ TestFlight için:
 2. EAS Build kullan: `npx eas build --platform ios --profile production`
 3. `eas submit --platform ios`
 
-## Web — sakin.life tarzı dağıtım
+## Web — statik dağıtım
 
 ```bash
 npm run build:web

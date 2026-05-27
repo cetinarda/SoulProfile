@@ -4,10 +4,10 @@
 
 > **The Pattern** astrolojiyi günlük insanın eline verdi.
 > **Co–Star** sosyal/comedy tonuyla viral oldu.
-> **Sakin.life** Türkçe iç huzur pratiklerini birleştirdi.
 >
 > **SoulProfile** = Yıldız kökenin + astrolojin + Human Design'in + numerolojin
-> + bu yaşamdaki görevlerin TEK bir **paylaşılabilir karne**de buluştuğu uygulama.
+> + Vedik nakshatran + Maya Kin'in + Norse runun + Tarot doğum kartların +
+> bu yaşamdaki görevlerin TEK bir **paylaşılabilir karne**de buluştuğu uygulama.
 > "Sen sadece insan değilsin — galaktik bir karnen var."
 
 ## Hedef pazarlar (faz faz)
