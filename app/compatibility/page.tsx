@@ -148,8 +148,8 @@ export default function CompatibilityPage() {
           <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">{t('compat.person1')}</p>
           <p className="mt-2 font-display text-2xl text-ink">{me.birth.fullName}</p>
           <p className="mt-1 text-sm text-muted">
-            {mySun ? SIGN_NAMES_TR[mySun.sign] : ''} {locale === 'tr' ? 'Güneş' : 'Sun'} ·{' '}
-            {SIGN_NAMES_TR[me.chart.ascendantSign]} {locale === 'tr' ? 'Yükselen' : 'Rising'} ·{' '}
+            {mySun ? (locale === 'tr' ? SIGN_NAMES_TR[mySun.sign] : mySun.sign) : ''} {locale === 'tr' ? 'Güneş' : 'Sun'} ·{' '}
+            {locale === 'tr' ? SIGN_NAMES_TR[me.chart.ascendantSign] : me.chart.ascendantSign} {locale === 'tr' ? 'Yükselen' : 'Rising'} ·{' '}
             {me.humanDesign.type} · {locale === 'tr' ? 'Yaşam Yolu' : 'Life Path'}{' '}
             {me.numerology.lifePath}
           </p>
