@@ -218,9 +218,20 @@ export default function BirthPage() {
             type="button"
             onClick={submit}
             disabled={loading}
-            className="mt-2 w-full rounded-full bg-gold py-4 text-base font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-60"
+            className="group mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-gold py-5 text-base font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-60"
           >
-            {loading ? 'Karnen hazırlanıyor...' : 'Galaktik Karnemi Aç'}
+            {loading ? (
+              <>
+                <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#1a0a40]/30 border-t-[#1a0a40]" />
+                Karnen hazırlanıyor...
+              </>
+            ) : (
+              <>
+                <span className="text-xl">✦</span>
+                Galaktik Karnemi Aç
+                <span className="transition-transform group-hover:translate-x-1">→</span>
+              </>
+            )}
           </button>
 
           <p className="text-center text-xs text-faint">

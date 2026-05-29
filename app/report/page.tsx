@@ -233,6 +233,38 @@ export default function ReportPage() {
           </div>
         </section>
 
+        {/* İkili uyum CTA — büyük, görsel */}
+        <section className="mt-10 overflow-hidden rounded-3xl border border-cosmic/50 bg-gradient-to-br from-[#0b0524] via-[#1e1a6e] to-[#9d3cb1]/40 p-7 md:p-9">
+          <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-cosmic">
+                İKİ RUH NASIL ANLAŞIR?
+              </p>
+              <h2 className="mt-3 font-display text-3xl leading-tight text-ink md:text-4xl">
+                Şimdi senin karneni başka biriyle karşılaştır
+              </h2>
+              <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted">
+                Human Design tanımlı–tanımsız merkez dansı, astroloji synastry açıları ve numeroloji
+                uyumu. ⚡ Elektromanyetik çekim, ◐ hâkimiyet, 🤝 ortak kanal — hepsi anlık görselle.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3 text-[12px] text-ink">
+                <span className="rounded-full border border-cosmic/40 bg-cosmic/[0.08] px-3 py-1">⚡ Çekim noktaları</span>
+                <span className="rounded-full border border-cosmic/40 bg-cosmic/[0.08] px-3 py-1">◐ Hâkimiyet alanları</span>
+                <span className="rounded-full border border-cosmic/40 bg-cosmic/[0.08] px-3 py-1">📊 Uyum skoru</span>
+                <span className="rounded-full border border-cosmic/40 bg-cosmic/[0.08] px-3 py-1">📜 AI yorum</span>
+              </div>
+            </div>
+            <Link
+              href="/compatibility"
+              className="group inline-flex shrink-0 items-center gap-3 rounded-full bg-cosmic px-8 py-5 text-base font-bold tracking-wide text-white shadow-glow transition-transform hover:scale-105"
+            >
+              <span className="text-xl">⚯</span>
+              Uyumu Hesapla
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </Link>
+          </div>
+        </section>
+
         {/* Premium showcase */}
         <section className={`mt-10 rounded-2xl border p-6 ${isPremium ? 'border-gold/60 bg-gold/[0.08]' : 'border-panelBorder bg-panel'}`}>
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">

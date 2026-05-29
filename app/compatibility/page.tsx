@@ -223,9 +223,20 @@ export default function CompatibilityPage() {
           type="button"
           onClick={compare}
           disabled={loading}
-          className="mt-5 w-full rounded-full bg-gold py-4 text-base font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-60"
+          className="group mt-5 flex w-full items-center justify-center gap-3 rounded-full bg-cosmic py-5 text-base font-bold tracking-wide text-white shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-60"
         >
-          {loading ? 'İki kimlik karşılaştırılıyor...' : 'Uyumu Hesapla ✦'}
+          {loading ? (
+            <>
+              <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              İki kimlik karşılaştırılıyor...
+            </>
+          ) : (
+            <>
+              <span className="text-xl">⚯</span>
+              Uyumu Hesapla
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </>
+          )}
         </button>
 
         {result && narrative ? (
