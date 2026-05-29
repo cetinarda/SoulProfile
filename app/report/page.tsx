@@ -117,7 +117,9 @@ export default function ReportPage() {
             <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">{t('report.tree')}</p>
             <p className="mt-1 font-display text-2xl text-ink">{t('report.treeTitle')}</p>
             <p className="mt-1 text-[12px] text-muted">
-              Her gezegenin yolu, her çizgi bir kesişim. Dıştan içe — doğumdan bugüne.
+              {locale === 'tr'
+                ? 'Her gezegenin yolu, her çizgi bir kesişim. Dıştan içe — doğumdan bugüne.'
+                : 'Each planet\'s path, each line a crossing. From outside in — from your birth to now.'}
             </p>
           </div>
           <StarTreeOfLife birthISO={birthISO} />

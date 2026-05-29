@@ -196,7 +196,7 @@ export default function BirthPage() {
                 placeholder={locale === 'tr' ? 'İstanbul, Türkiye' : 'London, UK'}
                 className={inputClass}
               />
-              {searching ? <p className="mt-2 text-xs text-muted">Aranıyor...</p> : null}
+              {searching ? <p className="mt-2 text-xs text-muted">{locale === 'tr' ? 'Aranıyor...' : 'Searching...'}</p> : null}
               {suggestions.length > 0 ? (
                 <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl border border-panelBorder bg-bgElevated">
                   {suggestions.map((s, i) => (

@@ -189,7 +189,7 @@ export default function Welcome() {
             <div className="relative flex h-full flex-col items-center text-center">
               <span className="text-xs font-bold tracking-[0.4em] text-gold">PREVIEW</span>
               <span className="mt-2 text-4xl">✦</span>
-              <h2 className="mt-3 font-display text-2xl leading-tight text-ink">Ada Yıldız</h2>
+              <h2 className="mt-3 font-display text-2xl leading-tight text-ink">{locale === 'tr' ? 'Ada Yıldız' : 'Ada Star'}</h2>
               <p className="mt-2 text-sm text-gold">Pleiadian · Heart Healer</p>
               <div className="mt-3 grid w-full grid-cols-3 gap-2 text-[10px] text-muted">
                 <div className="rounded-lg border border-white/10 p-2"><div className="text-gold">♋</div>{locale === 'tr' ? 'Yengeç Güneş' : 'Cancer Sun'}</div>
