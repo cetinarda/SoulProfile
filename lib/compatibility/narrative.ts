@@ -110,35 +110,52 @@ function parse(text: string): CompatNarrative {
   };
 }
 
-function fallback(a: GalacticReport, b: GalacticReport, r: CompatibilityResult): CompatNarrative {
+function fallback(a: GalacticReport, b: GalacticReport, r: CompatibilityResult, locale: 'tr' | 'en' = 'tr'): CompatNarrative {
   const electro = r.hdConnections.filter((c) => c.kind === 'electromagnetic');
   const companion = r.hdConnections.filter((c) => c.kind === 'companionship');
   const aCond = r.hdCenters.filter((c) => c.status === 'a-conditions-b');
   const bCond = r.hdCenters.filter((c) => c.status === 'b-conditions-a');
   const shared = r.hdCenters.filter((c) => c.status === 'shared-openness');
+  const dom = r.hdConnections.filter((c) => c.kind.startsWith('dominance'));
+  const aShortCenters = aCond.map((c) => c.centerTr.split(' ')[0]).join(', ') || '—';
+  const bShortCenters = bCond.map((c) => c.centerTr.split(' ')[0]).join(', ') || '—';
+
+  if (locale === 'en') {
+    const overview = `When ${r.nameA} and ${r.nameB} come together, a resonance of ${r.scoreOverall} out of 100 emerges. ${a.humanDesign.type} and ${b.humanDesign.type} energies ${electro.length > 0 ? 'pull on each other magnetically' : 'complement each other calmly'}. ${r.headline.split(': ')[1] ?? ''}`;
+    const hdDynamic = `In your Human Design dance, ${r.nameA} conditions ${r.nameB} in ${aCond.length} centers (${aShortCenters}), while ${r.nameB} conditions ${r.nameA} in ${bCond.length} centers (${bShortCenters}). In ${shared.length} centers you are both open — there you mirror each other and feel outside influences together. ${electro.length > 0 ? `${electro.length} electromagnetic channels create a chemistry that ignites you.` : 'No prominent electromagnetic channels; your bond rests on calm rather than charge.'}`;
+    const strengths: string[] = [];
+    if (electro.length > 0) strengths.push(`${electro.length} electromagnetic channels create a natural attraction that enlivens you both.`);
+    if (companion.length > 0) strengths.push(`In ${companion.length} shared channels you speak the same language and understand each other effortlessly.`);
+    if (r.astroAspects.some((x) => x.flavor === 'flowing' || x.flavor === 'fusion')) strengths.push('Your astrological aspects support emotional and romantic flow.');
+    strengths.push(`Life Path ${r.numerology.aLifePath} & ${r.numerology.bLifePath}: ${r.numerology.harmony}`);
+    if (shared.length > 0) strengths.push('Your shared open centers help you learn the same lessons together and mirror wisdom back to each other.');
+    const frictions: string[] = [];
+    if (dom.length > 0) frictions.push(`In ${dom.length} dominance channels one side sets the tone; without awareness the other may feel muted.`);
+    if (aCond.length >= 4) frictions.push(`${r.nameA} conditions many centers; ${r.nameB} must learn to distinguish their own energy.`);
+    if (bCond.length >= 4) frictions.push(`${r.nameB} conditions many centers; ${r.nameA} must remember to return to their own center.`);
+    if (r.astroAspects.some((x) => x.flavor === 'tense')) frictions.push('Some tense aspects create growth friction — once seen, they become your most powerful growth area.');
+    if (a.humanDesign.authority !== b.humanDesign.authority) frictions.push(`Your decision rhythms differ (${a.humanDesign.authority} vs ${b.humanDesign.authority}); respecting each other's timing is essential.`);
+    if (frictions.length === 0) frictions.push('No obvious friction points; still, making room for difference keeps the relationship fresh.');
+    const advice = `${r.nameA} and ${r.nameB} — stay true to your Human Design strategies (${a.humanDesign.strategy} / ${b.humanDesign.strategy}). In your open centers, ask "does this feeling/pressure truly belong to me?"; use the defined side's energy consciously. Celebrate your attraction points and balance the voice in dominance areas.`;
+    return { overview, hdDynamic, strengths, frictions, advice };
+  }
 
   const overview = `${r.nameA} ve ${r.nameB} bir araya geldiğinde ${r.scoreOverall} üzerinden 100'lük bir rezonans doğuyor. ${a.humanDesign.type} ile ${b.humanDesign.type} enerjileri ${electro.length > 0 ? 'birbirini manyetik biçimde çekiyor' : 'birbirini sakin biçimde tamamlıyor'}. ${r.headline.split(': ')[1] ?? ''}`;
-
-  const hdDynamic = `Human Design dansınızda ${r.nameA}, ${aCond.length} merkezde ${r.nameB}'yi koşullarken (${aCond.map((c) => c.centerTr.split(' ')[0]).join(', ') || '—'}), ${r.nameB} ${bCond.length} merkezde ${r.nameA}'yı koşulluyor (${bCond.map((c) => c.centerTr.split(' ')[0]).join(', ') || '—'}). ${shared.length} merkezde ikiniz de açıksınız — bu alanlarda birbirinizin aynası olur, aynı dış etkileri birlikte hissedersiniz. ${electro.length > 0 ? `${electro.length} elektromanyetik kanal birbirinizi tetikleyen bir kimya yaratıyor.` : 'Belirgin elektromanyetik kanal yok; bağınız çekimden çok huzura dayanıyor.'}`;
-
+  const hdDynamic = `Human Design dansınızda ${r.nameA}, ${aCond.length} merkezde ${r.nameB}'yi koşullarken (${aShortCenters}), ${r.nameB} ${bCond.length} merkezde ${r.nameA}'yı koşulluyor (${bShortCenters}). ${shared.length} merkezde ikiniz de açıksınız — bu alanlarda birbirinizin aynası olur, aynı dış etkileri birlikte hissedersiniz. ${electro.length > 0 ? `${electro.length} elektromanyetik kanal birbirinizi tetikleyen bir kimya yaratıyor.` : 'Belirgin elektromanyetik kanal yok; bağınız çekimden çok huzura dayanıyor.'}`;
   const strengths: string[] = [];
   if (electro.length > 0) strengths.push(`${electro.length} elektromanyetik kanal birbirinizi canlandıran doğal bir çekim yaratıyor.`);
   if (companion.length > 0) strengths.push(`${companion.length} ortak kanalda aynı dili konuşuyor, birbirinizi zahmetsizce anlıyorsunuz.`);
   if (r.astroAspects.some((x) => x.flavor === 'flowing' || x.flavor === 'fusion')) strengths.push('Astrolojik açılarınız duygusal ve romantik akışı destekliyor.');
   strengths.push(`Yaşam Yolu ${r.numerology.aLifePath} ve ${r.numerology.bLifePath}: ${r.numerology.harmony}`);
-  if (shared.length > 0) strengths.push(`Ortak açık merkezleriniz, birlikte aynı dersleri öğrenmenize ve birbirinize bilgelik aynası olmanıza yarıyor.`);
-
+  if (shared.length > 0) strengths.push('Ortak açık merkezleriniz, birlikte aynı dersleri öğrenmenize ve birbirinize bilgelik aynası olmanıza yarıyor.');
   const frictions: string[] = [];
-  const dom = r.hdConnections.filter((c) => c.kind.startsWith('dominance'));
   if (dom.length > 0) frictions.push(`${dom.length} hâkimiyet kanalında bir taraf tonu belirler; bilinçli olunmazsa diğeri kısılmış hissedebilir.`);
   if (aCond.length >= 4) frictions.push(`${r.nameA} birçok merkezi koşulluyor; ${r.nameB} kendi enerjisini ayırt etmeyi öğrenmeli.`);
   if (bCond.length >= 4) frictions.push(`${r.nameB} birçok merkezi koşulluyor; ${r.nameA} kendi merkezine dönmeyi hatırlamalı.`);
   if (r.astroAspects.some((x) => x.flavor === 'tense')) frictions.push('Bazı gergin açılar büyüme sürtünmesi yaratır — fark edilirse en güçlü gelişim alanınız olur.');
   if (a.humanDesign.authority !== b.humanDesign.authority) frictions.push(`Karar ritimleriniz farklı (${a.humanDesign.authority} vs ${b.humanDesign.authority}); birbirinizin zamanlamasına saygı şart.`);
   if (frictions.length === 0) frictions.push('Belirgin bir sürtünme noktası görünmüyor; yine de farklılıklara alan açmak ilişkiyi taze tutar.');
-
   const advice = `${r.nameA} ve ${r.nameB}, her birinizin Human Design stratejisine (${a.humanDesign.strategy} / ${b.humanDesign.strategy}) sadık kalın. Açık merkezlerinizde "bu duygu/baskı gerçekten benim mi?" diye sorun; tanımlı tarafın enerjisini bilinçle kullanın. Çekim noktalarınızı kutlayın, hâkimiyet alanlarında söz hakkını dengeleyin.`;
-
   return { overview, hdDynamic, strengths, frictions, advice };
 }
 
@@ -149,7 +166,7 @@ export async function generateCompatNarrative(
   locale: 'tr' | 'en' = 'tr',
 ): Promise<CompatNarrative> {
   const key = getKey();
-  if (!key) return fallback(a, b, r);
+  if (!key) return fallback(a, b, r, locale);
   try {
     const client = new Anthropic({ apiKey: key, dangerouslyAllowBrowser: true });
     const msg = await client.messages.create({
@@ -161,9 +178,9 @@ export async function generateCompatNarrative(
     const text = msg.content.map((c) => (c.type === 'text' ? c.text : '')).join('\n').trim();
     const parsed = parse(text);
     if (parsed.overview.length > 20 && parsed.strengths.length >= 2) return parsed;
-    return fallback(a, b, r);
+    return fallback(a, b, r, locale);
   } catch (e) {
     console.warn('[compat] narrative fallback', e);
-    return fallback(a, b, r);
+    return fallback(a, b, r, locale);
   }
 }

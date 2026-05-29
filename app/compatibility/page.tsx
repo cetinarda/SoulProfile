@@ -89,7 +89,7 @@ export default function CompatibilityPage() {
         longitude: place.longitude,
         timezone: place.timezone,
       }, locale);
-      const res = compareReports(me, other);
+      const res = compareReports(me, other, locale);
       const narr = await generateCompatNarrative(me, other, res, locale);
       recordCompat();
       setResult(res);
