@@ -1,7 +1,7 @@
 {
-  "name": "SoulProfile — Galaktik Karnen",
+  "name": "SoulProfile — Doğum Verisi · Kimlik Analizi",
   "short_name": "SoulProfile",
-  "description": "Doğduğunda yıldızlar sana ne söylüyordu?",
+  "description": "Doğum verisinden 9 sistemi sentezleyen iç gözlem aracı. 3D interaktif görselleştirme ile.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#05060f",

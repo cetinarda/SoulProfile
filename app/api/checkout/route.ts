@@ -1,34 +1,28 @@
-// Web ödeme uç noktası: Stripe Checkout Session oluşturur.
-// iOS'ta StoreKit/RevenueCat kullanılır, bu endpoint çağrılmaz.
+// Web tek seferlik $4.99 ödeme — Stripe Checkout.
+// iOS Capacitor build'inde bu rota mevcut değil (statik export); orada Apple paid app modeli geçerli.
 
 import { NextResponse } from 'next/server';
-import { findSku, type SkuKey } from '@/lib/payments/skus';
+import { PRODUCT } from '@/lib/payments/skus';
 
 export const runtime = 'edge';
 
 export async function POST(request: Request) {
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   if (!stripeKey) {
-    return NextResponse.json(
-      { error: 'Stripe henüz yapılandırılmadı.' },
-      { status: 503 },
-    );
+    return NextResponse.json({ error: 'Stripe henüz yapılandırılmadı.' }, { status: 503 });
   }
 
-  let body: { sku: SkuKey; userEmail?: string } | null = null;
+  let body: { userEmail?: string } | null = null;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: 'Geçersiz istek' }, { status: 400 });
   }
 
-  const sku = body?.sku ? findSku(body.sku) : null;
-  if (!sku) return NextResponse.json({ error: 'Ürün bulunamadı' }, { status: 404 });
-
-  const priceId = process.env[sku.stripePriceEnvKey];
+  const priceId = process.env[PRODUCT.stripePriceEnvKey];
   if (!priceId) {
     return NextResponse.json(
-      { error: `Stripe price ID eksik: ${sku.stripePriceEnvKey}` },
+      { error: `Stripe price ID eksik: ${PRODUCT.stripePriceEnvKey}` },
       { status: 503 },
     );
   }
@@ -36,15 +30,14 @@ export async function POST(request: Request) {
   const origin = request.headers.get('origin') ?? 'https://soulprofile.life';
 
   const params = new URLSearchParams();
-  params.set('mode', sku.isSubscription ? 'subscription' : 'payment');
-  params.set('success_url', `${origin}/premium?success=1&sku=${sku.key}`);
+  params.set('mode', 'payment');
+  params.set('success_url', `${origin}/premium?success=1`);
   params.set('cancel_url', `${origin}/premium?canceled=1`);
   params.append('line_items[0][price]', priceId);
   params.append('line_items[0][quantity]', '1');
   if (body?.userEmail) params.set('customer_email', body.userEmail);
   params.set('allow_promotion_codes', 'true');
   params.set('billing_address_collection', 'auto');
-  params.set('automatic_tax[enabled]', 'true');
 
   const res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
     method: 'POST',

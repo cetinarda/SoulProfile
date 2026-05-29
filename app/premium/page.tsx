@@ -1,46 +1,43 @@
 'use client';
 
 import Link from 'next/link';
-import clsx from 'clsx';
 import { useState } from 'react';
 import { PageLayout } from '@/components/PageLayout';
 import { daysUntilPromoEnd, isLaunchPromoActive } from '@/lib/feature-flags';
-import { SKUS } from '@/lib/payments/skus';
+import { PRODUCT } from '@/lib/payments/skus';
 import { startCheckout } from '@/lib/payments/checkout';
 import { isCapacitorNative } from '@/lib/platform';
 
 export default function PremiumPage() {
   const promoActive = isLaunchPromoActive();
   const days = daysUntilPromoEnd();
-  const [working, setWorking] = useState<string | null>(null);
+  const [working, setWorking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function buy(skuKey: string) {
+  async function buy() {
     setError(null);
     if (isCapacitorNative()) {
-      // iOS/Android: RevenueCat IAP akışına yönlendirilecek (gelecekte).
-      setError('Native ödeme akışı henüz hazır değil. Lansman boyunca tüm premium ücretsiz.');
+      setError('iOS uygulamasında peşin satın alındı, tam erişim zaten açık.');
       return;
     }
-    setWorking(skuKey);
+    setWorking(true);
     try {
-      await startCheckout(skuKey as never);
+      await startCheckout();
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Bir hata oldu';
-      setError(`${msg}. Lansman bittikten sonra tekrar dene.`);
+      setError(e instanceof Error ? e.message : 'Bir hata oldu');
     } finally {
-      setWorking(null);
+      setWorking(false);
     }
   }
 
   return (
     <PageLayout
-      kicker={promoActive ? `LANSMAN PROMOSU · ${days} GÜN` : 'PREMIUM'}
-      title={promoActive ? 'Şu an her şey ücretsiz' : 'Karnen sadece başlangıç'}
+      kicker={promoActive ? `LANSMAN PROMOSU · ${days} GÜN` : 'TAM ERİŞİM'}
+      title={promoActive ? 'Şu an her şey ücretsiz' : 'Tek seferlik · Abonelik yok'}
       intro={
         promoActive
-          ? `Lansman boyunca tüm premium içerikler herkese açık. Kalan ${days} gün — galaktik karneni al, haftalık döngülerini gör, Solar Return haritanı çıkar.`
-          : 'Galaktik karne ücretsiz. Premium üyelikle haftalık ve aylık döngülere, ilişki haritana ve Solar Return analizine açılırsın.'
+          ? `Lansman boyunca SoulProfile'ın her özelliği herkese açık. Kalan ${days} gün — karneni al, ikili uyumu dene, geçmişini sakla.`
+          : 'Bir kerelik ödeyip uygulamaya ömür boyu sahip olursun. Abonelik, gizli ücret veya tekrar eden masraflar yok.'
       }
     >
       {error ? (
@@ -49,85 +46,72 @@ export default function PremiumPage() {
         </div>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {SKUS.map((p) => (
-          <div
-            key={p.key}
-            className={clsx(
-              'rounded-2xl border p-6 transition-all',
-              p.featured
-                ? 'border-gold/60 bg-gold/[0.08] md:col-span-2'
-                : 'border-panelBorder bg-panel',
-            )}
-          >
-            {p.featured ? (
-              <p className="mb-2 text-[10px] font-bold tracking-[0.3em] text-gold">EN POPÜLER</p>
-            ) : null}
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="font-display text-2xl text-ink">{p.name}</h3>
-              <p className="text-base font-bold text-gold">
-                {p.price} <span className="text-xs text-muted">/ {p.period}</span>
-              </p>
-            </div>
-            <p className="mt-2 text-sm leading-relaxed text-muted">{p.description}</p>
-            <ul className="mt-4 space-y-1.5 text-sm text-ink">
-              {p.features.map((f) => (
-                <li key={f} className="flex gap-2">
-                  <span className="text-gold">✦</span>
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-            <button
-              type="button"
-              onClick={() => buy(p.key)}
-              disabled={working !== null}
-              className={clsx(
-                'mt-5 w-full rounded-full px-6 py-3 text-sm font-bold transition-transform hover:scale-[1.02] disabled:opacity-60',
-                p.featured
-                  ? 'bg-gold text-[#1a0a40] shadow-glow'
-                  : 'border border-gold/50 bg-transparent text-gold hover:bg-gold/10',
-              )}
-            >
-              {working === p.key
-                ? 'Yönlendiriliyor...'
-                : promoActive
-                ? 'Lansmanda ücretsiz · İncele'
-                : 'Satın Al'}
-            </button>
+      <div className="rounded-3xl border border-gold/60 bg-gold/[0.08] p-8">
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <div>
+            <h2 className="font-display text-3xl text-ink">{PRODUCT.name}</h2>
+            <p className="mt-1 text-sm text-muted">{PRODUCT.description}</p>
           </div>
-        ))}
+          <div className="text-right">
+            <p className="font-display text-4xl text-gold">{PRODUCT.price}</p>
+            <p className="text-xs text-muted">veya {PRODUCT.priceTr} · tek seferlik</p>
+          </div>
+        </div>
+
+        <ul className="mt-6 grid gap-2 md:grid-cols-2">
+          {PRODUCT.features.map((f) => (
+            <li key={f} className="flex gap-2 text-sm text-ink">
+              <span className="text-gold">✦</span>
+              <span>{f}</span>
+            </li>
+          ))}
+        </ul>
+
+        <button
+          type="button"
+          onClick={buy}
+          disabled={working || promoActive}
+          className="mt-6 w-full rounded-full bg-gold py-4 text-base font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-60"
+        >
+          {promoActive
+            ? `Lansmanda ücretsiz · ${days} gün`
+            : working
+            ? 'Yönlendiriliyor...'
+            : `${PRODUCT.price} öde, tüm erişimi aç`}
+        </button>
+
+        <p className="mt-3 text-center text-[11px] text-faint">
+          Web: Stripe ile ödeme. iOS: peşin satın alındı, ayrı ödeme gerekmez.
+        </p>
       </div>
 
-      <div className="rounded-2xl border border-gold/40 bg-gold/[0.06] p-6">
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">
-          {promoActive ? `KALAN ${days} GÜN` : 'YAKINDA'}
-        </p>
-        <p className="mt-3 text-ink">
-          {promoActive
-            ? 'Lansman boyunca yukarıdaki planlar ücretsiz açık. Bedavadayken karneni al, premium içeriklerin tadına bak; promo bittikten sonra istediğin planda kalabilirsin.'
-            : 'Premium henüz canlıda değil. Free karneni şimdi al; premium açıldığında ilk sen duy diye e-posta listesine kaydolabilirsin.'}
+      <div className="rounded-2xl border border-panelBorder bg-panel p-6">
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">NEDEN TEK FİYAT</p>
+        <p className="mt-2 text-sm leading-relaxed text-muted">
+          Kimliğin sabittir — bir kez doğdun, bir kez sentezlenir. Sürekli ödeyeceğin bir
+          abonelik kurgusu değil bu. Bir kere öde, sahip ol, istediğin kadar karne oluştur
+          ve istediğin kadar ikili uyum karşılaştırması yap.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <Link
             href="/birth"
             className="inline-block rounded-full bg-gold px-6 py-3 text-sm font-bold text-[#1a0a40] shadow-glow"
           >
-            {promoActive ? 'Karnemi Şimdi Aç' : 'Free Karnemi Aç'}
+            {promoActive ? 'Karnemi Şimdi Aç' : 'Ücretsiz Karneye Bak'}
           </Link>
           <Link
-            href="/support"
+            href="/compatibility"
             className="inline-block rounded-full border border-panelBorder px-6 py-3 text-sm text-ink hover:border-gold"
           >
-            Sorum Var
+            İkili Uyumu Dene
           </Link>
         </div>
       </div>
 
       <p className="text-xs text-faint">
-        Abonelikler otomatik yenilenir. İstediğin zaman iptal edebilirsin. iOS aboneliklerini
-        Ayarlar → Apple ID → Abonelikler bölümünden, web aboneliklerini Profil sayfanızdan
-        yönetebilirsiniz. Detay için{' '}
+        iOS App Store'da peşin $4.99 (yaklaşık 99 ₺) olarak listelenir. Web sürümünde aynı tek
+        seferlik ödeme Stripe ile yapılır. AB ve Türkiye'de 14 gün cayma hakkın saklıdır.
+        Detay için{' '}
         <Link href="/terms" className="text-gold underline">
           Kullanım Koşulları
         </Link>

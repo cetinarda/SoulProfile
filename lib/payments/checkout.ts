@@ -1,10 +1,8 @@
-import type { SkuKey } from './skus';
-
-export async function startCheckout(sku: SkuKey, email?: string): Promise<void> {
+export async function startCheckout(email?: string): Promise<void> {
   const res = await fetch('/api/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sku, userEmail: email }),
+    body: JSON.stringify({ userEmail: email }),
   });
   if (!res.ok) {
     const err = (await res.json().catch(() => ({}))) as { error?: string };

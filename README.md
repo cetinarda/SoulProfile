@@ -1,10 +1,21 @@
 # SoulProfile
 
-> Sen sadece insan değilsin — galaktik bir karnen var.
+> Doğduğunda yıldızlar sana ne söylüyordu?
 
-Doğum bilgilerinden astroloji + Human Design + numeroloji + yıldız ırkı kökeni
-içeren **Galaktik Karne** üreten web uygulaması. Karne profil fotoğrafına basılır,
-PNG olarak indirilebilir veya Web Share API ile paylaşılabilir.
+Doğum verisinden 9 sistemi sentezleyen kişisel iç gözlem aracı. Tek seferlik
+**$4.99** (web ve iOS). Web Next.js + iOS Capacitor wrapper. 3D solar sistem,
+ikili uyum karşılaştırması, AI üretimli derin anlatım dahil.
+
+## iOS Build (Apple Store)
+
+```bash
+# Mac'te:
+chmod +x scripts/prepare-ios.sh
+./scripts/prepare-ios.sh
+```
+
+Detay: [docs/APP_STORE_LESSONS.md](docs/APP_STORE_LESSONS.md) (KRITIK — 4.3 spam
+reddedilmesinden nasıl kaçılır) + [docs/APP_STORE_SUBMISSION.md](docs/APP_STORE_SUBMISSION.md).
 
 ## Özellikler
 

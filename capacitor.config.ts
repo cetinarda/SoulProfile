@@ -4,11 +4,8 @@ const config: CapacitorConfig = {
   appId: 'life.soulprofile.app',
   appName: 'SoulProfile',
   webDir: 'out',
+  bundledWebRuntime: false,
   server: {
-    // Production: dahili statik build kullanır.
-    // Geliştirme: aşağıdaki satırı aç ve URL'i ver (canlı reload için).
-    // url: 'http://192.168.1.X:3000',
-    // cleartext: true,
     androidScheme: 'https',
     iosScheme: 'soulprofile',
   },
@@ -16,16 +13,21 @@ const config: CapacitorConfig = {
     contentInset: 'always',
     backgroundColor: '#05060f',
     limitsNavigationsToAppBoundDomains: true,
+    scheme: 'SoulProfile',
+    preferredContentMode: 'mobile',
+    scrollEnabled: true,
+    handleApplicationNotifications: true,
+    overrideUserAgent: undefined,
   },
   plugins: {
     SplashScreen: {
       launchShowDuration: 1500,
       backgroundColor: '#05060f',
-      androidSplashResourceName: 'splash',
-      androidScaleType: 'CENTER_CROP',
       showSpinner: false,
       iosSpinnerStyle: 'small',
       spinnerColor: '#f5d061',
+      splashImmersive: false,
+      splashFullScreen: false,
     },
     StatusBar: {
       style: 'dark',
@@ -35,9 +37,10 @@ const config: CapacitorConfig = {
     Keyboard: {
       resize: 'native',
       style: 'dark',
+      resizeOnFullScreen: true,
     },
-    PushNotifications: {
-      presentationOptions: ['badge', 'sound', 'alert'],
+    Preferences: {
+      group: 'life.soulprofile.app',
     },
   },
 };

@@ -21,16 +21,16 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   metadataBase: new URL('https://soulprofile.life'),
   title: {
-    default: 'SoulProfile — Doğduğunda yıldızlar sana ne söylüyordu?',
+    default: 'SoulProfile — Doğum Verisi · Kimlik Analizi',
     template: '%s · SoulProfile',
   },
   description:
-    'Batı astrolojisi, Vedik harita, Çin yıldız çarkı, Maya Tzolkin, Norse rune, Tarot, Human Design, numeroloji ve yıldız ırkı sentezi. Sen sadece insan değilsin.',
+    'Doğum tarih/saat/yerinden 9 analitik sistemi sentezleyen kişisel iç gözlem aracı. Astronomik harita hesabı, Human Design beden grafiği, numeroloji, Vedik nakshatra, Maya takvimi ve daha fazlası. 3D interaktif görselleştirme ile.',
   keywords: [
-    'astroloji', 'vedik astroloji', 'çin astrolojisi', 'maya takvimi',
-    'human design', 'numeroloji', 'doğum haritası', 'yıldız ırkı',
-    'kuzey ay düğümü', 'starseed', 'galaktik karne', 'kozmik kimlik',
-    'tarot doğum kartı', 'norse rune',
+    'doğum haritası', 'human design', 'numeroloji',
+    'astronomik harita', 'kozmik kimlik analizi', 'doğum verisi',
+    'kişilik arketipi', 'iç gözlem aracı', 'starseed', 'kuzey ay düğümü',
+    'nakshatra', 'tzolkin', 'doğum runu', 'tarot doğum kartı',
   ],
   applicationName: 'SoulProfile',
   manifest: '/manifest.json',
