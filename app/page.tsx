@@ -13,14 +13,6 @@ const FEATURES = [
   { emoji: '🃏', title: 'Tarot Doğum Kartı', desc: 'Kişilik + Ruh kartların — bu yaşamın arketipi.' },
 ];
 
-const HIGHLIGHTS = [
-  { icon: '🌍', text: '3D döndürülebilir doğum gökyüzü — gerçek gezegen dokuları' },
-  { icon: '🌳', text: 'Yıldız Yaşam Ağacı: doğumdan bugüne gezegen yolların' },
-  { icon: '🎴', text: 'Karakter Stat kartı: Güç · Sezgi · Dayanıklılık · Bilgelik...' },
-  { icon: '📜', text: 'AI üretimli Ruhun Hikâyesi · Bilgelikleri · Gölgeleri' },
-  { icon: '📸', text: 'Paylaşılabilir karne görseli (fotoğrafınla birlikte)' },
-];
-
 export default function Welcome() {
   return (
     <div className="relative">
@@ -85,21 +77,6 @@ export default function Welcome() {
               <p className="mt-auto text-[9px] tracking-widest text-faint">soulprofile.life</p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Vurgu satırları */}
-      <section className="mx-auto max-w-4xl px-6 pb-12">
-        <div className="grid gap-3 md:grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
-          {HIGHLIGHTS.map((h) => (
-            <div
-              key={h.text}
-              className="rounded-2xl border border-gold/30 bg-gold/[0.04] p-4 text-center text-[13px] text-ink"
-            >
-              <div className="mb-1 text-2xl">{h.icon}</div>
-              {h.text}
-            </div>
-          ))}
         </div>
       </section>
 

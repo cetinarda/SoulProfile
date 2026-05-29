@@ -35,6 +35,16 @@ function activeCenters(activatedGates: Set<number>): Set<HDCenter> {
   return active;
 }
 
+function definedChannels(activatedGates: Set<number>): string[] {
+  const result: string[] = [];
+  for (const { gates } of CHANNELS) {
+    if (activatedGates.has(gates[0]) && activatedGates.has(gates[1])) {
+      result.push(`${gates[0]}-${gates[1]}`);
+    }
+  }
+  return result;
+}
+
 function determineType(active: Set<HDCenter>, activatedGates: Set<number>): HumanDesign['type'] {
   const sacralDefined = active.has('Sacral');
   const throatDefined = active.has('Throat');
@@ -133,13 +143,19 @@ export function calculateHumanDesign(chart: Chart, birthISO: string): HumanDesig
   const profile = profileLines(personalitySunGate.line, designSunGate.line);
   const incarnationCross = `Kapı ${personalitySunGate.gate} / ${designSunGate.gate} Enkarnasyon Hattı`;
 
+  const definedSet = Array.from(active);
+  const openCenters = CENTERS.filter((c) => !active.has(c));
+
   return {
     type,
     strategy,
     authority,
     profile,
     incarnationCross,
-    definedCenters: Array.from(active),
+    definedCenters: definedSet,
+    openCenters,
+    gates: Array.from(activatedGates).sort((a, b) => a - b),
+    channels: definedChannels(activatedGates),
   };
 }
 

@@ -68,6 +68,14 @@ export default function Privacy() {
           veri sağladığını fark edersek, derhal silinir.
         </p>
       </Section>
+
+      <Section heading="Çerezler">
+        <p>
+          Web sürümünde yalnızca zorunlu çerezler (oturum ve tercih) kullanılır. Anonim analitik
+          çerezler için ilk ziyarette rızanı sorarız; reddedersen yüklemeyiz. Ödeme akışında Stripe
+          kendi çerezlerini kullanır. Tarayıcı ayarlarından tümünü silebilirsin.
+        </p>
+      </Section>
     </PageLayout>
   );
 }
