@@ -9,9 +9,14 @@ import { useSoulStore } from '@/lib/store';
 import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
 import { buildGalacticReport } from '@/lib/report';
 import { saveReport } from '@/lib/supabase/reports';
+import { useT } from '@/lib/i18n';
+import { canCreateReport, recordReport } from '@/lib/entitlements';
+import { PremiumGate } from '@/components/PremiumGate';
 
 export default function BirthPage() {
   const router = useRouter();
+  const { t, locale } = useT();
+  const [gated, setGated] = useState(false);
   const birth = useSoulStore((s) => s.birth);
   const setBirth = useSoulStore((s) => s.setBirth);
   const setReport = useSoulStore((s) => s.setReport);
@@ -65,7 +70,11 @@ export default function BirthPage() {
 
   async function submit() {
     if (!birth.fullName || !birth.birthDate || birth.latitude == null) {
-      setError('Lütfen isim, doğum tarihi ve doğum yerini gir.');
+      setError(t('birth.error'));
+      return;
+    }
+    if (!canCreateReport()) {
+      setGated(true);
       return;
     }
     setError(null);
@@ -81,16 +90,21 @@ export default function BirthPage() {
         longitude: birth.longitude!,
         timezone: birth.timezone ?? 'UTC',
         photoUri: birth.photoUri,
-      });
+      }, locale);
       setReport(report);
+      recordReport();
       saveReport(report).catch((e) => console.warn('[birth] save failed', e));
       router.push('/report');
     } catch (e) {
       console.error(e);
-      setError('Karne üretilemedi. Lütfen tekrar dene.');
+      setError(locale === 'tr' ? 'Karne üretilemedi. Lütfen tekrar dene.' : 'Could not generate profile. Please try again.');
     } finally {
       setLoading(false);
     }
+  }
+
+  if (gated) {
+    return <PremiumGate kind="report" onBack={() => setGated(false)} />;
   }
 
   return (
@@ -98,14 +112,11 @@ export default function BirthPage() {
       {loading ? <CosmicLoader /> : null}
       <CosmicBackground variant="aurora" />
       <div className="mx-auto max-w-xl px-6">
-        <p className="text-xs font-bold uppercase tracking-[0.5em] text-gold">DOĞUM BİLGİLERİN</p>
+        <p className="text-xs font-bold uppercase tracking-[0.5em] text-gold">{t('birth.kicker')}</p>
         <h1 className="mt-3 font-display text-4xl leading-tight text-ink md:text-5xl">
-          Yıldız çocuk, bilgini ver
+          {t('birth.title')}
         </h1>
-        <p className="mt-3 text-base leading-relaxed text-muted">
-          Karnen ne kadar derin olsun istersen, o kadar tam bilgi ver. Doğum saati Yükselen Burç
-          ve Human Design otoritesi için kritik.
-        </p>
+        <p className="mt-3 text-base leading-relaxed text-muted">{t('birth.subtitle')}</p>
 
         <div className="mt-8 flex flex-col items-center">
           <button
@@ -118,8 +129,8 @@ export default function BirthPage() {
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-1 text-center">
                 <span className="text-2xl text-gold">✦</span>
-                <span className="text-xs font-bold text-ink">Profil fotoğrafı</span>
-                <span className="text-[10px] text-faint">karne üzerine basılır</span>
+                <span className="text-xs font-bold text-ink">{t('birth.photo')}</span>
+                <span className="text-[10px] text-faint">{t('birth.photoHint')}</span>
               </div>
             )}
           </button>
@@ -133,18 +144,18 @@ export default function BirthPage() {
         </div>
 
         <div className="mt-8 space-y-5">
-          <Field label="Tam Adın">
+          <Field label={t('birth.name')}>
             <input
               type="text"
               value={birth.fullName ?? ''}
               onChange={(e) => setBirth({ fullName: e.target.value })}
-              placeholder="Ada Yıldız"
+              placeholder={locale === 'tr' ? 'Ada Yıldız' : 'Alex Rivers'}
               autoComplete="name"
               className={inputClass}
             />
           </Field>
 
-          <Field label="Doğum Tarihi">
+          <Field label={t('birth.date')}>
             <input
               type="date"
               value={birth.birthDate ?? ''}
@@ -154,7 +165,7 @@ export default function BirthPage() {
           </Field>
 
           <div className="grid grid-cols-[1fr_auto] gap-3">
-            <Field label="Doğum Saati (24h)">
+            <Field label={t('birth.time')}>
               <input
                 type="time"
                 value={birth.birthTime ?? ''}
@@ -171,18 +182,18 @@ export default function BirthPage() {
                   onChange={(e) => setBirth({ birthTimeKnown: e.target.checked })}
                   className="h-5 w-5 accent-gold"
                 />
-                <span className="text-xs text-muted">Biliniyor</span>
+                <span className="text-xs text-muted">{t('birth.timeKnown')}</span>
               </label>
             </div>
           </div>
 
-          <Field label="Doğum Yeri">
+          <Field label={t('birth.place')}>
             <div className="relative">
               <input
                 type="text"
                 value={placeQuery}
                 onChange={(e) => searchPlace(e.target.value)}
-                placeholder="İstanbul, Türkiye"
+                placeholder={locale === 'tr' ? 'İstanbul, Türkiye' : 'London, UK'}
                 className={inputClass}
               />
               {searching ? <p className="mt-2 text-xs text-muted">Aranıyor...</p> : null}
@@ -223,21 +234,21 @@ export default function BirthPage() {
             {loading ? (
               <>
                 <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#1a0a40]/30 border-t-[#1a0a40]" />
-                Karnen hazırlanıyor...
+                {t('birth.loading')}
               </>
             ) : (
               <>
                 <span className="text-xl">✦</span>
-                Galaktik Karnemi Aç
+                {t('birth.submit')}
                 <span className="transition-transform group-hover:translate-x-1">→</span>
               </>
             )}
           </button>
 
           <p className="text-center text-xs text-faint">
-            Verin yalnızca karne üretimi için kullanılır.{' '}
+            {t('birth.privacyNote')}{' '}
             <a href="/privacy" className="text-muted hover:text-gold underline">
-              Gizlilik
+              {t('nav.privacy')}
             </a>
           </p>
         </div>

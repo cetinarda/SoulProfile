@@ -1,17 +1,5 @@
-// Lansman dönemi: tüm premium özellikler herkese açık, ücretsiz.
-// Promo bitiş: bu tarihten sonra paywall devreye girer.
+// Eski 95 günlük lansman promosu kaldırıldı.
+// Yeni model: ücretsiz 1 karne + 1 uyum karşılaştırması, sonrası premium.
+// Premium durumu lib/entitlements.ts üzerinden yönetilir.
 
-export const LAUNCH_PROMO_END = new Date('2026-09-01T00:00:00Z');
-
-export function isLaunchPromoActive(now = new Date()): boolean {
-  return now < LAUNCH_PROMO_END;
-}
-
-export function premiumOpen(): boolean {
-  return isLaunchPromoActive();
-}
-
-export function daysUntilPromoEnd(now = new Date()): number {
-  const ms = LAUNCH_PROMO_END.getTime() - now.getTime();
-  return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
-}
+export { hasPremium as premiumOpen } from './entitlements';

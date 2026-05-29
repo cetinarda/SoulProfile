@@ -14,9 +14,11 @@ import { useSoulStore } from '@/lib/store';
 import { captureNode, downloadDataUrl, shareDataUrl } from '@/lib/share';
 import { premiumOpen } from '@/lib/feature-flags';
 import { buildConceptDecks } from '@/lib/concepts';
+import { useT } from '@/lib/i18n';
 
 export default function ReportPage() {
   const router = useRouter();
+  const { t, locale } = useT();
   const report = useSoulStore((s) => s.report);
   const cardRef = useRef<HTMLDivElement>(null);
   const [working, setWorking] = useState<'share' | 'download' | null>(null);
@@ -33,13 +35,13 @@ export default function ReportPage() {
       <div className="relative flex min-h-[70vh] items-center justify-center px-6">
         <CosmicBackground variant="cosmic" />
         <div className="rounded-2xl border border-panelBorder bg-panel p-8 text-center">
-          <p className="text-base text-ink">Henüz bir karne yok.</p>
+          <p className="text-base text-ink">{t('report.empty')}</p>
           <button
             type="button"
             onClick={() => router.replace('/birth')}
             className="mt-4 rounded-full bg-gold px-6 py-3 text-sm font-bold text-[#1a0a40]"
           >
-            Karne Hazırla
+            {t('report.createCard')}
           </button>
         </div>
       </div>
@@ -89,8 +91,8 @@ export default function ReportPage() {
         {/* 3D Solar Sistem — touch ile döndürülebilir */}
         <section className="mt-8 rounded-3xl border border-gold/30 bg-panel/60 p-4 backdrop-blur md:p-6">
           <div className="mb-3 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">DOĞUM ANI GÖKYÜZÜ · 3D</p>
-            <p className="mt-1 font-display text-2xl text-ink">Yıldızlar sana ne söylüyordu</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">{t('report.sky3d')}</p>
+            <p className="mt-1 font-display text-2xl text-ink">{t('report.sky3dTitle')}</p>
             <p className="mt-1 text-[12px] text-muted">
               {report.birth.birthDate} · {report.birth.birthTime} · {report.birth.birthPlace}
             </p>
@@ -101,8 +103,8 @@ export default function ReportPage() {
         {/* 2D Astrolojik harita — klasik görüm */}
         <section className="mt-6 rounded-3xl border border-panelBorder bg-panel/60 p-4 backdrop-blur md:p-6">
           <div className="mb-3 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">KLASİK HARİTA</p>
-            <p className="mt-1 font-display text-xl text-ink">Astrolojik çark</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">{t('report.wheel')}</p>
+            <p className="mt-1 font-display text-xl text-ink">{t('report.wheelTitle')}</p>
           </div>
           <div className="mx-auto max-w-xl">
             <BirthChartWheel chart={report.chart} />
@@ -112,8 +114,8 @@ export default function ReportPage() {
         {/* Yıldız Yaşam Ağacı animasyonu */}
         <section className="mt-6 rounded-3xl border border-panelBorder bg-panel/60 p-4 backdrop-blur md:p-6">
           <div className="mb-3 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">YILDIZ YAŞAM AĞACI</p>
-            <p className="mt-1 font-display text-2xl text-ink">Doğumundan bugüne yıldızların izi</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">{t('report.tree')}</p>
+            <p className="mt-1 font-display text-2xl text-ink">{t('report.treeTitle')}</p>
             <p className="mt-1 text-[12px] text-muted">
               Her gezegenin yolu, her çizgi bir kesişim. Dıştan içe — doğumdan bugüne.
             </p>
@@ -142,7 +144,7 @@ export default function ReportPage() {
             disabled={working !== null}
             className="rounded-full bg-gold px-6 py-3 text-sm font-bold text-[#1a0a40] disabled:opacity-60"
           >
-            {working === 'share' ? 'Hazırlanıyor...' : 'Görsel Olarak Paylaş'}
+            {working === 'share' ? t('report.preparing') : t('report.share')}
           </button>
           <button
             type="button"
@@ -150,14 +152,14 @@ export default function ReportPage() {
             disabled={working !== null}
             className="rounded-full border border-panelBorder bg-panel px-6 py-3 text-sm font-bold text-ink hover:border-gold"
           >
-            {working === 'download' ? 'Hazırlanıyor...' : 'PNG İndir'}
+            {working === 'download' ? t('report.preparing') : t('report.download')}
           </button>
         </div>
 
         {/* Kozmik Anlatın — zenginleştirilmiş bölümler */}
         <article className="mt-10 rounded-2xl border border-panelBorder bg-panel p-6 md:p-8">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">Kozmik Anlatın</p>
-          <h2 className="mt-1 font-display text-3xl text-ink">{report.birth.fullName}, hikâyen</h2>
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">{t('report.narrative')}</p>
+          <h2 className="mt-1 font-display text-3xl text-ink">{report.birth.fullName}</h2>
 
           <div className="mt-6 space-y-4">
             {report.sections.opening ? (
@@ -176,14 +178,14 @@ export default function ReportPage() {
 
           {report.sections.soulStory ? (
             <section className="mt-8 rounded-2xl border border-gold/30 bg-gold/[0.04] p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">RUHUN HİKÂYESİ</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">{t('report.soulStory')}</p>
               <p className="mt-3 text-[15px] leading-relaxed text-ink">{report.sections.soulStory}</p>
             </section>
           ) : null}
 
           {report.sections.wisdoms.length > 0 ? (
             <section className="mt-6 rounded-2xl border border-success/30 bg-success/[0.04] p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-success">BİLGELİKLERİN</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-success">{t('report.wisdoms')}</p>
               <ul className="mt-3 space-y-2">
                 {report.sections.wisdoms.map((w, i) => (
                   <li key={i} className="flex gap-3 text-[14px] leading-relaxed text-ink">
@@ -197,10 +199,7 @@ export default function ReportPage() {
 
           {report.sections.shadows.length > 0 ? (
             <section className="mt-6 rounded-2xl border border-cosmic/40 bg-cosmic/[0.06] p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-cosmic">GÖLGELERİN</p>
-              <p className="mt-1 text-[11px] text-faint">
-                "Kötü huy" değil; tanışılması gereken kapılar.
-              </p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-cosmic">{t('report.shadows')}</p>
               <ul className="mt-3 space-y-2">
                 {report.sections.shadows.map((s, i) => (
                   <li key={i} className="flex gap-3 text-[14px] leading-relaxed text-ink">
@@ -216,7 +215,7 @@ export default function ReportPage() {
         {/* Detaylı sistem kartları — tıklanabilir */}
         <section className="mt-10">
           <h2 className="mb-4 text-center font-display text-2xl text-ink">
-            Kimlik kavramların — tıkla, derinleş
+            {t('report.concepts')}
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
             {concepts.map((c) => (
@@ -238,20 +237,16 @@ export default function ReportPage() {
           <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-cosmic">
-                İKİ RUH NASIL ANLAŞIR?
+                {t('home.path2.title')}
               </p>
               <h2 className="mt-3 font-display text-3xl leading-tight text-ink md:text-4xl">
-                Şimdi senin karneni başka biriyle karşılaştır
+                {t('report.compatCta')}
               </h2>
-              <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted">
-                Human Design tanımlı–tanımsız merkez dansı, astroloji synastry açıları ve numeroloji
-                uyumu. ⚡ Elektromanyetik çekim, ◐ hâkimiyet, 🤝 ortak kanal — hepsi anlık görselle.
-              </p>
               <div className="mt-5 flex flex-wrap gap-3 text-[12px] text-ink">
-                <span className="rounded-full border border-cosmic/40 bg-cosmic/[0.08] px-3 py-1">⚡ Çekim noktaları</span>
-                <span className="rounded-full border border-cosmic/40 bg-cosmic/[0.08] px-3 py-1">◐ Hâkimiyet alanları</span>
-                <span className="rounded-full border border-cosmic/40 bg-cosmic/[0.08] px-3 py-1">📊 Uyum skoru</span>
-                <span className="rounded-full border border-cosmic/40 bg-cosmic/[0.08] px-3 py-1">📜 AI yorum</span>
+                <span className="rounded-full border border-cosmic/40 bg-cosmic/[0.08] px-3 py-1">⚡ {locale === 'tr' ? 'Çekim' : 'Attraction'}</span>
+                <span className="rounded-full border border-cosmic/40 bg-cosmic/[0.08] px-3 py-1">◐ {locale === 'tr' ? 'Hâkimiyet' : 'Dominance'}</span>
+                <span className="rounded-full border border-cosmic/40 bg-cosmic/[0.08] px-3 py-1">📊 {locale === 'tr' ? 'Uyum skoru' : 'Score'}</span>
+                <span className="rounded-full border border-cosmic/40 bg-cosmic/[0.08] px-3 py-1">📜 {locale === 'tr' ? 'AI yorum' : 'AI reading'}</span>
               </div>
             </div>
             <Link
@@ -259,34 +254,38 @@ export default function ReportPage() {
               className="group inline-flex shrink-0 items-center gap-3 rounded-full bg-cosmic px-8 py-5 text-base font-bold tracking-wide text-white shadow-glow transition-transform hover:scale-105"
             >
               <span className="text-xl">⚯</span>
-              Uyumu Hesapla
+              {t('report.compatBtn')}
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
           </div>
         </section>
 
-        {/* Premium showcase */}
-        <section className={`mt-10 rounded-2xl border p-6 ${isPremium ? 'border-gold/60 bg-gold/[0.08]' : 'border-panelBorder bg-panel'}`}>
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">
-            {isPremium ? 'LANSMAN PROMOSU · ÜCRETSİZ AÇIK' : 'YAKINDA'}
-          </p>
-          <h3 className="mt-2 font-display text-3xl text-ink">Premium Karneler</h3>
-          <p className="mt-2 text-sm leading-relaxed text-muted">
-            {isPremium
-              ? 'Lansman dönemi boyunca aşağıdaki tüm premium içerikler senin için açık. Haftalık & aylık döngüler, Solar Return, ilişki haritası, biyoritm grafiği, çakra tarama ve detaylı Human Design kapı analizleri.'
-              : 'Haftalık & aylık döngüler, Solar Return analizleri, ilişki haritası, biyoritm grafiği, çakra tarama ve detaylı Human Design kapı analizleri.'}
-          </p>
-          <Link
-            href="/premium"
-            className="mt-4 inline-block text-sm font-bold text-gold underline"
-          >
-            Premium planlara bak →
-          </Link>
-        </section>
+        {/* Premium showcase — sadece premium yoksa göster */}
+        {!isPremium ? (
+          <section className="mt-10 rounded-2xl border border-gold/40 bg-gold/[0.06] p-6">
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">
+              {locale === 'tr' ? 'TAM ERİŞİM' : 'FULL ACCESS'}
+            </p>
+            <h3 className="mt-2 font-display text-3xl text-ink">
+              {locale === 'tr' ? 'Sınırsız karne ve karşılaştırma' : 'Unlimited profiles & comparisons'}
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted">
+              {locale === 'tr'
+                ? 'İlk karnen ve ilk uyum karşılaştırman ücretsiz. Daha fazlası için tek seferlik $4.99 ile tam erişimi aç.'
+                : 'Your first profile and first compatibility check are free. Unlock full access with a one-time $4.99 for more.'}
+            </p>
+            <Link
+              href="/premium"
+              className="mt-4 inline-block rounded-full bg-gold px-6 py-3 text-sm font-bold text-[#1a0a40] shadow-glow"
+            >
+              {locale === 'tr' ? 'Tam Erişimi Aç · $4.99' : 'Unlock Full Access · $4.99'}
+            </Link>
+          </section>
+        ) : null}
 
         <div className="mt-8 text-center">
           <Link href="/" className="text-sm text-muted hover:text-gold">
-            Yeni karne oluştur
+            {t('report.newCard')}
           </Link>
         </div>
       </div>

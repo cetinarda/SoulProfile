@@ -1,6 +1,30 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useT } from '@/lib/i18n';
+
+const SYSTEMS_EN = [
+  '🌞 Calculating your Western chart...',
+  '🌙 Finding your lunar nodes...',
+  '◇ Deriving your Human Design type...',
+  '⚯ Opening your numerology gate...',
+  '✨ Determining your starseed origin...',
+  '🦋 Searching your Mayan Tzolkin Kin...',
+  '🪷 Your Vedic nakshatra speaks...',
+  '🐉 Spinning the Chinese zodiac wheel...',
+  'ᛒ Calling your Norse rune...',
+  '🃏 Drawing your Tarot birth cards...',
+  '🌀 Reading your chakra balance...',
+  '⚛ Synthesizing your element profile...',
+  '🔮 Listening to your North Node mission...',
+  '🕯 Your South Node residue speaks...',
+  '💫 Searching your galactic seal...',
+  '📜 Writing your soul story...',
+  '🌌 Gathering your wisdoms...',
+  '◐ Mapping your shadows...',
+  '⚔ Measuring your character powers...',
+  '✦ Synthesizing your cosmic identity...',
+];
 
 const SYSTEMS = [
   '🌞 Batı astrolojin hesaplanıyor...',
@@ -27,15 +51,17 @@ const SYSTEMS = [
 
 export function CosmicLoader() {
   const [idx, setIdx] = useState(0);
+  const { t, locale } = useT();
+  const list = locale === 'en' ? SYSTEMS_EN : SYSTEMS;
 
   useEffect(() => {
-    const t = setInterval(() => {
-      setIdx((i) => (i + 1) % SYSTEMS.length);
+    const id = setInterval(() => {
+      setIdx((i) => (i + 1) % list.length);
     }, 450);
-    return () => clearInterval(t);
-  }, []);
+    return () => clearInterval(id);
+  }, [list.length]);
 
-  const progress = ((idx + 1) / SYSTEMS.length) * 100;
+  const progress = ((idx + 1) / list.length) * 100;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg/95 backdrop-blur">
@@ -48,13 +74,13 @@ export function CosmicLoader() {
         </div>
 
         <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-gold">
-          KARNEN HAZIRLANIYOR
+          {t('loader.kicker')}
         </p>
         <h2 className="mt-3 font-display text-3xl text-ink">
-          20 sistem konuşuyor...
+          {t('loader.title')}
         </h2>
         <p className="mt-5 min-h-[28px] text-sm leading-relaxed text-ink transition-opacity">
-          {SYSTEMS[idx]}
+          {list[idx]}
         </p>
 
         <div className="mt-6 h-1 w-full overflow-hidden rounded-full bg-white/10">
@@ -63,7 +89,7 @@ export function CosmicLoader() {
             style={{ width: `${progress}%` }}
           />
         </div>
-        <p className="mt-2 text-[11px] text-faint">{idx + 1} / {SYSTEMS.length}</p>
+        <p className="mt-2 text-[11px] text-faint">{idx + 1} / {list.length}</p>
       </div>
     </div>
   );

@@ -66,6 +66,7 @@ function buildSummary(report: Omit<GalacticReport, 'narrative' | 'summary' | 'se
 
 export async function generateNarrative(
   report: Omit<GalacticReport, 'narrative' | 'summary' | 'sections'>,
+  locale: 'tr' | 'en' = 'tr',
 ): Promise<{ narrative: string; summary: string; sections: NarrativeSections }> {
   const summary = buildSummary(report);
   const key = getAnthropicKey();
@@ -80,7 +81,7 @@ export async function generateNarrative(
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2400,
-      system: buildSystemPrompt(),
+      system: buildSystemPrompt(locale),
       messages: [{ role: 'user', content: buildUserPrompt(report) }],
     });
     const text = message.content

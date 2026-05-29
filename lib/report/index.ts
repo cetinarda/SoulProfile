@@ -44,7 +44,10 @@ function buildBirthISO(date: string, time: string, timezone: string): string {
   }
 }
 
-export async function buildGalacticReport(input: BirthInput): Promise<GalacticReport> {
+export async function buildGalacticReport(
+  input: BirthInput,
+  locale: 'tr' | 'en' = 'tr',
+): Promise<GalacticReport> {
   const birthISO = buildBirthISO(input.birthDate, input.birthTime, input.timezone);
   const chart = calculateChart(birthISO, input.latitude, input.longitude);
   const numerology = buildNumerology(input.birthDate, input.fullName);
@@ -77,7 +80,7 @@ export async function buildGalacticReport(input: BirthInput): Promise<GalacticRe
     southNodeMessage: SOUTH_NODE_RELEASE[sn.sign],
   };
 
-  const { narrative, summary, sections } = await generateNarrative(partial);
+  const { narrative, summary, sections } = await generateNarrative(partial, locale);
 
   return { ...partial, narrative, summary, sections };
 }

@@ -1,13 +1,26 @@
-import { daysUntilPromoEnd, isLaunchPromoActive } from '@/lib/feature-flags';
+'use client';
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { hasPremium } from '@/lib/entitlements';
+import { useT } from '@/lib/i18n';
 
 export function PromoBanner() {
-  if (!isLaunchPromoActive()) return null;
-  const days = daysUntilPromoEnd();
+  const { t } = useT();
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    setShow(!hasPremium());
+  }, []);
+
+  if (!show) return null;
+
   return (
-    <div className="bg-gradient-to-r from-cosmicDeep via-cosmic to-nebula text-center text-[12px] font-bold tracking-wide text-white">
-      <div className="mx-auto max-w-6xl px-4 py-2">
-        ✦ LANSMAN PROMOSU · Tüm premium özellikler ücretsiz · Kalan {days} gün ✦
-      </div>
-    </div>
+    <Link
+      href="/premium"
+      className="block bg-gradient-to-r from-cosmicDeep via-cosmic to-nebula text-center text-[12px] font-bold tracking-wide text-white transition-opacity hover:opacity-90"
+    >
+      <div className="mx-auto max-w-6xl px-4 py-2">{t('free.banner')}</div>
+    </Link>
   );
 }

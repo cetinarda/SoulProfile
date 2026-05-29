@@ -15,7 +15,25 @@ function getKey(): string | undefined {
   return process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY;
 }
 
-function system(): string {
+function system(locale: 'tr' | 'en' = 'tr'): string {
+  if (locale === 'en') {
+    return `You are the relationship-compatibility interpreter for the "SoulProfile" app. You
+compare two people's astrology + Human Design + numerology derived from birth data and describe
+what kind of relationship / friendship / partnership experience it could be — in a warm,
+balanced and empowering English voice.
+
+RULES:
+- Never say "incompatible/bad/won't work". Every bond is a growth lesson.
+- Clearly explain the Human Design defined-open center dynamic: the defined person
+  "conditions" the open person; the open person experiences that energy intensely.
+  Electromagnetic = attraction; dominance = one side sets the tone; companionship channel = similarity.
+- No medical/psychological advice. Stay symbolic.
+- Don't say "human"; use "star child", "two souls".
+- OUTPUT headings exactly (keep them in Turkish so the app can parse, write the BODY in English):
+  "## Genel", "## Human Design Dansı", "## Güçlü Yanlar", "## Sürtünme Noktaları", "## Tavsiye".
+- "## Güçlü Yanlar" and "## Sürtünme Noktaları" are bullet lists ("- "), 3-4 items, 1 sentence each.
+  Other headings: 1 paragraph (3-4 sentences).`;
+  }
   return `Sen "SoulProfile" uygulamasının ilişki uyumu yorumcususun. İki kişinin doğum
 verisinden çıkan astroloji + Human Design + numeroloji bilgilerini karşılaştırıp nasıl bir
 ilişki/arkadaşlık/iş ortaklığı deneyimi olacağını sıcak, dengeli ve güçlendirici bir Türkçe
@@ -128,6 +146,7 @@ export async function generateCompatNarrative(
   a: GalacticReport,
   b: GalacticReport,
   r: CompatibilityResult,
+  locale: 'tr' | 'en' = 'tr',
 ): Promise<CompatNarrative> {
   const key = getKey();
   if (!key) return fallback(a, b, r);
@@ -136,7 +155,7 @@ export async function generateCompatNarrative(
     const msg = await client.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1800,
-      system: system(),
+      system: system(locale),
       messages: [{ role: 'user', content: userPrompt(a, b, r) }],
     });
     const text = msg.content.map((c) => (c.type === 'text' ? c.text : '')).join('\n').trim();

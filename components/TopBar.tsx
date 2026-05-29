@@ -4,26 +4,29 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import clsx from 'clsx';
-
-const NAV_LINKS = [
-  { href: '/birth', label: 'Karne Oluştur' },
-  { href: '/compatibility', label: 'İkili Uyum' },
-];
+import { useT } from '@/lib/i18n';
+import { LanguageToggle } from './LanguageToggle';
 
 export function TopBar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { t } = useT();
+
+  const navLinks = [
+    { href: '/birth', label: t('nav.birth') },
+    { href: '/compatibility', label: t('nav.compatibility') },
+  ];
 
   return (
     <header className="sticky top-0 z-40 border-b border-panelBorder bg-bg/70 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-6 px-5 py-4">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-4">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-2xl text-gold">✦</span>
           <span className="text-[13px] font-bold tracking-[0.3em] text-ink">SOULPROFILE</span>
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex">
-          {NAV_LINKS.map((l) => (
+          {navLinks.map((l) => (
             <Link
               key={l.href}
               href={l.href}
@@ -38,17 +41,18 @@ export function TopBar() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <LanguageToggle />
           <Link
             href="/birth"
             className="hidden rounded-full bg-gold px-4 py-2 text-xs font-bold tracking-wide text-[#1a0a40] transition-transform hover:scale-105 sm:inline-block"
           >
-            Karnemi Aç
+            {t('cta.openCard')}
           </Link>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             className="text-2xl text-ink md:hidden"
-            aria-label="Menü"
+            aria-label="Menu"
           >
             {open ? '×' : '☰'}
           </button>
@@ -58,7 +62,7 @@ export function TopBar() {
       {open ? (
         <nav className="border-t border-panelBorder bg-bg/95 px-5 py-4 md:hidden">
           <ul className="flex flex-col gap-3">
-            {NAV_LINKS.map((l) => (
+            {navLinks.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
@@ -71,7 +75,7 @@ export function TopBar() {
             ))}
             <li>
               <Link href="/history" onClick={() => setOpen(false)} className="block text-sm text-muted">
-                Geçmişin
+                {t('nav.history')}
               </Link>
             </li>
           </ul>

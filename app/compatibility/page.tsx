@@ -12,14 +12,19 @@ import { compareReports, type CompatibilityResult } from '@/lib/compatibility';
 import { generateCompatNarrative, type CompatNarrative } from '@/lib/compatibility/narrative';
 import type { GalacticReport } from '@/lib/types';
 import { SIGN_NAMES_TR } from '@/lib/content/astrology-content';
+import { useT } from '@/lib/i18n';
+import { canRunCompat, recordCompat } from '@/lib/entitlements';
+import { PremiumGate } from '@/components/PremiumGate';
 
 const inputClass =
   'w-full rounded-xl border border-panelBorder bg-panel px-4 py-3.5 text-ink placeholder:text-faint focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold';
 
 export default function CompatibilityPage() {
+  const { t, locale } = useT();
   const storeReport = useSoulStore((s) => s.report);
   const [me, setMe] = useState<GalacticReport | null>(storeReport);
   const [hydrated, setHydrated] = useState(false);
+  const [gated, setGated] = useState(false);
 
   // İkinci kişi formu
   const [name, setName] = useState('');
@@ -64,7 +69,11 @@ export default function CompatibilityPage() {
   async function compare() {
     if (!me) return;
     if (!name || !date || !place) {
-      setError('Lütfen ikinci kişinin adını, doğum tarihini ve yerini gir.');
+      setError(t('compat.error'));
+      return;
+    }
+    if (!canRunCompat()) {
+      setGated(true);
       return;
     }
     setError(null);
@@ -79,9 +88,10 @@ export default function CompatibilityPage() {
         latitude: place.latitude,
         longitude: place.longitude,
         timezone: place.timezone,
-      });
+      }, locale);
       const res = compareReports(me, other);
-      const narr = await generateCompatNarrative(me, other, res);
+      const narr = await generateCompatNarrative(me, other, res, locale);
+      recordCompat();
       setResult(res);
       setNarrative(narr);
       setTimeout(() => {
@@ -89,10 +99,14 @@ export default function CompatibilityPage() {
       }, 100);
     } catch (e) {
       console.error(e);
-      setError('Karşılaştırma yapılamadı. Lütfen tekrar dene.');
+      setError(locale === 'tr' ? 'Karşılaştırma yapılamadı. Lütfen tekrar dene.' : 'Comparison failed. Please try again.');
     } finally {
       setLoading(false);
     }
+  }
+
+  if (gated) {
+    return <PremiumGate kind="compat" onBack={() => setGated(false)} />;
   }
 
   // Kendi karnesi yoksa
@@ -101,16 +115,14 @@ export default function CompatibilityPage() {
       <div className="relative min-h-[70vh]">
         <CosmicBackground variant="aurora" />
         <div className="mx-auto max-w-xl px-6 py-20 text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.5em] text-gold">İKİLİ UYUM</p>
-          <h1 className="mt-3 font-display text-4xl text-ink">Önce kendini tanı</h1>
-          <p className="mt-3 text-muted">
-            İki kimliği karşılaştırmadan önce kendi galaktik karneni oluşturman gerekiyor.
-          </p>
+          <p className="text-xs font-bold uppercase tracking-[0.5em] text-gold">{t('compat.needSelf.kicker')}</p>
+          <h1 className="mt-3 font-display text-4xl text-ink">{t('compat.needSelf.title')}</h1>
+          <p className="mt-3 text-muted">{t('compat.needSelf.desc')}</p>
           <Link
             href="/birth"
             className="mt-6 inline-block rounded-full bg-gold px-7 py-4 text-sm font-bold text-[#1a0a40] shadow-glow"
           >
-            Önce Karnemi Oluştur →
+            {t('compat.needSelf.cta')} →
           </Link>
         </div>
       </div>
@@ -125,37 +137,34 @@ export default function CompatibilityPage() {
     <div className="relative py-12 md:py-16">
       <CosmicBackground variant="aurora" />
       <div className="mx-auto max-w-3xl px-5 md:px-6">
-        <p className="text-xs font-bold uppercase tracking-[0.5em] text-gold">İKİLİ KOZMİK UYUM</p>
+        <p className="text-xs font-bold uppercase tracking-[0.5em] text-gold">{t('compat.kicker')}</p>
         <h1 className="mt-3 font-display text-4xl leading-tight text-ink md:text-5xl">
-          İki ruh nasıl anlaşır?
+          {t('compat.title')}
         </h1>
-        <p className="mt-3 text-base leading-relaxed text-muted">
-          Senin kimliğin ile başka birinin doğum verisini karşılaştırıyoruz: astroloji synastry,
-          Human Design tanımlı–tanımsız merkez dansı ve numeroloji uyumu — sonra nasıl bir deneyim
-          olacağını yorumluyoruz.
-        </p>
+        <p className="mt-3 text-base leading-relaxed text-muted">{t('compat.subtitle')}</p>
 
         {/* Kişi 1 — sen */}
         <div className="mt-8 rounded-2xl border border-gold/30 bg-gold/[0.05] p-5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">1. KİŞİ — SEN</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">{t('compat.person1')}</p>
           <p className="mt-2 font-display text-2xl text-ink">{me.birth.fullName}</p>
           <p className="mt-1 text-sm text-muted">
-            {mySun ? SIGN_NAMES_TR[mySun.sign] : ''} Güneş ·{' '}
-            {SIGN_NAMES_TR[me.chart.ascendantSign]} Yükselen · {me.humanDesign.type} · Yaşam Yolu{' '}
+            {mySun ? SIGN_NAMES_TR[mySun.sign] : ''} {locale === 'tr' ? 'Güneş' : 'Sun'} ·{' '}
+            {SIGN_NAMES_TR[me.chart.ascendantSign]} {locale === 'tr' ? 'Yükselen' : 'Rising'} ·{' '}
+            {me.humanDesign.type} · {locale === 'tr' ? 'Yaşam Yolu' : 'Life Path'}{' '}
             {me.numerology.lifePath}
           </p>
         </div>
 
         {/* Kişi 2 — form */}
         <div className="mt-4 rounded-2xl border border-panelBorder bg-panel p-5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-cosmic">2. KİŞİ</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-cosmic">{t('compat.person2')}</p>
 
           <div className="mt-4 space-y-4">
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Adı (örn. Deniz Kaya)"
+              placeholder={t('compat.name')}
               className={inputClass}
             />
             <input
@@ -179,7 +188,7 @@ export default function CompatibilityPage() {
                   onChange={(e: ChangeEvent<HTMLInputElement>) => setTimeKnown(e.target.checked)}
                   className="h-5 w-5 accent-gold"
                 />
-                <span className="text-xs text-muted">Saat biliniyor</span>
+                <span className="text-xs text-muted">{t('compat.timeKnown')}</span>
               </label>
             </div>
             <div className="relative">
@@ -187,7 +196,7 @@ export default function CompatibilityPage() {
                 type="text"
                 value={placeQuery}
                 onChange={(e) => searchPlace(e.target.value)}
-                placeholder="Doğum yeri (örn. Ankara, Türkiye)"
+                placeholder={t('compat.place')}
                 className={inputClass}
               />
               {suggestions.length > 0 ? (
@@ -228,12 +237,12 @@ export default function CompatibilityPage() {
           {loading ? (
             <>
               <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              İki kimlik karşılaştırılıyor...
+              {t('compat.loading')}
             </>
           ) : (
             <>
               <span className="text-xl">⚯</span>
-              Uyumu Hesapla
+              {t('compat.submit')}
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </>
           )}
@@ -255,7 +264,7 @@ export default function CompatibilityPage() {
                 }}
                 className="text-sm text-muted hover:text-gold"
               >
-                Başka biriyle karşılaştır
+                {t('compat.again')}
               </button>
             </div>
           </div>
