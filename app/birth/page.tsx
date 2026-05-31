@@ -118,31 +118,6 @@ export default function BirthPage() {
         </h1>
         <p className="mt-3 text-base leading-relaxed text-muted">{t('birth.subtitle')}</p>
 
-        <div className="mt-8 flex flex-col items-center">
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="relative h-36 w-36 overflow-hidden rounded-full border-2 border-gold bg-panel transition-transform hover:scale-105"
-          >
-            {birth.photoUri ? (
-              <Image src={birth.photoUri} alt="Profil" fill className="object-cover" unoptimized />
-            ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-1 text-center">
-                <span className="text-2xl text-gold">✦</span>
-                <span className="text-xs font-bold text-ink">{t('birth.photo')}</span>
-                <span className="text-[10px] text-faint">{t('birth.photoHint')}</span>
-              </div>
-            )}
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={onPhotoChange}
-            className="hidden"
-          />
-        </div>
-
         <div className="mt-8 space-y-5">
           <Field label={t('birth.name')}>
             <input
@@ -218,6 +193,35 @@ export default function BirthPage() {
               ) : null}
             </div>
           </Field>
+
+          {/* Opsiyonel profil fotoğrafı — kompakt, en sonda */}
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex w-full items-center gap-3 rounded-xl border border-dashed border-panelBorder bg-panel px-4 py-3 text-left transition-colors hover:border-gold/50"
+          >
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-gold/40 bg-bg">
+              {birth.photoUri ? (
+                <Image src={birth.photoUri} alt="" width={48} height={48} className="h-full w-full object-cover" unoptimized />
+              ) : (
+                <span className="text-lg text-gold">✦</span>
+              )}
+            </span>
+            <span className="flex-1">
+              <span className="block text-sm font-bold text-ink">
+                {t('birth.photo')} <span className="text-[11px] font-normal text-faint">({locale === 'tr' ? 'opsiyonel' : 'optional'})</span>
+              </span>
+              <span className="block text-[11px] text-faint">{t('birth.photoHint')}</span>
+            </span>
+            <span className="shrink-0 text-xs text-gold">{birth.photoUri ? (locale === 'tr' ? 'Değiştir' : 'Change') : (locale === 'tr' ? 'Ekle' : 'Add')}</span>
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={onPhotoChange}
+            className="hidden"
+          />
 
           {error ? (
             <p className="rounded-lg border border-danger/40 bg-danger/10 p-3 text-sm text-danger">

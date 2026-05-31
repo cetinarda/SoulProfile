@@ -23,6 +23,7 @@ export default function ReportPage() {
   const cardRef = useRef<HTMLDivElement>(null);
   const [working, setWorking] = useState<'share' | 'download' | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [showExplore, setShowExplore] = useState(false);
 
   useEffect(() => {
     setHydrated(true);
@@ -88,54 +89,8 @@ export default function ReportPage() {
       <div className="mx-auto max-w-4xl px-4 md:px-6">
         <p className="text-center text-xs tracking-[0.3em] text-gold">{report.summary}</p>
 
-        {/* 3D Solar Sistem — touch ile döndürülebilir */}
-        <section className="mt-8 rounded-3xl border border-gold/30 bg-panel/60 p-4 backdrop-blur md:p-6">
-          <div className="mb-3 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">{t('report.sky3d')}</p>
-            <p className="mt-1 font-display text-2xl text-ink">{t('report.sky3dTitle')}</p>
-            <p className="mt-1 text-[12px] text-muted">
-              {report.birth.birthDate} · {report.birth.birthTime} · {report.birth.birthPlace}
-            </p>
-          </div>
-          <SolarSystem3D chart={report.chart} />
-        </section>
-
-        {/* 2D Astrolojik harita — klasik görüm */}
-        <section className="mt-6 rounded-3xl border border-panelBorder bg-panel/60 p-4 backdrop-blur md:p-6">
-          <div className="mb-3 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">{t('report.wheel')}</p>
-            <p className="mt-1 font-display text-xl text-ink">{t('report.wheelTitle')}</p>
-          </div>
-          <div className="mx-auto max-w-xl">
-            <BirthChartWheel chart={report.chart} />
-          </div>
-        </section>
-
-        {/* Yıldız Yaşam Ağacı animasyonu */}
-        <section className="mt-6 rounded-3xl border border-panelBorder bg-panel/60 p-4 backdrop-blur md:p-6">
-          <div className="mb-3 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">{t('report.tree')}</p>
-            <p className="mt-1 font-display text-2xl text-ink">{t('report.treeTitle')}</p>
-            <p className="mt-1 text-[12px] text-muted">
-              {locale === 'tr'
-                ? 'Her gezegenin yolu, her çizgi bir kesişim. Dıştan içe — doğumdan bugüne.'
-                : 'Each planet\'s path, each line a crossing. From outside in — from your birth to now.'}
-            </p>
-          </div>
-          <StarTreeOfLife birthISO={birthISO} />
-        </section>
-
-        {/* Karakter Stat Kartı */}
-        <section className="mt-6">
-          <CharacterStats
-            chart={report.chart}
-            numerology={report.numerology}
-            humanDesign={report.humanDesign}
-          />
-        </section>
-
-        {/* Paylaşılabilir karne */}
-        <div className="mt-8 flex justify-center">
+        {/* AHA — paylaşılabilir kimlik kartı en üstte */}
+        <div className="mt-6 flex justify-center">
           <ReportCard ref={cardRef} report={report} />
         </div>
 
@@ -213,6 +168,59 @@ export default function ReportPage() {
             </section>
           ) : null}
         </article>
+
+        {/* Karakter Stat Kartı */}
+        <section className="mt-8">
+          <CharacterStats
+            chart={report.chart}
+            numerology={report.numerology}
+            humanDesign={report.humanDesign}
+          />
+        </section>
+
+        {/* Gökyüzünü keşfet — ağır görseller talep üzerine */}
+        <section className="mt-8">
+          <button
+            type="button"
+            onClick={() => setShowExplore((v) => !v)}
+            className="flex w-full items-center justify-between rounded-2xl border border-gold/30 bg-panel/60 px-5 py-4 text-left transition-colors hover:border-gold/60"
+          >
+            <span>
+              <span className="block text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
+                {report.birth.birthDate} · {report.birth.birthTime} · {report.birth.birthPlace}
+              </span>
+              <span className="mt-1 block font-display text-xl text-ink">{t('report.exploreTitle')}</span>
+            </span>
+            <span className="shrink-0 rounded-full border border-gold/40 px-4 py-2 text-xs font-bold text-gold">
+              {showExplore ? t('report.exploreHide') : `${t('report.exploreBtn')} ↓`}
+            </span>
+          </button>
+
+          {showExplore ? (
+            <div className="mt-4 space-y-6">
+              <div className="rounded-3xl border border-gold/30 bg-panel/60 p-4 backdrop-blur md:p-6">
+                <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
+                  {t('report.sky3d')}
+                </p>
+                <SolarSystem3D chart={report.chart} />
+              </div>
+              <div className="rounded-3xl border border-panelBorder bg-panel/60 p-4 backdrop-blur md:p-6">
+                <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
+                  {t('report.tree')}
+                </p>
+                <StarTreeOfLife birthISO={birthISO} />
+              </div>
+              <div className="rounded-3xl border border-panelBorder bg-panel/60 p-4 backdrop-blur md:p-6">
+                <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
+                  {t('report.wheel')}
+                </p>
+                <div className="mx-auto max-w-xl">
+                  <BirthChartWheel chart={report.chart} />
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </section>
 
         {/* Detaylı sistem kartları — tıklanabilir */}
         <section className="mt-10">

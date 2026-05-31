@@ -99,6 +99,9 @@ const tr: Dict = {
   'report.newCard': 'Yeni karne oluştur',
   'report.empty': 'Henüz bir karne yok.',
   'report.createCard': 'Karne Hazırla',
+  'report.exploreBtn': 'Gökyüzünü keşfet',
+  'report.exploreHide': 'Gökyüzünü gizle',
+  'report.exploreTitle': '3D doğum gökyüzün + Yaşam Ağacın',
 
   // Compatibility
   'compat.kicker': 'İKİLİ KOZMİK UYUM',
@@ -254,6 +257,9 @@ const en: Dict = {
   'report.newCard': 'Create a new profile',
   'report.empty': 'No profile yet.',
   'report.createCard': 'Create Profile',
+  'report.exploreBtn': 'Explore your sky',
+  'report.exploreHide': 'Hide your sky',
+  'report.exploreTitle': 'Your 3D birth sky + Tree of Life',
 
   // Compatibility
   'compat.kicker': 'DUAL COSMIC COMPATIBILITY',
