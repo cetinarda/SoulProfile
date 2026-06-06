@@ -156,6 +156,32 @@ export default function Welcome() {
         </div>
       </section>
 
+      {/* 3 SEMBOLİK ARKETİP — twin flame yerine */}
+      <section className="mx-auto max-w-5xl px-6 py-14">
+        <div className="mb-8 text-center">
+          <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold">{t('home.archetypes.kicker')}</p>
+          <h2 className="mt-2 font-display text-3xl text-ink md:text-4xl">{t('home.archetypes.title')}</h2>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {[
+            { key: 'lesson', accent: '#9CAF88', glyph: '🌿' },
+            { key: 'mirror', accent: '#C9A0A6', glyph: '🪞' },
+            { key: 'union',  accent: '#C7B8E8', glyph: '✦' },
+          ].map((a) => (
+            <div
+              key={a.key}
+              className="rounded-3xl border bg-panel/40 p-6"
+              style={{ borderColor: `${a.accent}40` }}
+            >
+              <div className="text-3xl">{a.glyph}</div>
+              <h3 className="mt-3 font-display text-2xl text-ink">{t(`home.archetypes.${a.key}.title`)}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{t(`home.archetypes.${a.key}.desc`)}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-5 text-center text-[11px] text-faint">{t('home.archetypes.disclaimer')}</p>
+      </section>
+
       {/* 9 SİSTEM */}
       <section className="mx-auto max-w-5xl px-6 py-14">
         <div className="mb-8 text-center">

@@ -47,6 +47,7 @@ const L = {
     planet: {
       Sun: 'Güneş', Moon: 'Ay', Mercury: 'Merkür', Venus: 'Venüs', Mars: 'Mars',
       Jupiter: 'Jüpiter', Saturn: 'Satürn', Ascendant: 'Yükselen', NorthNode: 'Kuzey Düğüm',
+      Vertex: 'Vertex',
     } as Record<string, string>,
     pairTheme: {
       sunMoon: 'kimlik ve duygusal besleme — klasik ruh eşi göstergesi',
@@ -61,6 +62,9 @@ const L = {
       saturnSun: 'sorumluluk, kalıcılık ve olgunlaştıran bağ',
       nnSun: 'kaderî / büyüten karmik bağ',
       sunNn: 'ortak ruhsal yön ve kader hissi',
+      vertexSun: 'kader buluşması — eşin senin kim olduğunu derinden tetikliyor',
+      vertexMoon: 'kader buluşması — duygu hafızanda silinmez bir iz bırakıyor',
+      vertexVenus: 'kader buluşması — sevgi ve değer üzerinden hatırlatıcı bir bağ',
     },
     numerology: {
       same: (lp: number) => `İkiniz de Yaşam Yolu ${lp}. Aynı temel dersi paylaşıyorsunuz — birbirinizi derinden anlarsınız ama aynı kör noktaları da paylaşırsınız.`,
@@ -107,6 +111,7 @@ const L = {
     planet: {
       Sun: 'Sun', Moon: 'Moon', Mercury: 'Mercury', Venus: 'Venus', Mars: 'Mars',
       Jupiter: 'Jupiter', Saturn: 'Saturn', Ascendant: 'Rising', NorthNode: 'North Node',
+      Vertex: 'Vertex',
     } as Record<string, string>,
     pairTheme: {
       sunMoon: 'identity and emotional nourishment — the classic soul-mate marker',
@@ -121,6 +126,9 @@ const L = {
       saturnSun: 'responsibility, longevity and a maturing bond',
       nnSun: 'a fated, growth-driving karmic bond',
       sunNn: 'a shared spiritual direction and sense of fate',
+      vertexSun: 'a fated encounter — they trigger something deep about who you are',
+      vertexMoon: 'a fated encounter — leaving an indelible mark on your emotional memory',
+      vertexVenus: 'a fated encounter — a remembering bond through love and value',
     },
     numerology: {
       same: (lp: number) => `You both share Life Path ${lp}. You carry the same core lesson — you understand each other deeply, but also share the same blind spots.`,
@@ -318,7 +326,7 @@ function findAspect(lonA: number, lonB: number): AspectDef | null {
   return null;
 }
 
-type PairKey = 'sunMoon' | 'moonSun' | 'venusMars' | 'marsVenus' | 'sunSun' | 'moonMoon' | 'venusVenus' | 'sunAsc' | 'moonAsc' | 'saturnSun' | 'nnSun' | 'sunNn';
+type PairKey = 'sunMoon' | 'moonSun' | 'venusMars' | 'marsVenus' | 'sunSun' | 'moonMoon' | 'venusVenus' | 'sunAsc' | 'moonAsc' | 'saturnSun' | 'nnSun' | 'sunNn' | 'vertexSun' | 'vertexMoon' | 'vertexVenus';
 
 const SYNASTRY_PAIRS: Array<{ a: PlanetName; b: PlanetName; key: PairKey }> = [
   { a: 'Sun', b: 'Moon', key: 'sunMoon' },
@@ -333,6 +341,10 @@ const SYNASTRY_PAIRS: Array<{ a: PlanetName; b: PlanetName; key: PairKey }> = [
   { a: 'Saturn', b: 'Sun', key: 'saturnSun' },
   { a: 'NorthNode', b: 'Sun', key: 'nnSun' },
   { a: 'Sun', b: 'NorthNode', key: 'sunNn' },
+  // Vertex — synastry kader buluşması göstergeleri (Robert Hand, Astrodienst)
+  { a: 'Vertex', b: 'Sun', key: 'vertexSun' },
+  { a: 'Vertex', b: 'Moon', key: 'vertexMoon' },
+  { a: 'Vertex', b: 'Venus', key: 'vertexVenus' },
 ];
 
 function planetLon(report: GalacticReport, name: PlanetName): number | null {

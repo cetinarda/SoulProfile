@@ -23,7 +23,7 @@ const SIGNS: ZodiacSign[] = [
   'Pisces',
 ];
 
-const PLANET_BODY: Record<Exclude<PlanetName, 'NorthNode' | 'SouthNode' | 'Ascendant' | 'MC' | 'Chiron' | 'Moon'>, Body> = {
+const PLANET_BODY: Record<Exclude<PlanetName, 'NorthNode' | 'SouthNode' | 'Ascendant' | 'MC' | 'Chiron' | 'Moon' | 'Vertex'>, Body> = {
   Sun: Body.Sun,
   Mercury: Body.Mercury,
   Venus: Body.Venus,
@@ -99,6 +99,24 @@ function ascendant(date: Date, latitude: number, longitude: number): number {
   const x = -(Math.sin(ramcRad) * Math.cos(epsilon) + Math.tan(phi) * Math.sin(epsilon));
   const ascRad = Math.atan2(y, x);
   return normalize((ascRad * 180) / Math.PI);
+}
+
+function vertex(date: Date, latitude: number, longitude: number): number {
+  // Vertex = ASC formülüne benzer ama batı ufukta hesaplanır.
+  // Anti-Vertex doğu, Vertex batı. Co-latitude (90-lat) kullanılır.
+  // Genel kabul: Vertex = atan2(-cos(RAMC), sin(RAMC)*cos(ε) - cot(φ)*sin(ε))
+  const gmst = gmstHours(date);
+  const lst = (gmst + longitude / 15) * 15;
+  const ramc = ((lst % 360) + 360) % 360;
+  const epsilon = obliquity(date);
+  const phiRad = (latitude * Math.PI) / 180;
+  const ramcRad = (ramc * Math.PI) / 180;
+  // co-latitude tan ile ifade
+  const cotPhi = 1 / Math.tan(phiRad);
+  const y = -Math.cos(ramcRad);
+  const x = Math.sin(ramcRad) * Math.cos(epsilon) - cotPhi * Math.sin(epsilon);
+  const vRad = Math.atan2(y, x);
+  return normalize((vRad * 180) / Math.PI);
 }
 
 function midheaven(date: Date, longitude: number): number {
@@ -203,6 +221,17 @@ export function calculateChart(
     sign: signOf(mcDeg),
     degreeInSign: degreeInSign(mcDeg),
     house: 10,
+    retrograde: false,
+  });
+
+  // Vertex — synastry "kader buluşması" noktası
+  const vertexDeg = vertex(date, latitude, longitude);
+  planets.push({
+    name: 'Vertex',
+    longitude: vertexDeg,
+    sign: signOf(vertexDeg),
+    degreeInSign: degreeInSign(vertexDeg),
+    house: houseOf(vertexDeg, houses),
     retrograde: false,
   });
 

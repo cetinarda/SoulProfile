@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import type { CompatibilityResult } from '@/lib/compatibility';
 import type { CompatNarrative } from '@/lib/compatibility/narrative';
+import { drawCoupleCompass } from '@/lib/compatibility/compass';
 import { useT } from '@/lib/i18n';
 
 // "Twilight Vellum" 5-katman pastel paleti
@@ -86,6 +87,18 @@ export function CompatibilityView({
       diff: max - min,
     };
   }, [layerScores]);
+
+  // 3-kart deterministik Pusula çekimi
+  const compass = useMemo(
+    () =>
+      drawCoupleCompass(
+        result.nameA,
+        result.nameB,
+        result.numerology.aLifePath,
+        result.numerology.bLifePath,
+      ),
+    [result.nameA, result.nameB, result.numerology.aLifePath, result.numerology.bLifePath],
+  );
 
   // "Aynalar" — defined→open merkezlerinden öz cümleler
   const mirrors = useMemo(() => {
@@ -230,6 +243,32 @@ export function CompatibilityView({
       {/* TAB 3 — Pusula: birlikte ne yapmalılar */}
       {tab === 3 ? (
         <section className="space-y-4">
+          {/* 3-kart deterministik tarot çekimi */}
+          <div className="rounded-3xl border border-[#C7B8E8]/40 bg-[#C7B8E8]/[0.05] p-5 md:p-6">
+            <p className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: '#C7B8E8' }}>
+              {locale === 'tr' ? 'ÜÇ KART · ORTAK ÇEKİM' : 'THREE CARDS · COUPLE PULL'}
+            </p>
+            <p className="mt-2 text-[12px] leading-relaxed text-muted">
+              {locale === 'tr'
+                ? 'İsimlerinizden ve sayılarınızdan üretilmiş sabit bir çekim — her seferinde aynı kartları görürsünüz.'
+                : 'A fixed pull generated from your names and numbers — the same cards every time.'}
+            </p>
+            <div className="mt-4 grid gap-3 md:grid-cols-3">
+              {compass.cards.map((c) => (
+                <div key={c.position} className="rounded-2xl border border-white/10 bg-bg/40 p-4 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: '#C7B8E8' }}>
+                    {locale === 'tr' ? c.positionTr : c.positionEn}
+                  </p>
+                  <div className="mt-3 text-4xl">{c.glyph}</div>
+                  <p className="mt-2 font-display text-lg text-ink">{locale === 'tr' ? c.name : c.nameEn}</p>
+                  <p className="mt-2 text-[12px] leading-relaxed text-muted">
+                    {c.reading[locale]}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="rounded-3xl border border-gold/40 bg-gold/[0.05] p-6">
             <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">
               {locale === 'tr' ? 'PUSULA' : 'COMPASS'}

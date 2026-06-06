@@ -34,7 +34,8 @@ export type PlanetName =
   | 'SouthNode'
   | 'Chiron'
   | 'Ascendant'
-  | 'MC';
+  | 'MC'
+  | 'Vertex';
 
 export type ZodiacSign =
   | 'Aries'

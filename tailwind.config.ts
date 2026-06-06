@@ -24,6 +24,16 @@ const config: Config = {
         starlight: '#9dd9ff',
         success: '#5bd9a0',
         danger: '#ff6b6b',
+        // Twilight Vellum — 5-katman pastel uyum paleti
+        vellum: {
+          bg: '#1B1F2E',
+          surface: '#252939',
+          chemistry: '#E8C28A',  // amber — Kimya (synastry)
+          lesson: '#9CAF88',     // sage — Ders (Human Design)
+          rhythm: '#C9A0A6',     // dusty rose — Ritim (numeroloji)
+          fate: '#8FA3C2',       // indigo dusk — Kader (Vedik)
+          compass: '#C7B8E8',    // soft lavender — Pusula (tarot)
+        },
       },
       fontFamily: {
         display: ['var(--font-display)', 'Cormorant Garamond', 'serif'],

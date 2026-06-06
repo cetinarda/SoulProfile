@@ -10,6 +10,7 @@ import { BirthChartWheel } from '@/components/BirthChartWheel';
 import { SolarSystem3D } from '@/components/SolarSystem3D';
 import { CharacterStats } from '@/components/CharacterStats';
 import { ConceptCard } from '@/components/ConceptCard';
+import { InviteShare } from '@/components/InviteShare';
 import { useSoulStore } from '@/lib/store';
 import { captureNode, downloadDataUrl, shareDataUrl } from '@/lib/share';
 import { premiumOpen } from '@/lib/feature-flags';
@@ -112,6 +113,11 @@ export default function ReportPage() {
             {working === 'download' ? t('report.preparing') : t('report.download')}
           </button>
         </div>
+
+        {/* Birini davet et — viral motor */}
+        <section className="mt-10">
+          <InviteShare birth={report.birth} />
+        </section>
 
         {/* Kozmik Anlatın — zenginleştirilmiş bölümler */}
         <article className="mt-10 rounded-2xl border border-panelBorder bg-panel p-6 md:p-8">

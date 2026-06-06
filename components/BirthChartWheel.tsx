@@ -17,6 +17,7 @@ const PLANET_GLYPHS: Record<PlanetName, string> = {
   Chiron: '⚷',
   Ascendant: 'AC',
   MC: 'MC',
+  Vertex: 'Vx',
 };
 
 const PLANET_COLORS: Record<PlanetName, string> = {
@@ -35,6 +36,7 @@ const PLANET_COLORS: Record<PlanetName, string> = {
   Chiron: '#ff9d7a',
   Ascendant: '#ffffff',
   MC: '#ffffff',
+  Vertex: '#C7B8E8',
 };
 
 const SIZE = 720;
