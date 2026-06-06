@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState, type ChangeEvent } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { CompatibilityView } from '@/components/CompatibilityView';
+import { DeepAnalysisBox } from '@/components/DeepAnalysisBox';
 import { useSoulStore } from '@/lib/store';
 import { listReports } from '@/lib/supabase/reports';
 import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
@@ -39,6 +40,7 @@ export default function CompatibilityPage() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CompatibilityResult | null>(null);
   const [narrative, setNarrative] = useState<CompatNarrative | null>(null);
+  const [otherReport, setOtherReport] = useState<GalacticReport | null>(null);
 
   useEffect(() => {
     setHydrated(true);
@@ -92,6 +94,7 @@ export default function CompatibilityPage() {
       const res = compareReports(me, other, locale);
       const narr = await generateCompatNarrative(me, other, res, locale);
       recordCompat();
+      setOtherReport(other);
       setResult(res);
       setNarrative(narr);
       setTimeout(() => {
@@ -249,8 +252,11 @@ export default function CompatibilityPage() {
         </button>
 
         {result && narrative ? (
-          <div id="compat-result" className="mt-12">
+          <div id="compat-result" className="mt-12 space-y-10">
             <CompatibilityView result={result} narrative={narrative} />
+            {me && otherReport ? (
+              <DeepAnalysisBox a={me} b={otherReport} result={result} />
+            ) : null}
             <div className="mt-8 text-center">
               <button
                 type="button"

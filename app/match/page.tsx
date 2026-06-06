@@ -5,6 +5,7 @@ import { Suspense, useEffect, useState, type ChangeEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { CompatibilityView } from '@/components/CompatibilityView';
+import { DeepAnalysisBox } from '@/components/DeepAnalysisBox';
 import { CosmicLoader } from '@/components/CosmicLoader';
 import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
 import { buildGalacticReport } from '@/lib/report';
@@ -49,6 +50,7 @@ function MatchPage() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CompatibilityResult | null>(null);
   const [narrative, setNarrative] = useState<CompatNarrative | null>(null);
+  const [meReport, setMeReport] = useState<GalacticReport | null>(null);
 
   useEffect(() => {
     const token = params.get('i');
@@ -115,6 +117,7 @@ function MatchPage() {
       );
       const res = compareReports(inviter, me, locale);
       const narr = await generateCompatNarrative(inviter, me, res, locale);
+      setMeReport(me);
       setResult(res);
       setNarrative(narr);
       setTimeout(() => {
@@ -287,8 +290,11 @@ function MatchPage() {
         </button>
 
         {result && narrative ? (
-          <div id="match-result" className="mt-12">
+          <div id="match-result" className="mt-12 space-y-10">
             <CompatibilityView result={result} narrative={narrative} />
+            {inviter && meReport ? (
+              <DeepAnalysisBox a={inviter} b={meReport} result={result} />
+            ) : null}
           </div>
         ) : null}
       </div>
