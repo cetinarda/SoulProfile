@@ -21,14 +21,14 @@ const tr: Dict = {
     'Eğlence ve farkındalık amaçlıdır. Tıbbi, psikolojik veya finansal tavsiye yerine geçmez. Verin sende kalır, istediğin zaman silebilirsin.',
 
   // Home
-  'home.kicker': 'SOULPROFILE · DOĞUM VERİSİ KİMLİK ANALİZİ',
-  'home.title1': 'Doğduğunda yıldızlar sana',
-  'home.title2': 'ne söylüyordu?',
+  'home.kicker': 'SOULPROFILE · İKİLİ KOZMİK UYUM',
+  'home.title1': 'İki ruh nasıl',
+  'home.title2': 'birbirini yansıtır?',
   'home.subtitle':
-    'Doğum tarih · saat · yerinden 9 analitik sistem aynı anda hesaplanır. Astronomik haritan, Human Design beden grafiğin, numerolojin, Vedik nakshatran, Maya Kin\'in, Çin yıldız çarkın, Norse runun, Tarot doğum kartların ve yıldız ırkı arketipin — hepsi tek bir kozmik kimlik karnesinde.',
-  'home.cta.primary': 'Karnemi Şimdi Aç',
-  'home.cta.secondary': 'İki Kişiyi Karşılaştır',
-  'home.cta.note': '✦ İlk karnen ücretsiz · 5 dakika sürer · Verin sende kalır',
+    'Astroloji synastry, Human Design tanımlı–açık merkez dansı, numeroloji ritmi ve Vedik Ashtakuta kader dokusunun sentezi. 4 pencere, 5 ayna, 1 pusula — birbirinize ne yansıttığınızı sakin bir biçimde görün.',
+  'home.cta.primary': 'İkili Uyumu Aç',
+  'home.cta.secondary': 'Önce Kendi Karnen',
+  'home.cta.note': '✦ İlk uyum karşılaştırman ücretsiz · 5 dakika sürer · Verin sende kalır',
   'home.how.kicker': 'NASIL ÇALIŞIR',
   'home.how.title': '3 adımda kozmik kimliğin',
   'home.step1.title': 'Doğum Bilgini Gir',
@@ -179,14 +179,14 @@ const en: Dict = {
     'For entertainment and self-awareness only. Not a substitute for medical, psychological, or financial advice. Your data stays with you and can be deleted anytime.',
 
   // Home
-  'home.kicker': 'SOULPROFILE · BIRTH-DATA IDENTITY ANALYSIS',
-  'home.title1': 'When you were born, what did',
-  'home.title2': 'the stars say?',
+  'home.kicker': 'SOULPROFILE · DUAL COSMIC COMPATIBILITY',
+  'home.title1': 'How do two souls',
+  'home.title2': 'mirror each other?',
   'home.subtitle':
-    'From your birth date · time · place, 9 analytical systems are computed at once. Your astronomical chart, Human Design body graph, numerology, Vedic nakshatra, Mayan Kin, Chinese zodiac, Norse rune, Tarot birth cards and starseed archetype — all in a single cosmic identity profile.',
-  'home.cta.primary': 'Open My Profile Now',
-  'home.cta.secondary': 'Compare Two People',
-  'home.cta.note': '✦ Your first profile is free · takes 5 minutes · your data stays with you',
+    'A synthesis of astrology synastry, the Human Design defined–open center dance, numerology rhythm and the Vedic Ashtakuta fate weave. 4 windows, 5 mirrors, 1 compass — see what you reflect in each other, calmly.',
+  'home.cta.primary': 'Open Dual Compatibility',
+  'home.cta.secondary': 'Start with Your Own Profile',
+  'home.cta.note': '✦ Your first compatibility check is free · takes 5 minutes · Your data stays with you',
   'home.how.kicker': 'HOW IT WORKS',
   'home.how.title': 'Your cosmic identity in 3 steps',
   'home.step1.title': 'Enter Your Birth Data',

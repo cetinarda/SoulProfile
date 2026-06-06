@@ -1,64 +1,64 @@
 'use client';
 
+import { useMemo, useState } from 'react';
+import clsx from 'clsx';
 import type { CompatibilityResult } from '@/lib/compatibility';
 import type { CompatNarrative } from '@/lib/compatibility/narrative';
 import { useT } from '@/lib/i18n';
 
-function ScoreRing({ score, label }: { score: number; label: string }) {
-  const r = 34;
+// "Twilight Vellum" 5-katman pastel paleti
+const LAYER = [
+  { key: 'kimya', tr: 'Kimya', en: 'Chemistry', color: '#E8C28A', hint: { tr: 'Astroloji synastry — neden çekiyorsunuz', en: 'Astrology synastry — why you attract' } },
+  { key: 'ders',  tr: 'Ders',  en: 'Lesson',    color: '#9CAF88', hint: { tr: 'Human Design — birbirinize ne öğretiyorsunuz', en: 'Human Design — what you teach each other' } },
+  { key: 'ritim', tr: 'Ritim', en: 'Rhythm',    color: '#C9A0A6', hint: { tr: 'Numeroloji — hangi tempo ile akıyorsunuz', en: 'Numerology — what tempo you flow with' } },
+  { key: 'kader', tr: 'Kader', en: 'Fate',      color: '#8FA3C2', hint: { tr: 'Vedik Ashtakuta — kozmik eşleşme dokusu', en: 'Vedic Ashtakuta — cosmic match weave' } },
+] as const;
+
+function ScoreRing({ score, color, label, big = false }: { score: number; color: string; label: string; big?: boolean }) {
+  const size = big ? 120 : 86;
+  const r = big ? 50 : 34;
+  const cx = size / 2;
   const circ = 2 * Math.PI * r;
   const dash = (score / 100) * circ;
-  const color = score >= 75 ? '#5bd9a0' : score >= 55 ? '#f5d061' : '#ff7ad9';
   return (
-    <div className="flex flex-col items-center gap-1">
-      <svg viewBox="0 0 80 80" className="h-20 w-20">
-        <circle cx="40" cy="40" r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" />
+    <div className="flex flex-col items-center gap-1.5">
+      <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} className="select-none">
+        <circle cx={cx} cy={cx} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={big ? 8 : 6} />
         <circle
-          cx="40"
-          cy="40"
+          cx={cx}
+          cy={cx}
           r={r}
           fill="none"
           stroke={color}
-          strokeWidth="6"
+          strokeWidth={big ? 8 : 6}
           strokeLinecap="round"
           strokeDasharray={`${dash} ${circ}`}
-          transform="rotate(-90 40 40)"
+          transform={`rotate(-90 ${cx} ${cx})`}
+          style={{ transition: 'stroke-dasharray 800ms ease-out' }}
         />
-        <text x="40" y="46" textAnchor="middle" fontSize="20" fill="#f4f1ff" fontWeight="700">
+        <text
+          x={cx}
+          y={cx + (big ? 6 : 4)}
+          textAnchor="middle"
+          fontSize={big ? 28 : 20}
+          fill="#f4f1ff"
+          fontWeight="600"
+          style={{ fontFamily: 'var(--font-display), serif' }}
+        >
           {score}
         </text>
       </svg>
-      <span className="text-[11px] text-muted">{label}</span>
+      <span className="text-[11px] uppercase tracking-[0.25em] text-muted">{label}</span>
     </div>
   );
 }
 
-const STATUS_COLOR: Record<string, string> = {
-  companionship: '#5bd9a0',
-  'a-conditions-b': '#f5d061',
-  'b-conditions-a': '#9dd9ff',
-  'shared-openness': '#c79dff',
-};
+type Tab = 0 | 1 | 2 | 3;
 
-const FLAVOR_COLOR: Record<string, string> = {
-  flowing: '#5bd9a0',
-  fusion: '#f5d061',
-  tense: '#ff7ad9',
-};
-
-const KIND_COLOR: Record<string, string> = {
-  electromagnetic: '#f5d061',
-  companionship: '#5bd9a0',
-  'dominance-a': '#9dd9ff',
-  'dominance-b': '#9dd9ff',
-};
-
-const KIND_BADGE_KEY: Record<string, string> = {
-  electromagnetic: 'cv.badge.electro',
-  companionship: 'cv.badge.companion',
-  'dominance-a': 'cv.badge.dominance',
-  'dominance-b': 'cv.badge.dominance',
-};
+const TAB_LABEL = {
+  tr: ['İki Yıldız', 'Beş Pencere', 'Aynalar', 'Pusula'],
+  en: ['Two Stars', 'Five Windows', 'Mirrors', 'Compass'],
+} as const;
 
 export function CompatibilityView({
   result,
@@ -67,152 +67,292 @@ export function CompatibilityView({
   result: CompatibilityResult;
   narrative: CompatNarrative;
 }) {
-  const { t } = useT();
+  const { t, locale } = useT();
+  const [tab, setTab] = useState<Tab>(0);
+
+  const layerScores = useMemo(
+    () => [result.scoreAstro, result.scoreHD, result.scoreNumerology, result.scoreFate],
+    [result],
+  );
+
+  const scoresHeadline = useMemo(() => {
+    const max = Math.max(...layerScores);
+    const min = Math.min(...layerScores);
+    const idxMax = layerScores.indexOf(max);
+    const idxMin = layerScores.indexOf(min);
+    return {
+      strongest: LAYER[idxMax],
+      weakest: LAYER[idxMin],
+      diff: max - min,
+    };
+  }, [layerScores]);
+
+  // "Aynalar" — defined→open merkezlerinden öz cümleler
+  const mirrors = useMemo(() => {
+    const aConditions = result.hdCenters.filter((c) => c.status === 'a-conditions-b').slice(0, 2);
+    const bConditions = result.hdCenters.filter((c) => c.status === 'b-conditions-a').slice(0, 2);
+    const shared = result.hdCenters.filter((c) => c.status === 'shared-openness').slice(0, 1);
+    return [...aConditions, ...bConditions, ...shared].slice(0, 5);
+  }, [result.hdCenters]);
+
   return (
-    <div className="space-y-8">
-      {/* Skor başlığı */}
-      <section className="rounded-3xl border border-gold/30 bg-gradient-to-br from-[#0a0524] via-[#1a0a40] to-[#2a0a5a] p-6 shadow-glow">
-        <div className="starfield opacity-30" />
-        <div className="relative text-center">
-          <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">{t('cv.kicker')}</p>
-          <h2 className="mt-2 font-display text-3xl text-ink">{result.headline}</h2>
-          <div className="mx-auto mt-5 flex items-center justify-center">
-            <ScoreRing score={result.scoreOverall} label={t('cv.overall')} />
-          </div>
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-5">
-            <ScoreRing score={result.scoreHD} label={t('cv.hd')} />
-            <ScoreRing score={result.scoreAstro} label={t('cv.astro')} />
-            <ScoreRing score={result.scoreNumerology} label={t('cv.numerology')} />
-          </div>
-        </div>
-      </section>
+    <div className="space-y-6">
+      {/* Sade üst başlık — toplam skor halkası YOK */}
+      <header className="text-center">
+        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">{t('cv.kicker')}</p>
+        <h2 className="mt-2 font-display text-3xl text-ink md:text-4xl">{result.headline}</h2>
+        <p className="mt-3 text-[13px] text-muted">
+          {locale === 'tr'
+            ? `${result.nameA} ↔ ${result.nameB} · ${scoresHeadline.strongest[locale]} en güçlü pencere`
+            : `${result.nameA} ↔ ${result.nameB} · ${scoresHeadline.strongest[locale]} is your strongest window`}
+        </p>
+      </header>
 
-      {/* Genel yorum */}
-      <article className="rounded-2xl border border-panelBorder bg-panel p-6">
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">{t('cv.general')}</p>
-        <p className="mt-3 text-[15px] leading-relaxed text-ink">{narrative.overview}</p>
-        <div className="mt-5 rounded-2xl border border-cosmic/40 bg-cosmic/[0.06] p-4">
-          <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-cosmic">{t('cv.hdDance')}</p>
-          <p className="mt-2 text-[14px] leading-relaxed text-ink">{narrative.hdDynamic}</p>
-        </div>
-      </article>
+      {/* Tab navigasyonu */}
+      <nav className="flex flex-wrap items-center justify-center gap-2 rounded-full border border-panelBorder bg-panel/40 p-1">
+        {TAB_LABEL[locale].map((label, i) => (
+          <button
+            key={label}
+            type="button"
+            onClick={() => setTab(i as Tab)}
+            className={clsx(
+              'rounded-full px-4 py-2 text-[12px] font-bold tracking-wide transition-colors',
+              tab === i ? 'bg-gold text-[#1a0a40]' : 'text-muted hover:text-ink',
+            )}
+            aria-pressed={tab === i}
+          >
+            <span className="opacity-60">{(i + 1).toString().padStart(2, '0')}.</span> {label}
+          </button>
+        ))}
+      </nav>
 
-      {/* Güçlü + Sürtünme */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <section className="rounded-2xl border border-success/30 bg-success/[0.04] p-5">
-          <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-success">{t('cv.strengths')}</p>
-          <ul className="mt-3 space-y-2">
-            {narrative.strengths.map((s, i) => (
-              <li key={i} className="flex gap-2 text-[14px] leading-relaxed text-ink">
-                <span className="text-success">✦</span>
-                <span className="flex-1">{s}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-        <section className="rounded-2xl border border-nebula/40 bg-nebula/[0.06] p-5">
-          <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-nebula">{t('cv.frictions')}</p>
-          <ul className="mt-3 space-y-2">
-            {narrative.frictions.map((s, i) => (
-              <li key={i} className="flex gap-2 text-[14px] leading-relaxed text-ink">
-                <span className="text-nebula">◐</span>
-                <span className="flex-1">{s}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
-
-      {/* HD merkez matrisi */}
-      <section className="rounded-2xl border border-panelBorder bg-panel p-6">
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">{t('cv.centers')}</p>
-        <p className="mt-1 text-[12px] text-muted">{t('cv.centersHint')}</p>
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
-          {result.hdCenters.map((c) => (
-            <div
-              key={c.center}
-              className="rounded-xl border border-white/10 bg-white/[0.03] p-4"
-              style={{ borderLeftColor: STATUS_COLOR[c.status], borderLeftWidth: 3 }}
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[13px] font-bold text-ink">{c.centerTr}</span>
-                <span
-                  className="rounded-full px-2 py-0.5 text-[9px] font-bold"
-                  style={{ backgroundColor: `${STATUS_COLOR[c.status]}22`, color: STATUS_COLOR[c.status] }}
-                >
-                  {c.statusLabel}
-                </span>
-              </div>
-              <p className="mt-2 text-[12px] leading-snug text-muted">{c.meaning}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Kanal bağları */}
-      {result.hdConnections.length > 0 ? (
-        <section className="rounded-2xl border border-panelBorder bg-panel p-6">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">{t('cv.channels')}</p>
-          <div className="mt-4 space-y-3">
-            {result.hdConnections.map((c, i) => {
-              const color = KIND_COLOR[c.kind];
-              return (
-                <div key={i} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="rounded-full px-2 py-0.5 text-[10px] font-bold"
-                      style={{ backgroundColor: `${color}22`, color }}
-                    >
-                      {t(KIND_BADGE_KEY[c.kind])}
-                    </span>
-                    <span className="text-[12px] font-bold text-ink">{t('cv.channel')} {c.channel}</span>
-                    <span className="text-[11px] text-faint">· {c.theme}</span>
-                  </div>
-                  <p className="mt-2 text-[13px] leading-relaxed text-muted">{c.meaning}</p>
-                </div>
-              );
-            })}
-          </div>
+      {/* TAB 0 — İki Yıldız: kim kim, hızlı tanışma */}
+      {tab === 0 ? (
+        <section className="grid gap-4 md:grid-cols-2">
+          <PersonCard
+            name={result.nameA}
+            lifePath={result.numerology.aLifePath}
+            label={locale === 'tr' ? '1. Yıldız' : 'Star 1'}
+            accent="#E8C28A"
+            nakshatra={result.ashtakuta.pair.aNakshatra}
+          />
+          <PersonCard
+            name={result.nameB}
+            lifePath={result.numerology.bLifePath}
+            label={locale === 'tr' ? '2. Yıldız' : 'Star 2'}
+            accent="#C9A0A6"
+            nakshatra={result.ashtakuta.pair.bNakshatra}
+          />
         </section>
       ) : null}
 
-      {/* Astroloji açıları */}
-      {result.astroAspects.length > 0 ? (
-        <section className="rounded-2xl border border-panelBorder bg-panel p-6">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">{t('cv.aspects')}</p>
-          <div className="mt-4 space-y-2">
-            {result.astroAspects.map((x, i) => (
-              <div
-                key={i}
-                className="flex flex-wrap items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-3"
+      {/* TAB 1 — Beş Pencere: 4 katman skoru + tek pusula */}
+      {tab === 1 ? (
+        <section className="space-y-5">
+          <div className="grid grid-cols-2 gap-4 rounded-3xl border border-panelBorder bg-panel/40 p-6 md:grid-cols-4">
+            {LAYER.map((layer, i) => (
+              <button
+                key={layer.key}
+                type="button"
+                onClick={() => setTab(2)}
+                className="group flex flex-col items-center gap-2"
               >
-                <span
-                  className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: FLAVOR_COLOR[x.flavor] }}
-                />
-                <span className="text-[13px] font-bold text-ink">{x.a}</span>
-                <span className="text-[12px] text-gold">{x.aspect}</span>
-                <span className="text-[13px] font-bold text-ink">{x.b}</span>
-                <span className="w-full text-[12px] leading-snug text-muted">{x.meaning}</span>
-              </div>
+                <ScoreRing score={layerScores[i]!} color={layer.color} label={layer[locale]} />
+                <span className="text-center text-[11px] leading-snug text-muted opacity-0 transition-opacity group-hover:opacity-100">
+                  {layer.hint[locale]}
+                </span>
+              </button>
             ))}
           </div>
+
+          <article className="rounded-2xl border border-panelBorder bg-panel/40 p-5">
+            <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">
+              {locale === 'tr' ? 'BİRLİKTE' : 'TOGETHER'}
+            </p>
+            <p className="mt-3 text-[15px] leading-relaxed text-ink">{narrative.overview}</p>
+          </article>
+
+          {/* Ashtakuta tek satır özet */}
+          <article className="rounded-2xl border border-[#8FA3C2]/40 bg-[#8FA3C2]/[0.06] p-5">
+            <p className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: '#8FA3C2' }}>
+              {locale === 'tr' ? 'VEDİK KADER DOKUSU' : 'VEDIC FATE WEAVE'}
+            </p>
+            <p className="mt-3 text-[14px] leading-relaxed text-ink">
+              {result.ashtakuta.notes.summary[locale]}
+            </p>
+          </article>
         </section>
       ) : null}
 
-      {/* Numeroloji */}
-      <section className="rounded-2xl border border-panelBorder bg-panel p-6">
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">{t('cv.numHarmony')}</p>
-        <p className="mt-2 text-[14px] leading-relaxed text-ink">{result.numerology.harmony}</p>
-      </section>
+      {/* TAB 2 — Aynalar: birbirine ne yansıttıklarınız */}
+      {tab === 2 ? (
+        <section className="space-y-4">
+          <div className="rounded-2xl border border-panelBorder bg-panel/40 p-5">
+            <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">
+              {locale === 'tr' ? 'BİRBİRİNİZE NE YANSITIYORSUNUZ' : 'WHAT YOU REFLECT IN EACH OTHER'}
+            </p>
+            <p className="mt-2 text-[12px] leading-relaxed text-muted">
+              {locale === 'tr'
+                ? 'Tanımlı taraf, açık tarafa o alanda kendi enerjisini gösterir. Birbirinizin gölgesini ve potansiyelini ayna gibi yansıtırsınız.'
+                : "The defined side shows its energy to the open side in that area. You mirror each other's shadow and potential."}
+            </p>
+          </div>
 
-      {/* Tavsiye */}
-      <section className="rounded-2xl border border-gold/40 bg-gold/[0.06] p-6">
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">{t('cv.advice')}</p>
-        <p className="mt-2 text-[15px] leading-relaxed text-ink">{narrative.advice}</p>
-      </section>
+          <div className="space-y-3">
+            {mirrors.length === 0 ? (
+              <p className="rounded-2xl border border-panelBorder bg-panel/40 p-5 text-sm text-muted">
+                {locale === 'tr'
+                  ? 'Belirgin bir koşullama yok — ikiniz de bağımsız enerji alanlarında dans ediyorsunuz.'
+                  : 'No prominent conditioning — you both dance in independent energy fields.'}
+              </p>
+            ) : (
+              mirrors.map((m, i) => (
+                <div key={i} className="rounded-2xl border border-panelBorder bg-panel/40 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">{m.centerTr}</p>
+                  <p className="mt-1 text-[13px] text-muted">{m.statusLabel}</p>
+                  <p className="mt-2 text-[14px] leading-relaxed text-ink">{m.meaning}</p>
+                </div>
+              ))
+            )}
+          </div>
 
-      <p className="text-center text-[11px] text-faint">{t('cv.disclaimer')}</p>
+          {narrative.hdDynamic ? (
+            <div className="rounded-2xl border border-[#9CAF88]/40 bg-[#9CAF88]/[0.06] p-5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: '#9CAF88' }}>
+                {t('cv.hdDance')}
+              </p>
+              <p className="mt-2 text-[14px] leading-relaxed text-ink">{narrative.hdDynamic}</p>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
+      {/* TAB 3 — Pusula: birlikte ne yapmalılar */}
+      {tab === 3 ? (
+        <section className="space-y-4">
+          <div className="rounded-3xl border border-gold/40 bg-gold/[0.05] p-6">
+            <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">
+              {locale === 'tr' ? 'PUSULA' : 'COMPASS'}
+            </p>
+            <p className="mt-3 text-[15px] leading-relaxed text-ink">{narrative.advice}</p>
+          </div>
+
+          {narrative.strengths.length > 0 ? (
+            <section className="rounded-2xl border border-[#9CAF88]/40 bg-[#9CAF88]/[0.06] p-5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: '#9CAF88' }}>
+                {t('cv.strengths')}
+              </p>
+              <ul className="mt-3 space-y-2">
+                {narrative.strengths.slice(0, 4).map((s, i) => (
+                  <li key={i} className="flex gap-2 text-[14px] leading-relaxed text-ink">
+                    <span style={{ color: '#9CAF88' }}>✦</span>
+                    <span className="flex-1">{s}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          {narrative.frictions.length > 0 ? (
+            <section className="rounded-2xl border border-[#C9A0A6]/40 bg-[#C9A0A6]/[0.06] p-5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: '#C9A0A6' }}>
+                {t('cv.frictions')}
+              </p>
+              <ul className="mt-3 space-y-2">
+                {narrative.frictions.slice(0, 4).map((s, i) => (
+                  <li key={i} className="flex gap-2 text-[14px] leading-relaxed text-ink">
+                    <span style={{ color: '#C9A0A6' }}>◐</span>
+                    <span className="flex-1">{s}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          <p className="text-center text-[11px] leading-relaxed text-faint">
+            {locale === 'tr'
+              ? 'Bu bir sembolik gözlemdir. İki kişinin gidişatını tayin etmez; alan açar.'
+              : 'This is a symbolic observation. It does not determine the course of two people; it opens space.'}
+          </p>
+        </section>
+      ) : null}
+
+      {/* Derinleş — opsiyonel detay */}
+      <details className="rounded-2xl border border-panelBorder bg-panel/30 px-4 py-3 [&_summary::-webkit-details-marker]:hidden">
+        <summary className="flex cursor-pointer items-center justify-between text-[12px] font-bold text-muted">
+          <span>{locale === 'tr' ? 'Derinleş — tam motor çıktısı' : 'Go deeper — full engine output'}</span>
+          <span className="text-gold">↓</span>
+        </summary>
+        <div className="mt-4 space-y-4 text-[13px]">
+          {result.hdConnections.length > 0 ? (
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-gold">{t('cv.channels')}</p>
+              <ul className="mt-2 space-y-1.5">
+                {result.hdConnections.slice(0, 6).map((c, i) => (
+                  <li key={i} className="text-muted">
+                    <span className="text-ink">{t('cv.channel')} {c.channel}</span> · {c.theme}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {result.astroAspects.length > 0 ? (
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-gold">{t('cv.aspects')}</p>
+              <ul className="mt-2 space-y-1.5">
+                {result.astroAspects.slice(0, 6).map((x, i) => (
+                  <li key={i} className="text-muted">
+                    <span className="text-ink">{x.a} — {x.b}</span> · {x.aspect}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-gold">
+              {locale === 'tr' ? 'Vedik Ashtakuta detayı' : 'Vedic Ashtakuta detail'}
+            </p>
+            <ul className="mt-2 space-y-1.5 text-muted">
+              <li>Nadi · {result.ashtakuta.raw.nadi}/8 — {result.ashtakuta.notes.nadi[locale]}</li>
+              <li>Bhakuta · {result.ashtakuta.raw.bhakuta}/7 — {result.ashtakuta.notes.bhakuta[locale]}</li>
+              <li>Gana · {result.ashtakuta.raw.gana}/6 — {result.ashtakuta.notes.gana[locale]}</li>
+              <li>Yoni · {result.ashtakuta.raw.yoni}/4 — {result.ashtakuta.notes.yoni[locale]}</li>
+            </ul>
+          </div>
+        </div>
+      </details>
+    </div>
+  );
+}
+
+function PersonCard({
+  name,
+  lifePath,
+  label,
+  accent,
+  nakshatra,
+}: {
+  name: string;
+  lifePath: number;
+  label: string;
+  accent: string;
+  nakshatra: string;
+}) {
+  return (
+    <div
+      className="rounded-3xl border bg-panel/40 p-6 text-center"
+      style={{ borderColor: `${accent}40` }}
+    >
+      <p className="text-[10px] font-bold uppercase tracking-[0.4em]" style={{ color: accent }}>
+        {label}
+      </p>
+      <h3 className="mt-3 font-display text-3xl text-ink">{name}</h3>
+      <div className="mt-4 inline-flex flex-col items-center gap-1 rounded-2xl border border-white/10 px-5 py-3">
+        <span className="text-[10px] uppercase tracking-widest text-muted">Life Path · Nakshatra</span>
+        <span className="text-base font-bold text-ink">
+          {lifePath} · {nakshatra}
+        </span>
+      </div>
     </div>
   );
 }

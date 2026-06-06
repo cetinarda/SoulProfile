@@ -57,18 +57,18 @@ export default function Welcome() {
 
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
-              href="/birth"
+              href="/compatibility"
               className="group inline-flex items-center gap-3 rounded-full bg-gold px-10 py-5 text-base font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-105"
             >
-              <span className="text-xl">✦</span>
+              <span className="text-xl">⚯</span>
               {t('home.cta.primary')}
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
             <Link
-              href="/compatibility"
+              href="/birth"
               className="inline-flex items-center gap-2 rounded-full border-2 border-gold/40 bg-bg/40 px-7 py-5 text-sm font-bold text-ink backdrop-blur transition-colors hover:border-gold hover:bg-gold/[0.05]"
             >
-              <span>👥</span> {t('home.cta.secondary')}
+              <span>✦</span> {t('home.cta.secondary')}
             </Link>
           </div>
 

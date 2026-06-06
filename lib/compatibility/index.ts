@@ -8,6 +8,7 @@ import {
   type Locale,
 } from './hd-content';
 import { SIGN_NAMES_TR } from '../content/astrology-content';
+import { calculateAshtakuta, type AshtakutaResult } from './ashtakuta';
 
 const CENTERS: HDCenter[] = [
   'Head', 'Ajna', 'Throat', 'G', 'Heart', 'SolarPlexus', 'Sacral', 'Spleen', 'Root',
@@ -167,10 +168,13 @@ export type CompatibilityResult = {
   scoreHD: number;
   scoreAstro: number;
   scoreNumerology: number;
+  /** Vedik Ashtakuta — "Kader" katmanı (4-boyut MVP, 0-100) */
+  scoreFate: number;
   hdCenters: CenterDynamic[];
   hdConnections: ChannelConnection[];
   astroAspects: AstroAspect[];
   numerology: { aLifePath: number; bLifePath: number; harmony: string; score: number };
+  ashtakuta: AshtakutaResult;
   headline: string;
 };
 
@@ -393,21 +397,32 @@ export function compareReports(a: GalacticReport, b: GalacticReport, locale: Loc
   const aspects = astroAspects(a, b, locale);
   const num = numerologyHarmony(a.numerology.lifePath, b.numerology.lifePath, locale);
 
-  // HD skoru
+  // HD skoru (Ders katmanı)
   const electro = hdConnections.filter((c) => c.kind === 'electromagnetic').length;
   const companion = hdConnections.filter((c) => c.kind === 'companionship').length;
   const dominance = hdConnections.filter((c) => c.kind.startsWith('dominance')).length;
   const scoreHD = clamp(50 + electro * 9 + companion * 6 - dominance * 1.5);
 
-  // Astro skoru
+  // Astro skoru (Kimya katmanı)
   const flowing = aspects.filter((x) => x.flavor === 'flowing').length;
   const fusion = aspects.filter((x) => x.flavor === 'fusion').length;
   const tense = aspects.filter((x) => x.flavor === 'tense').length;
   const scoreAstro = clamp(48 + flowing * 8 + fusion * 7 + tense * 2);
 
+  // Numeroloji (Ritim katmanı)
   const scoreNumerology = num.score;
 
-  const scoreOverall = clamp(scoreHD * 0.4 + scoreAstro * 0.4 + scoreNumerology * 0.2);
+  // Vedik Ashtakuta (Kader katmanı) — Ay nakshatra'larından
+  const ashtakuta = calculateAshtakuta(
+    a.systems.vedic.nakshatra.index,
+    b.systems.vedic.nakshatra.index,
+  );
+  const scoreFate = ashtakuta.score;
+
+  // 4 katman ortalaması (Pusula UI katmanı, skor yok)
+  const scoreOverall = clamp(
+    scoreAstro * 0.3 + scoreHD * 0.3 + scoreNumerology * 0.2 + scoreFate * 0.2,
+  );
 
   const nameA = a.birth.fullName.split(' ')[0];
   const nameB = b.birth.fullName.split(' ')[0];
@@ -426,6 +441,8 @@ export function compareReports(a: GalacticReport, b: GalacticReport, locale: Loc
     scoreHD,
     scoreAstro,
     scoreNumerology,
+    scoreFate,
+    ashtakuta,
     hdCenters,
     hdConnections,
     astroAspects: aspects,
