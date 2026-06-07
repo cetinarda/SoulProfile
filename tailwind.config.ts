@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
+  darkMode: ['class', '[data-theme="dark"]'],
   content: [
     './app/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -9,30 +10,33 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: '#07091a',
-        bgElevated: '#0f1230',
-        panel: 'rgba(255,255,255,0.035)',
-        panelBorder: 'rgba(255,255,255,0.07)',
-        ink: '#f4f1ff',
-        muted: 'rgba(244,241,255,0.68)',
-        faint: 'rgba(244,241,255,0.4)',
-        gold: '#f5d061',
-        goldSoft: '#d4a94a',
-        cosmic: '#7c5cff',
-        cosmicDeep: '#4d2ed1',
-        nebula: '#ff7ad9',
-        starlight: '#9dd9ff',
-        success: '#5bd9a0',
-        danger: '#ff6b6b',
-        // Twilight Vellum — 5-katman pastel uyum paleti
+        bg: 'var(--bg)',
+        bgElevated: 'var(--bg-elev-1)',
+        bgElev2: 'var(--bg-elev-2)',
+        panel: 'var(--panel)',
+        panelElev: 'var(--panel-elev)',
+        panelBorder: 'var(--panel-border)',
+        panelBorderStrong: 'var(--panel-border-strong)',
+        ink: 'var(--ink)',
+        muted: 'var(--muted)',
+        faint: 'var(--faint)',
+        gold: 'var(--gold)',
+        goldSoft: 'var(--gold-soft)',
+        cosmic: 'var(--cosmic)',
+        cosmicDeep: 'var(--cosmic-deep)',
+        nebula: 'var(--nebula)',
+        starlight: 'var(--starlight)',
+        success: 'var(--success)',
+        danger: 'var(--danger)',
+        // Twilight Vellum
         vellum: {
-          bg: '#1B1F2E',
-          surface: '#252939',
-          chemistry: '#E8C28A',  // amber — Kimya (synastry)
-          lesson: '#9CAF88',     // sage — Ders (Human Design)
-          rhythm: '#C9A0A6',     // dusty rose — Ritim (numeroloji)
-          fate: '#8FA3C2',       // indigo dusk — Kader (Vedik)
-          compass: '#C7B8E8',    // soft lavender — Pusula (tarot)
+          bg: 'var(--bg-elev-2)',
+          surface: 'var(--bg-elev-1)',
+          chemistry: 'var(--vellum-chemistry)',
+          lesson: 'var(--vellum-lesson)',
+          rhythm: 'var(--vellum-rhythm)',
+          fate: 'var(--vellum-fate)',
+          compass: 'var(--vellum-compass)',
         },
       },
       fontFamily: {

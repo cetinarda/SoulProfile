@@ -108,7 +108,7 @@ export default function Welcome() {
         </div>
         <div className="grid gap-5 md:grid-cols-2">
           {/* Kendi karnen */}
-          <div className="relative overflow-hidden rounded-3xl border border-gold/40 bg-gradient-to-br from-[#15043a] via-[#1a0a40] to-[#2a0a5a] p-7 transition-transform hover:-translate-y-1">
+          <div className="surface-warm-grad relative overflow-hidden rounded-3xl border border-gold/40 p-7 transition-transform hover:-translate-y-1">
             <div className="starfield opacity-30" />
             <div className="relative">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gold/15 text-4xl">✦</div>
@@ -132,7 +132,7 @@ export default function Welcome() {
           </div>
 
           {/* İkili uyum */}
-          <div className="relative overflow-hidden rounded-3xl border border-cosmic/50 bg-gradient-to-br from-[#0b0524] via-[#1e1a6e] to-[#9d3cb1]/30 p-7 transition-transform hover:-translate-y-1">
+          <div className="surface-cool-grad relative overflow-hidden rounded-3xl border border-cosmic/50 p-7 transition-transform hover:-translate-y-1">
             <div className="starfield opacity-30" />
             <div className="relative">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-cosmic/20 text-4xl">⚯</div>

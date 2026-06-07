@@ -6,6 +6,7 @@ import { useState } from 'react';
 import clsx from 'clsx';
 import { useT } from '@/lib/i18n';
 import { LanguageToggle } from './LanguageToggle';
+import { ThemeToggle } from './ThemeToggle';
 
 export function TopBar() {
   const pathname = usePathname();
@@ -40,7 +41,8 @@ export function TopBar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
           <LanguageToggle />
           <Link
             href="/birth"

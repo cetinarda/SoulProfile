@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { PageLayout, Section, Bullet } from '@/components/PageLayout';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { useSoulStore } from '@/lib/store';
 
 export default function Settings() {
@@ -42,6 +43,13 @@ export default function Settings() {
       title="Verin senin kontrolünde"
       intro="Karneni indir, hesabını sil, abonelikleri yönet. Tüm hakların KVKK + GDPR çerçevesinde korunur."
     >
+      <Section heading="Görünüm">
+        <p>Uygulamanın temasını seç. "Sistem" cihazının ayarına uyar.</p>
+        <div className="mt-2">
+          <ThemeToggle />
+        </div>
+      </Section>
+
       <Section heading="Verilerini İndir">
         <p>
           Karneni JSON formatında indir. İçeriğinde tüm sistemlerden çıkan değerler ve AI
