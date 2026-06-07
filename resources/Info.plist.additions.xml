@@ -1,0 +1,41 @@
+<!--
+  Xcode'da ios/App/App/Info.plist içine bu anahtarları ekle.
+  npx cap add ios sonrası dosya otomatik oluşur; aşağıdaki anahtarlar
+  Apple'ın zorunlu purpose string'leri + encryption compliance.
+
+  Eklenecek: <dict>...</dict> içinde, mevcut anahtarlar arasında.
+-->
+
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Profil fotoğrafını galaktik karnenin üzerine basmak için galerin gerekiyor. Fotoğraf cihazında kalır, hiçbir sunucuya yüklenmez.</string>
+
+<key>NSCameraUsageDescription</key>
+<string>Karnen için anlık bir profil fotoğrafı çekmek istersen kameran gerekiyor. İstemezsen bu adımı atlayabilirsin.</string>
+
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>Hazırladığın paylaşılabilir karneyi cihazına PNG olarak kaydetmek için galeri yazma izni gerekiyor.</string>
+
+<!-- Export compliance — encryption yok, her build için manuel cevap istemekten kurtarır -->
+<key>ITSAppUsesNonExemptEncryption</key>
+<false/>
+
+<!-- Status bar — Capacitor StatusBar plugin yönetir, view controller değil -->
+<key>UIViewControllerBasedStatusBarAppearance</key>
+<false/>
+
+<!-- iPad orientation — iPhone'da capacitor varsayılanı kullanılır -->
+<key>UISupportedInterfaceOrientations~ipad</key>
+<array>
+  <string>UIInterfaceOrientationPortrait</string>
+  <string>UIInterfaceOrientationPortraitUpsideDown</string>
+  <string>UIInterfaceOrientationLandscapeLeft</string>
+  <string>UIInterfaceOrientationLandscapeRight</string>
+</array>
+
+<!-- Universal Link / Associated Domain için (opsiyonel) -->
+<!--
+<key>com.apple.developer.associated-domains</key>
+<array>
+  <string>applinks:soulprofile.life</string>
+</array>
+-->

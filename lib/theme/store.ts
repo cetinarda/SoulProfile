@@ -1,6 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
+import { syncStatusBar } from '@/lib/native/status-bar';
 
 export type Theme = 'auto' | 'light' | 'dark';
 
@@ -37,6 +38,7 @@ export const useThemeStore = create<State>((set) => ({
       document.documentElement.dataset.theme = resolved;
       document.documentElement.style.colorScheme = resolved;
     }
+    syncStatusBar(resolved);
     set({ theme, resolved });
   },
 }));
@@ -50,6 +52,7 @@ export function initTheme() {
     document.documentElement.style.colorScheme = resolved;
   }
   useThemeStore.setState({ theme: stored, resolved });
+  syncStatusBar(resolved);
 
   // System tema değişikliği auto modda canlı yansır
   if (typeof window !== 'undefined' && window.matchMedia) {
@@ -60,6 +63,7 @@ export function initTheme() {
         const newResolved = systemPref();
         document.documentElement.dataset.theme = newResolved;
         document.documentElement.style.colorScheme = newResolved;
+        syncStatusBar(newResolved);
         useThemeStore.setState({ resolved: newResolved });
       }
     });

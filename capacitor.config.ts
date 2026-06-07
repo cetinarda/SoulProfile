@@ -30,8 +30,10 @@ const config: CapacitorConfig = {
       splashFullScreen: false,
     },
     StatusBar: {
-      style: 'dark',
-      backgroundColor: '#05060f',
+      // Default tema koyu → light ikonlar. Tema değişiminde lib/native/status-bar.ts
+      // runtime'da setStyle ile günceller.
+      style: 'light',
+      backgroundColor: '#07091a',
       overlaysWebView: true,
     },
     Keyboard: {
