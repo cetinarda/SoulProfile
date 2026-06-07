@@ -7,12 +7,15 @@ import { PRODUCT } from '@/lib/payments/skus';
 import { startCheckout } from '@/lib/payments/checkout';
 import { isCapacitorNative } from '@/lib/platform';
 import { grantPremium, hasPremium } from '@/lib/entitlements';
+import { initIAP, buyOnNative, restorePurchases } from '@/lib/payments/iap';
 import { useT } from '@/lib/i18n';
 
 export default function PremiumPage() {
   const { t, locale } = useT();
   const [working, setWorking] = useState(false);
+  const [restoring, setRestoring] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const [owned, setOwned] = useState(false);
 
   useEffect(() => {
@@ -22,21 +25,55 @@ export default function PremiumPage() {
       grantPremium();
     }
     setOwned(hasPremium());
+    // iOS Capacitor ortamında RevenueCat init
+    initIAP();
   }, []);
 
   async function buy() {
     setError(null);
-    if (isCapacitorNative()) {
-      setError(locale === 'tr' ? 'iOS uygulamasında peşin satın alındı, tam erişim zaten açık.' : 'Purchased upfront on iOS — full access is already unlocked.');
-      return;
-    }
+    setInfo(null);
     setWorking(true);
     try {
-      await startCheckout();
+      if (isCapacitorNative()) {
+        // iOS / Android — Apple StoreKit / Google Play Billing
+        const res = await buyOnNative();
+        if (res.ok) {
+          setOwned(true);
+          setInfo(locale === 'tr' ? 'Tam erişim açıldı.' : 'Full access unlocked.');
+        } else if (res.error === 'cancelled') {
+          // sessiz iptal
+        } else {
+          setError(res.error ?? 'Purchase failed');
+        }
+      } else {
+        // Web — Stripe Checkout
+        await startCheckout();
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error');
     } finally {
       setWorking(false);
+    }
+  }
+
+  async function onRestore() {
+    setError(null);
+    setInfo(null);
+    setRestoring(true);
+    try {
+      const res = await restorePurchases();
+      if (res.ok) {
+        setOwned(true);
+        setInfo(locale === 'tr' ? 'Önceki satın alımın geri yüklendi.' : 'Your previous purchase was restored.');
+      } else {
+        setError(
+          res.error === 'No active entitlement to restore'
+            ? (locale === 'tr' ? 'Geri yüklenecek aktif bir satın alım bulunamadı.' : 'No active purchase to restore.')
+            : (res.error ?? 'Restore failed'),
+        );
+      }
+    } finally {
+      setRestoring(false);
     }
   }
 
@@ -88,14 +125,32 @@ export default function PremiumPage() {
           {owned
             ? (locale === 'tr' ? '✓ Tam erişim açık' : '✓ Full access unlocked')
             : working
-            ? (locale === 'tr' ? 'Yönlendiriliyor...' : 'Redirecting...')
+            ? (locale === 'tr' ? 'İşleniyor...' : 'Processing...')
             : (locale === 'tr' ? `${PRODUCT.price} öde, tüm erişimi aç` : `Pay ${PRODUCT.price}, unlock everything`)}
         </button>
 
+        {/* Restore Purchases — Apple guideline 3.1.1 zorunluluğu */}
+        <button
+          type="button"
+          onClick={onRestore}
+          disabled={restoring || owned}
+          className="mt-3 w-full rounded-full border border-panelBorder bg-transparent py-3 text-[12px] font-bold text-muted transition-colors hover:text-ink disabled:opacity-60"
+        >
+          {restoring
+            ? (locale === 'tr' ? 'Geri yükleniyor...' : 'Restoring...')
+            : (locale === 'tr' ? 'Önceki satın alımı geri yükle' : 'Restore previous purchase')}
+        </button>
+
+        {info ? (
+          <p className="mt-3 rounded-lg border border-success/40 bg-success/10 p-2.5 text-center text-[12px] text-success">
+            {info}
+          </p>
+        ) : null}
+
         <p className="mt-3 text-center text-[11px] text-faint">
           {locale === 'tr'
-            ? 'Web: Stripe ile ödeme. iOS: peşin satın alındı, ayrı ödeme gerekmez.'
-            : 'Web: pay via Stripe. iOS: purchased upfront, no extra payment.'}
+            ? 'iOS: Apple sistemi ile (App Store). Web: Stripe ile. Tek seferlik · abonelik yok.'
+            : 'iOS: Apple system (App Store). Web: Stripe. One-time · no subscription.'}
         </p>
       </div>
 
