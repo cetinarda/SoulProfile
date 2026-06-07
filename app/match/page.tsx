@@ -175,7 +175,7 @@ function MatchPage() {
   }
 
   return (
-    <div className="relative py-12 md:py-16">
+    <div className="relative py-20 md:py-28">
       {loading ? <CosmicLoader /> : null}
       <CosmicBackground variant="aurora" />
       <div className="mx-auto max-w-2xl px-5 md:px-6">

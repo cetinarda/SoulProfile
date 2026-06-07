@@ -137,7 +137,7 @@ export default function CompatibilityPage() {
   const mySun = me.chart.planets.find((p) => p.name === 'Sun');
 
   return (
-    <div className="relative py-12 md:py-16">
+    <div className="relative py-20 md:py-28">
       <CosmicBackground variant="aurora" />
       <div className="mx-auto max-w-3xl px-5 md:px-6">
         <p className="text-xs font-bold uppercase tracking-[0.5em] text-gold">{t('compat.kicker')}</p>

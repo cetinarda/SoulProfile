@@ -202,42 +202,42 @@ export function CompatibilityView({
 
       {/* TAB 2 — Aynalar: birbirine ne yansıttıklarınız */}
       {tab === 2 ? (
-        <section className="space-y-4">
-          <div className="rounded-2xl border border-panelBorder bg-panel/40 p-5">
+        <section className="space-y-6">
+          <div className="rounded-3xl border border-panelBorder bg-panel/30 p-6 md:p-7">
             <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">
               {locale === 'tr' ? 'BİRBİRİNİZE NE YANSITIYORSUNUZ' : 'WHAT YOU REFLECT IN EACH OTHER'}
             </p>
-            <p className="mt-2 text-[12px] leading-relaxed text-muted">
+            <p className="mt-3 text-[13px] leading-[1.75] text-muted">
               {locale === 'tr'
                 ? 'Tanımlı taraf, açık tarafa o alanda kendi enerjisini gösterir. Birbirinizin gölgesini ve potansiyelini ayna gibi yansıtırsınız.'
                 : "The defined side shows its energy to the open side in that area. You mirror each other's shadow and potential."}
             </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {mirrors.length === 0 ? (
-              <p className="rounded-2xl border border-panelBorder bg-panel/40 p-5 text-sm text-muted">
+              <p className="rounded-2xl border border-panelBorder bg-panel/30 p-6 text-sm leading-[1.75] text-muted">
                 {locale === 'tr'
                   ? 'Belirgin bir koşullama yok — ikiniz de bağımsız enerji alanlarında dans ediyorsunuz.'
                   : 'No prominent conditioning — you both dance in independent energy fields.'}
               </p>
             ) : (
               mirrors.map((m, i) => (
-                <div key={i} className="rounded-2xl border border-panelBorder bg-panel/40 p-4">
+                <div key={i} className="rounded-2xl border border-panelBorder bg-panel/30 p-5 md:p-6">
                   <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">{m.centerTr}</p>
-                  <p className="mt-1 text-[13px] text-muted">{m.statusLabel}</p>
-                  <p className="mt-2 text-[14px] leading-relaxed text-ink">{m.meaning}</p>
+                  <p className="mt-2 text-[12px] text-muted">{m.statusLabel}</p>
+                  <p className="mt-4 text-[14px] leading-[1.75] text-ink">{m.meaning}</p>
                 </div>
               ))
             )}
           </div>
 
           {narrative.hdDynamic ? (
-            <div className="rounded-2xl border border-[#9CAF88]/40 bg-[#9CAF88]/[0.06] p-5">
+            <div className="rounded-3xl border border-[#9CAF88]/40 bg-[#9CAF88]/[0.05] p-6 md:p-7">
               <p className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: '#9CAF88' }}>
                 {t('cv.hdDance')}
               </p>
-              <p className="mt-2 text-[14px] leading-relaxed text-ink">{narrative.hdDynamic}</p>
+              <p className="mt-3 text-[14px] leading-[1.75] text-ink">{narrative.hdDynamic}</p>
             </div>
           ) : null}
         </section>
@@ -245,26 +245,26 @@ export function CompatibilityView({
 
       {/* TAB 3 — Pusula: birlikte ne yapmalılar */}
       {tab === 3 ? (
-        <section className="space-y-4">
+        <section className="space-y-6">
           {/* 3-kart deterministik tarot çekimi */}
-          <div className="rounded-3xl border border-[#C7B8E8]/40 bg-[#C7B8E8]/[0.05] p-5 md:p-6">
+          <div className="rounded-3xl border border-[#C7B8E8]/40 bg-[#C7B8E8]/[0.04] p-6 md:p-8">
             <p className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: '#C7B8E8' }}>
               {locale === 'tr' ? 'ÜÇ KART · ORTAK ÇEKİM' : 'THREE CARDS · COUPLE PULL'}
             </p>
-            <p className="mt-2 text-[12px] leading-relaxed text-muted">
+            <p className="mt-3 text-[13px] leading-[1.75] text-muted">
               {locale === 'tr'
                 ? 'İsimlerinizden ve sayılarınızdan üretilmiş sabit bir çekim — her seferinde aynı kartları görürsünüz.'
                 : 'A fixed pull generated from your names and numbers — the same cards every time.'}
             </p>
-            <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className="mt-6 grid gap-5 md:grid-cols-3">
               {compass.cards.map((c) => (
-                <div key={c.position} className="rounded-2xl border border-white/10 bg-bg/40 p-4 text-center">
+                <div key={c.position} className="rounded-2xl border border-white/10 bg-bg/40 p-6 text-center">
                   <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: '#C7B8E8' }}>
                     {locale === 'tr' ? c.positionTr : c.positionEn}
                   </p>
-                  <div className="mt-3 text-4xl">{c.glyph}</div>
-                  <p className="mt-2 font-display text-lg text-ink">{locale === 'tr' ? c.name : c.nameEn}</p>
-                  <p className="mt-2 text-[12px] leading-relaxed text-muted">
+                  <div className="mt-5 text-5xl">{c.glyph}</div>
+                  <p className="mt-4 font-display text-xl text-ink">{locale === 'tr' ? c.name : c.nameEn}</p>
+                  <p className="mt-3 text-[12px] leading-[1.75] text-muted">
                     {c.reading[locale]}
                   </p>
                 </div>
@@ -272,21 +272,21 @@ export function CompatibilityView({
             </div>
           </div>
 
-          <div className="rounded-3xl border border-gold/40 bg-gold/[0.05] p-6">
+          <div className="rounded-3xl border border-gold/40 bg-gold/[0.04] p-7 md:p-8">
             <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">
               {locale === 'tr' ? 'PUSULA' : 'COMPASS'}
             </p>
-            <p className="mt-3 text-[15px] leading-relaxed text-ink">{narrative.advice}</p>
+            <p className="mt-4 text-[15px] leading-[1.85] text-ink">{narrative.advice}</p>
           </div>
 
           {narrative.strengths.length > 0 ? (
-            <section className="rounded-2xl border border-[#9CAF88]/40 bg-[#9CAF88]/[0.06] p-5">
+            <section className="rounded-3xl border border-[#9CAF88]/40 bg-[#9CAF88]/[0.05] p-6 md:p-7">
               <p className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: '#9CAF88' }}>
                 {t('cv.strengths')}
               </p>
-              <ul className="mt-3 space-y-2">
+              <ul className="mt-5 space-y-3">
                 {narrative.strengths.slice(0, 4).map((s, i) => (
-                  <li key={i} className="flex gap-2 text-[14px] leading-relaxed text-ink">
+                  <li key={i} className="flex gap-3 text-[14px] leading-[1.75] text-ink">
                     <span style={{ color: '#9CAF88' }}>✦</span>
                     <span className="flex-1">{s}</span>
                   </li>
@@ -296,13 +296,13 @@ export function CompatibilityView({
           ) : null}
 
           {narrative.frictions.length > 0 ? (
-            <section className="rounded-2xl border border-[#C9A0A6]/40 bg-[#C9A0A6]/[0.06] p-5">
+            <section className="rounded-3xl border border-[#C9A0A6]/40 bg-[#C9A0A6]/[0.05] p-6 md:p-7">
               <p className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: '#C9A0A6' }}>
                 {t('cv.frictions')}
               </p>
-              <ul className="mt-3 space-y-2">
+              <ul className="mt-5 space-y-3">
                 {narrative.frictions.slice(0, 4).map((s, i) => (
-                  <li key={i} className="flex gap-2 text-[14px] leading-relaxed text-ink">
+                  <li key={i} className="flex gap-3 text-[14px] leading-[1.75] text-ink">
                     <span style={{ color: '#C9A0A6' }}>◐</span>
                     <span className="flex-1">{s}</span>
                   </li>
@@ -311,7 +311,7 @@ export function CompatibilityView({
             </section>
           ) : null}
 
-          <p className="text-center text-[11px] leading-relaxed text-faint">
+          <p className="pt-2 text-center text-[11px] leading-[1.85] text-faint">
             {locale === 'tr'
               ? 'Bu bir sembolik gözlemdir. İki kişinin gidişatını tayin etmez; alan açar.'
               : 'This is a symbolic observation. It does not determine the course of two people; it opens space.'}

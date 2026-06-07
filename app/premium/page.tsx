@@ -95,7 +95,7 @@ export default function PremiumPage() {
         </div>
       ) : null}
 
-      <div className="rounded-3xl border border-gold/60 bg-gold/[0.08] p-8">
+      <div className="rounded-3xl border border-gold/40 bg-gold/[0.05] p-8 md:p-10">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <div>
             <h2 className="font-display text-3xl text-ink">{PRODUCT.name}</h2>

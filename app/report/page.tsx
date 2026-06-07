@@ -85,7 +85,7 @@ export default function ReportPage() {
       : new Date().toISOString();
 
   return (
-    <div className="relative py-12 md:py-16">
+    <div className="relative py-20 md:py-28">
       <CosmicBackground variant="cosmic" />
       <div className="mx-auto max-w-4xl px-4 md:px-6">
         <p className="text-center text-xs tracking-[0.3em] text-gold">{report.summary}</p>
@@ -115,12 +115,12 @@ export default function ReportPage() {
         </div>
 
         {/* Birini davet et — viral motor */}
-        <section className="mt-10">
+        <section className="mt-14">
           <InviteShare birth={report.birth} />
         </section>
 
         {/* Kozmik Anlatın — zenginleştirilmiş bölümler */}
-        <article className="mt-10 rounded-2xl border border-panelBorder bg-panel p-6 md:p-8">
+        <article className="mt-14 rounded-2xl border border-panelBorder bg-panel p-6 md:p-8">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">{t('report.narrative')}</p>
           <h2 className="mt-1 font-display text-3xl text-ink">{report.birth.fullName}</h2>
 
@@ -176,7 +176,7 @@ export default function ReportPage() {
         </article>
 
         {/* Karakter Stat Kartı */}
-        <section className="mt-8">
+        <section className="mt-14">
           <CharacterStats
             chart={report.chart}
             numerology={report.numerology}
@@ -185,7 +185,7 @@ export default function ReportPage() {
         </section>
 
         {/* Gökyüzünü keşfet — ağır görseller talep üzerine */}
-        <section className="mt-8">
+        <section className="mt-14">
           <button
             type="button"
             onClick={() => setShowExplore((v) => !v)}
@@ -229,7 +229,7 @@ export default function ReportPage() {
         </section>
 
         {/* Detaylı sistem kartları — tıklanabilir */}
-        <section className="mt-10">
+        <section className="mt-14">
           <h2 className="mb-4 text-center font-display text-2xl text-ink">
             {t('report.concepts')}
           </h2>
@@ -249,7 +249,7 @@ export default function ReportPage() {
         </section>
 
         {/* İkili uyum CTA — büyük, görsel */}
-        <section className="mt-10 overflow-hidden rounded-3xl border border-cosmic/50 bg-gradient-to-br from-[#0b0524] via-[#1e1a6e] to-[#9d3cb1]/40 p-7 md:p-9">
+        <section className="mt-14 overflow-hidden rounded-3xl border border-cosmic/50 bg-gradient-to-br from-[#0b0524] via-[#1e1a6e] to-[#9d3cb1]/40 p-7 md:p-9">
           <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-cosmic">
@@ -278,7 +278,7 @@ export default function ReportPage() {
 
         {/* Premium showcase — sadece premium yoksa göster */}
         {!isPremium ? (
-          <section className="mt-10 rounded-2xl border border-gold/40 bg-gold/[0.06] p-6">
+          <section className="mt-14 rounded-2xl border border-gold/40 bg-gold/[0.06] p-6">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">
               {locale === 'tr' ? 'TAM ERİŞİM' : 'FULL ACCESS'}
             </p>
