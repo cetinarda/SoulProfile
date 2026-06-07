@@ -9,13 +9,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: '#05060f',
-        bgElevated: '#0c0e22',
-        panel: 'rgba(255,255,255,0.04)',
-        panelBorder: 'rgba(255,255,255,0.08)',
+        bg: '#07091a',
+        bgElevated: '#0f1230',
+        panel: 'rgba(255,255,255,0.035)',
+        panelBorder: 'rgba(255,255,255,0.07)',
         ink: '#f4f1ff',
-        muted: 'rgba(244,241,255,0.62)',
-        faint: 'rgba(244,241,255,0.35)',
+        muted: 'rgba(244,241,255,0.68)',
+        faint: 'rgba(244,241,255,0.4)',
         gold: '#f5d061',
         goldSoft: '#d4a94a',
         cosmic: '#7c5cff',

@@ -7,18 +7,92 @@
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html, body {
-  background: #05060f;
+  background: #07091a;
   color: #f4f1ff;
   font-family: var(--font-sans);
   min-height: 100%;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   font-feature-settings: 'cv11', 'ss01';
+  font-size: 16px;
+  line-height: 1.65;
+  letter-spacing: 0.005em;
+  position: relative;
+  overflow-x: hidden;
 }
 
+/* Sayfa zeminine yumuşak nebula vignette — gözü yormayan derinlik */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(80% 55% at 22% 18%, rgba(108, 81, 198, 0.22), transparent 65%),
+    radial-gradient(70% 60% at 82% 78%, rgba(64, 128, 196, 0.18), transparent 70%),
+    radial-gradient(55% 45% at 50% 50%, rgba(20, 24, 50, 0.65), transparent 80%),
+    #07091a;
+  pointer-events: none;
+}
+
+/* Çok hafif, yavaş yıldız drift — sabit değil, nefes alıyor */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(0.8px 0.8px at 12% 20%, rgba(255, 255, 255, 0.5), transparent 50%),
+    radial-gradient(1px 1px at 38% 70%, rgba(255, 255, 255, 0.4), transparent 50%),
+    radial-gradient(0.6px 0.6px at 64% 32%, rgba(255, 255, 255, 0.55), transparent 50%),
+    radial-gradient(1.2px 1.2px at 88% 88%, rgba(255, 255, 255, 0.45), transparent 50%),
+    radial-gradient(0.7px 0.7px at 22% 92%, rgba(255, 255, 255, 0.4), transparent 50%),
+    radial-gradient(0.9px 0.9px at 76% 14%, rgba(255, 255, 255, 0.5), transparent 50%),
+    radial-gradient(0.6px 0.6px at 8% 56%, rgba(255, 255, 255, 0.35), transparent 50%);
+  pointer-events: none;
+  animation: starDrift 120s linear infinite;
+  opacity: 0.55;
+}
+
+@keyframes starDrift {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(-12px, -16px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Tüm sayfalar otomatik hafif giriş — kullanıcı sayfa açıldığında "düşer gibi" gelir */
+main {
+  animation: spaceFadeIn 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes spaceFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Erişilebilirlik — hareketi azaltmak isteyenlere saygı */
+@media (prefers-reduced-motion: reduce) {
+  body::after { animation: none; }
+  main { animation: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* Eski starfield class'ı — daha sakin opacity */
 .starfield {
   position: absolute;
   inset: 0;
@@ -35,7 +109,7 @@ body {
     radial-gradient(1px 1px at 65% 95%, white 50%, transparent 100%);
   background-repeat: repeat;
   background-size: 600px 600px;
-  opacity: 0.55;
+  opacity: 0.32; /* önceden 0.55 idi — daha sakin */
 }
 
 .nebula-glow::before {
@@ -43,15 +117,47 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(50% 35% at 50% 18%, rgba(124, 92, 255, 0.35), transparent 70%);
+  background: radial-gradient(50% 35% at 50% 18%, rgba(124, 92, 255, 0.22), transparent 70%);
 }
 
 .card-glow {
   box-shadow:
-    0 0 0 1px rgba(245, 208, 97, 0.18),
-    0 30px 80px -30px rgba(124, 92, 255, 0.5);
+    0 0 0 1px rgba(245, 208, 97, 0.15),
+    0 30px 80px -30px rgba(64, 80, 160, 0.5);
 }
 
 input, textarea {
   font-family: inherit;
+}
+
+/* Okunabilir prose default'u — uzun paragraflarda göz dinlenir */
+.prose-calm p {
+  max-width: 64ch;
+  line-height: 1.75;
+}
+
+/* Yumuşak focus ring — sakin galaktik kontrast */
+*:focus-visible {
+  outline: 2px solid rgba(245, 208, 97, 0.7);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Mobile readability — daha yumuşak font scale */
+@media (max-width: 640px) {
+  body {
+    font-size: 15.5px;
+    line-height: 1.7;
+  }
+}
+
+/* Scrollbar — galaktik ama görünmez */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(245, 208, 97, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 208, 97, 0.3);
 }

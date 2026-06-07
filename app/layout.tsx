@@ -4,6 +4,7 @@ import { Inter, Cormorant_Garamond } from 'next/font/google';
 import { TopBar } from '@/components/TopBar';
 import { Footer } from '@/components/Footer';
 import { PromoBanner } from '@/components/PromoBanner';
+import { SpaceIntro } from '@/components/SpaceIntro';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -82,6 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="tr" className={`${inter.variable} ${cormorant.variable}`}>
       <body className="bg-bg text-ink min-h-screen flex flex-col">
+        <SpaceIntro />
         <PromoBanner />
         <TopBar />
         <main className="flex-1">{children}</main>
