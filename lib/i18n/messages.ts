@@ -90,11 +90,8 @@ const tr: Dict = {
 
   // Report
   'report.sky3d': 'DOĞUM ANI GÖKYÜZÜ · 3D',
-  'report.sky3dTitle': 'Yıldızlar sana ne söylüyordu',
   'report.wheel': 'KLASİK HARİTA',
-  'report.wheelTitle': 'Astrolojik çark',
   'report.tree': 'YILDIZ YAŞAM AĞACI',
-  'report.treeTitle': 'Doğumundan bugüne yıldızların izi',
   'report.share': 'Görsel Olarak Paylaş',
   'report.download': 'PNG İndir',
   'report.preparing': 'Hazırlanıyor...',
@@ -108,9 +105,6 @@ const tr: Dict = {
   'report.newCard': 'Yeni karne oluştur',
   'report.empty': 'Henüz bir karne yok.',
   'report.createCard': 'Karne Hazırla',
-  'report.exploreBtn': 'Gökyüzünü keşfet',
-  'report.exploreHide': 'Gökyüzünü gizle',
-  'report.exploreTitle': '3D doğum gökyüzün + Yaşam Ağacın',
   'report.layerExplore': 'KEŞFET',
   'report.layerDeeper': 'DERİNLEŞ',
   'report.deeperBtn': 'Daha derine bak',
@@ -264,11 +258,8 @@ const en: Dict = {
 
   // Report
   'report.sky3d': 'BIRTH SKY · 3D',
-  'report.sky3dTitle': 'What the stars told you',
   'report.wheel': 'CLASSIC CHART',
-  'report.wheelTitle': 'Astrological wheel',
   'report.tree': 'STAR TREE OF LIFE',
-  'report.treeTitle': 'The trail of stars from your birth to today',
   'report.share': 'Share as Image',
   'report.download': 'Download PNG',
   'report.preparing': 'Preparing...',
@@ -282,9 +273,6 @@ const en: Dict = {
   'report.newCard': 'Create a new profile',
   'report.empty': 'No profile yet.',
   'report.createCard': 'Create Profile',
-  'report.exploreBtn': 'Explore your sky',
-  'report.exploreHide': 'Hide your sky',
-  'report.exploreTitle': 'Your 3D birth sky + Tree of Life',
   'report.layerExplore': 'EXPLORE',
   'report.layerDeeper': 'GO DEEPER',
   'report.deeperBtn': 'Go deeper',

@@ -122,7 +122,10 @@ export const ReportCard = forwardRef<HTMLDivElement, Props>(function ReportCard(
           <p className="mt-1 text-[10px] leading-snug text-muted">{report.southNodeMessage}</p>
         </div>
 
-        <p className="pt-2 text-center text-[9px] tracking-[0.35em] text-faint">
+        <p className="pt-2 text-center text-[8px] leading-relaxed text-faint">
+          Sembolik gözlem · Tıbbi/psikolojik tavsiye değildir
+        </p>
+        <p className="text-center text-[9px] tracking-[0.35em] text-faint">
           soulprofile.life
         </p>
       </div>
