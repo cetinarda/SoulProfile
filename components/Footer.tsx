@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useT } from '@/lib/i18n';
+import { DevToggle } from './DevToggle';
 
 export function Footer() {
   const { t } = useT();
@@ -34,6 +35,7 @@ export function Footer() {
         <p className="mt-5 text-[11px] leading-relaxed text-faint">
           {t('footer.disclaimer')} © {new Date().getFullYear()} SoulProfile.
         </p>
+        <DevToggle />
       </div>
     </footer>
   );

@@ -36,6 +36,19 @@ export function grantPremium() {
   if (typeof localStorage !== 'undefined') localStorage.setItem(KEY_PREMIUM, '1');
 }
 
+export function revokePremium() {
+  if (typeof localStorage !== 'undefined') localStorage.removeItem(KEY_PREMIUM);
+}
+
+export function togglePremium(): boolean {
+  if (hasPremium()) {
+    revokePremium();
+    return false;
+  }
+  grantPremium();
+  return true;
+}
+
 export function reportCount(): number {
   return readInt(KEY_REPORTS);
 }
