@@ -3,6 +3,11 @@
 import { useEffect, useState } from 'react';
 import { hasPremium, togglePremium, reportCount, compatCount, resetUsage } from '@/lib/entitlements';
 
+// Production'da gösterilmez. Geliştirme/test için aç:
+//   .env.local → NEXT_PUBLIC_SHOW_DEV_TOGGLE=1
+// Netlify production env'inde tanımsız bırakırsan otomatik gizlenir.
+const SHOW = process.env.NEXT_PUBLIC_SHOW_DEV_TOGGLE === '1' || process.env.NODE_ENV !== 'production';
+
 export function DevToggle() {
   const [mounted, setMounted] = useState(false);
   const [premium, setPremium] = useState(false);
@@ -16,7 +21,7 @@ export function DevToggle() {
     setCompats(compatCount());
   }, []);
 
-  if (!mounted) return null;
+  if (!SHOW || !mounted) return null;
 
   function flip() {
     const next = togglePremium();
