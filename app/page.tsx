@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { CosmicBackground } from '@/components/CosmicBackground';
+import { NowSkyChip } from '@/components/NowSkyChip';
 import { useT } from '@/lib/i18n';
 
 export default function Welcome() {
@@ -45,6 +46,9 @@ export default function Welcome() {
       {/* HERO — uzayda asılı sakin alan */}
       <section className="mx-auto max-w-5xl px-6 pb-16 pt-20 md:pt-32">
         <div className="text-center">
+          <div className="mb-7 flex justify-center">
+            <NowSkyChip />
+          </div>
           <p className="text-[10px] font-bold uppercase tracking-[0.6em] text-gold/80">
             {t('home.kicker')}
           </p>

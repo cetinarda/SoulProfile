@@ -111,6 +111,13 @@ const tr: Dict = {
   'report.exploreBtn': 'Gökyüzünü keşfet',
   'report.exploreHide': 'Gökyüzünü gizle',
   'report.exploreTitle': '3D doğum gökyüzün + Yaşam Ağacın',
+  'report.layerExplore': 'KEŞFET',
+  'report.layerDeeper': 'DERİNLEŞ',
+  'report.deeperBtn': 'Daha derine bak',
+  'report.deeperHide': 'Topla',
+  'report.deeperHint': 'AI bağlamı + 3D gökyüzü + yaşam ağacı + zodyak çarkı',
+  'report.discoverKicker': 'Senin için ne anlama geliyor',
+  'birth.breath': 'Bir nefes al',
 
   // Compatibility
   'compat.kicker': 'İKİLİ KOZMİK UYUM',
@@ -278,6 +285,13 @@ const en: Dict = {
   'report.exploreBtn': 'Explore your sky',
   'report.exploreHide': 'Hide your sky',
   'report.exploreTitle': 'Your 3D birth sky + Tree of Life',
+  'report.layerExplore': 'EXPLORE',
+  'report.layerDeeper': 'GO DEEPER',
+  'report.deeperBtn': 'Go deeper',
+  'report.deeperHide': 'Collapse',
+  'report.deeperHint': 'AI context + 3D sky + life tree + zodiac wheel',
+  'report.discoverKicker': 'What it means for you',
+  'birth.breath': 'Take a breath',
 
   // Compatibility
   'compat.kicker': 'DUAL COSMIC COMPATIBILITY',

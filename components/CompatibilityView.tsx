@@ -1,11 +1,12 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import type { CompatibilityResult } from '@/lib/compatibility';
 import type { CompatNarrative } from '@/lib/compatibility/narrative';
 import { drawCoupleCompass } from '@/lib/compatibility/compass';
 import { useT } from '@/lib/i18n';
+import { tap } from '@/lib/haptics';
 
 // "Twilight Vellum" 5-katman pastel paleti
 const LAYER = [
@@ -15,7 +16,19 @@ const LAYER = [
   { key: 'kader', tr: 'Kader', en: 'Fate',      color: '#8FA3C2', hint: { tr: 'Vedik Ashtakuta — kozmik eşleşme dokusu', en: 'Vedic Ashtakuta — cosmic match weave' } },
 ] as const;
 
-function ScoreRing({ score, color, label, big = false }: { score: number; color: string; label: string; big?: boolean }) {
+function ScoreRing({
+  score,
+  color,
+  label,
+  big = false,
+  index = 0,
+}: {
+  score: number;
+  color: string;
+  label: string;
+  big?: boolean;
+  index?: number;
+}) {
   const size = big ? 120 : 86;
   const r = big ? 50 : 34;
   const cx = size / 2;
@@ -33,18 +46,25 @@ function ScoreRing({ score, color, label, big = false }: { score: number; color:
           stroke={color}
           strokeWidth={big ? 8 : 6}
           strokeLinecap="round"
-          strokeDasharray={`${dash} ${circ}`}
           transform={`rotate(-90 ${cx} ${cx})`}
-          style={{ transition: 'stroke-dasharray 800ms ease-out' }}
+          className="ring-draw"
+          style={
+            {
+              '--ring-dash': dash,
+              '--ring-circ': circ,
+              animationDelay: `${index * 120}ms`,
+            } as React.CSSProperties
+          }
         />
         <text
           x={cx}
           y={cx + (big ? 6 : 4)}
           textAnchor="middle"
           fontSize={big ? 28 : 20}
-          fill="#f4f1ff"
+          fill="currentColor"
           fontWeight="600"
           style={{ fontFamily: 'var(--font-display), serif' }}
+          className="text-ink"
         >
           {score}
         </text>
@@ -70,6 +90,34 @@ export function CompatibilityView({
 }) {
   const { t, locale } = useT();
   const [tab, setTab] = useState<Tab>(0);
+  const navRef = useRef<HTMLElement>(null);
+  const tabBtnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [pill, setPill] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+
+  useLayoutEffect(() => {
+    function measure() {
+      const navEl = navRef.current;
+      const btn = tabBtnRefs.current[tab];
+      if (!navEl || !btn) return;
+      const navRect = navEl.getBoundingClientRect();
+      const btnRect = btn.getBoundingClientRect();
+      setPill({
+        x: btnRect.left - navRect.left,
+        y: btnRect.top - navRect.top,
+        w: btnRect.width,
+        h: btnRect.height,
+      });
+    }
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [tab, locale]);
+
+  function selectTab(i: Tab) {
+    if (i === tab) return;
+    tap('light');
+    setTab(i);
+  }
 
   const layerScores = useMemo(
     () => [result.scoreAstro, result.scoreHD, result.scoreNumerology, result.scoreFate],
@@ -121,20 +169,40 @@ export function CompatibilityView({
         </p>
       </header>
 
-      {/* Tab navigasyonu — sakin pasif/aktif */}
-      <nav className="mx-auto flex max-w-2xl flex-wrap items-center justify-center gap-1 rounded-full border border-panelBorder bg-panel/30 p-1.5 backdrop-blur-md">
+      {/* Tab navigasyonu — shared-element pill (Crouton pattern) */}
+      <nav
+        ref={navRef}
+        role="tablist"
+        className="relative mx-auto flex max-w-2xl flex-wrap items-center justify-center gap-1 rounded-full border border-panelBorder bg-panel/30 p-1.5 backdrop-blur-md"
+      >
+        {pill ? (
+          <span
+            aria-hidden
+            className="pointer-events-none absolute rounded-full bg-gold shadow-[0_8px_24px_-8px_rgba(245,208,97,0.4)]"
+            style={{
+              left: pill.x,
+              top: pill.y,
+              width: pill.w,
+              height: pill.h,
+              transition: 'left 480ms cubic-bezier(0.16, 1, 0.3, 1), top 480ms cubic-bezier(0.16, 1, 0.3, 1), width 480ms cubic-bezier(0.16, 1, 0.3, 1), height 480ms cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          />
+        ) : null}
         {TAB_LABEL[locale].map((label, i) => (
           <button
             key={label}
+            ref={(el) => { tabBtnRefs.current[i] = el; }}
             type="button"
-            onClick={() => setTab(i as Tab)}
+            role="tab"
+            onClick={() => selectTab(i as Tab)}
             className={clsx(
-              'rounded-full px-4 py-2.5 text-[12px] font-bold tracking-wide',
+              'relative z-10 rounded-full px-4 py-2.5 text-[12px] font-bold tracking-wide transition-colors duration-200',
               tab === i
-                ? 'bg-gold text-[#1a0a40] shadow-[0_8px_24px_-8px_rgba(245,208,97,0.4)]'
-                : 'text-muted hover:bg-white/5 hover:text-ink',
+                ? 'text-[#1a0a40]'
+                : 'text-muted hover:text-ink',
             )}
             aria-pressed={tab === i}
+            aria-selected={tab === i}
           >
             <span className="opacity-50">{(i + 1).toString().padStart(2, '0')}</span>
             <span className="ml-1.5">{label}</span>
@@ -173,7 +241,7 @@ export function CompatibilityView({
                 onClick={() => setTab(2)}
                 className="group flex flex-col items-center gap-2"
               >
-                <ScoreRing score={layerScores[i]!} color={layer.color} label={layer[locale]} />
+                <ScoreRing score={layerScores[i]!} color={layer.color} label={layer[locale]} index={i} />
                 <span className="text-center text-[11px] leading-snug text-muted opacity-0 transition-opacity group-hover:opacity-100">
                   {layer.hint[locale]}
                 </span>

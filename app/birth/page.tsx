@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { CosmicLoader } from '@/components/CosmicLoader';
+import { BreathIntro } from '@/components/BreathIntro';
 import { useSoulStore } from '@/lib/store';
 import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
 import { buildGalacticReport } from '@/lib/report';
@@ -108,6 +109,7 @@ export default function BirthPage() {
   }
 
   return (
+    <BreathIntro>
     <div className="relative min-h-[80vh] py-20 md:py-28">
       {loading ? <CosmicLoader /> : null}
       <CosmicBackground variant="aurora" />
@@ -258,6 +260,7 @@ export default function BirthPage() {
         </div>
       </div>
     </div>
+    </BreathIntro>
   );
 }
 

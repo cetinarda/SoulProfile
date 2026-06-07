@@ -17,6 +17,7 @@ export const ReportCard = forwardRef<HTMLDivElement, Props>(function ReportCard(
   return (
     <div
       ref={ref}
+      data-theme="dark"
       className="relative w-full max-w-md overflow-hidden rounded-[28px] bg-galaxy p-6 text-ink card-glow"
       style={{ fontFamily: 'var(--font-sans), Inter, sans-serif' }}
     >

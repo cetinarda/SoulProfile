@@ -215,6 +215,38 @@ main {
   html, body { transition: none; }
 }
 
+/* ============================================================
+   ScoreRing — stagger giriş animasyonu (Crouton pattern)
+   ============================================================ */
+@keyframes ringDraw {
+  from { stroke-dasharray: 0 var(--ring-circ); }
+  to   { stroke-dasharray: var(--ring-dash) var(--ring-circ); }
+}
+
+.ring-draw {
+  animation: ringDraw 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring-draw { animation: none; stroke-dasharray: var(--ring-dash) var(--ring-circ); }
+}
+
+/* ============================================================
+   Breath Intro — Headspace pattern, 2sn nefes anı
+   ============================================================ */
+@keyframes breathPulse {
+  0%, 100% { transform: scale(0.85); opacity: 0.55; }
+  50%      { transform: scale(1.08); opacity: 1; }
+}
+
+.breath-pulse {
+  animation: breathPulse 1900ms cubic-bezier(0.45, 0, 0.55, 1) infinite both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breath-pulse { animation: none; }
+}
+
 /* Eski .starfield class'ı — opacity hangi temada nasıl */
 .starfield {
   position: absolute;

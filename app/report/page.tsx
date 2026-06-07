@@ -16,6 +16,7 @@ import { captureNode, downloadDataUrl, shareDataUrl } from '@/lib/share';
 import { premiumOpen } from '@/lib/feature-flags';
 import { buildConceptDecks } from '@/lib/concepts';
 import { useT } from '@/lib/i18n';
+import { tap } from '@/lib/haptics';
 
 export default function ReportPage() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function ReportPage() {
   const cardRef = useRef<HTMLDivElement>(null);
   const [working, setWorking] = useState<'share' | 'download' | null>(null);
   const [hydrated, setHydrated] = useState(false);
-  const [showExplore, setShowExplore] = useState(false);
+  const [showDeeper, setShowDeeper] = useState(false);
 
   useEffect(() => {
     setHydrated(true);
@@ -114,69 +115,35 @@ export default function ReportPage() {
           </button>
         </div>
 
-        {/* Birini davet et — viral motor */}
+        {/* Birini davet et — viral motor (Aha tabakası) */}
         <section className="mt-14">
           <InviteShare birth={report.birth} />
         </section>
 
-        {/* Kozmik Anlatın — zenginleştirilmiş bölümler */}
-        <article className="mt-14 rounded-2xl border border-panelBorder bg-panel p-6 md:p-8">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">{t('report.narrative')}</p>
-          <h2 className="mt-1 font-display text-3xl text-ink">{report.birth.fullName}</h2>
+        {/* ───────── KEŞFET tabakası ───────── */}
+        <LayerDivider label={t('report.layerExplore')} />
 
-          <div className="mt-6 space-y-4">
+        {/* Duygusal başlangıç — opening + soulStory (en sıcak iki paragraf) */}
+        {(report.sections.opening || report.sections.soulStory) ? (
+          <article className="card-surface mt-8 rounded-3xl border border-panelBorder p-6 md:p-8">
+            <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">{t('report.discoverKicker')}</p>
+            <h2 className="mt-2 font-display text-3xl text-ink">{report.birth.fullName}</h2>
+
             {report.sections.opening ? (
-              <p className="text-[15px] leading-relaxed text-ink">{report.sections.opening}</p>
+              <p className="mt-6 text-[15px] leading-relaxed text-ink">{report.sections.opening}</p>
             ) : null}
-            {report.sections.astrology ? (
-              <p className="text-[15px] leading-relaxed text-ink">{report.sections.astrology}</p>
-            ) : null}
-            {report.sections.humanDesign ? (
-              <p className="text-[15px] leading-relaxed text-ink">{report.sections.humanDesign}</p>
-            ) : null}
-            {report.sections.callToAction ? (
-              <p className="text-[15px] leading-relaxed text-ink">{report.sections.callToAction}</p>
-            ) : null}
-          </div>
 
-          {report.sections.soulStory ? (
-            <section className="mt-8 rounded-2xl border border-gold/30 bg-gold/[0.04] p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">{t('report.soulStory')}</p>
-              <p className="mt-3 text-[15px] leading-relaxed text-ink">{report.sections.soulStory}</p>
-            </section>
-          ) : null}
-
-          {report.sections.wisdoms.length > 0 ? (
-            <section className="mt-6 rounded-2xl border border-success/30 bg-success/[0.04] p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-success">{t('report.wisdoms')}</p>
-              <ul className="mt-3 space-y-2">
-                {report.sections.wisdoms.map((w, i) => (
-                  <li key={i} className="flex gap-3 text-[14px] leading-relaxed text-ink">
-                    <span className="text-success">✦</span>
-                    <span className="flex-1">{w}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
-
-          {report.sections.shadows.length > 0 ? (
-            <section className="mt-6 rounded-2xl border border-cosmic/40 bg-cosmic/[0.06] p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-cosmic">{t('report.shadows')}</p>
-              <ul className="mt-3 space-y-2">
-                {report.sections.shadows.map((s, i) => (
-                  <li key={i} className="flex gap-3 text-[14px] leading-relaxed text-ink">
-                    <span className="text-cosmic">◐</span>
-                    <span className="flex-1">{s}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
-        </article>
+            {report.sections.soulStory ? (
+              <section className="mt-6 rounded-2xl border border-gold/30 bg-gold/[0.04] p-5">
+                <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">{t('report.soulStory')}</p>
+                <p className="mt-3 text-[15px] leading-relaxed text-ink">{report.sections.soulStory}</p>
+              </section>
+            ) : null}
+          </article>
+        ) : null}
 
         {/* Karakter Stat Kartı */}
-        <section className="mt-14">
+        <section className="mt-10">
           <CharacterStats
             chart={report.chart}
             numerology={report.numerology}
@@ -184,26 +151,99 @@ export default function ReportPage() {
           />
         </section>
 
-        {/* Gökyüzünü keşfet — ağır görseller talep üzerine */}
-        <section className="mt-14">
+        {/* Detaylı sistem kartları — tıklanabilir */}
+        <section className="mt-12">
+          <h2 className="mb-4 text-center font-display text-2xl text-ink">
+            {t('report.concepts')}
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {concepts.map((c) => (
+              <ConceptCard
+                key={c.kicker + c.title}
+                kicker={c.kicker}
+                title={c.title}
+                highlight={c.highlight}
+                short={c.short}
+                details={c.details}
+                accent={c.accent}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* ───────── DERİNLEŞ tabakası — tek toggle ───────── */}
+        <LayerDivider label={t('report.layerDeeper')} />
+
+        <section className="mt-8">
           <button
             type="button"
-            onClick={() => setShowExplore((v) => !v)}
-            className="flex w-full items-center justify-between rounded-2xl border border-gold/30 bg-panel/60 px-5 py-4 text-left transition-colors hover:border-gold/60"
+            onClick={() => {
+              tap('medium');
+              setShowDeeper((v) => !v);
+            }}
+            aria-expanded={showDeeper}
+            className="card-surface flex w-full items-center justify-between rounded-2xl border border-gold/30 px-5 py-4 text-left transition-colors hover:border-gold/60"
           >
             <span>
               <span className="block text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
                 {report.birth.birthDate} · {report.birth.birthTime} · {report.birth.birthPlace}
               </span>
-              <span className="mt-1 block font-display text-xl text-ink">{t('report.exploreTitle')}</span>
+              <span className="mt-1 block font-display text-xl text-ink">{t('report.deeperHint')}</span>
             </span>
             <span className="shrink-0 rounded-full border border-gold/40 px-4 py-2 text-xs font-bold text-gold">
-              {showExplore ? t('report.exploreHide') : `${t('report.exploreBtn')} ↓`}
+              {showDeeper ? t('report.deeperHide') : `${t('report.deeperBtn')} ↓`}
             </span>
           </button>
 
-          {showExplore ? (
-            <div className="mt-4 space-y-6">
+          {showDeeper ? (
+            <div className="mt-6 space-y-6">
+              {/* AI'nın derin parçaları */}
+              {(report.sections.astrology || report.sections.humanDesign || report.sections.callToAction) ? (
+                <article className="card-surface rounded-3xl border border-panelBorder p-6 md:p-8">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">{t('report.narrative')}</p>
+                  <div className="mt-4 space-y-4">
+                    {report.sections.astrology ? (
+                      <p className="text-[15px] leading-relaxed text-ink">{report.sections.astrology}</p>
+                    ) : null}
+                    {report.sections.humanDesign ? (
+                      <p className="text-[15px] leading-relaxed text-ink">{report.sections.humanDesign}</p>
+                    ) : null}
+                    {report.sections.callToAction ? (
+                      <p className="text-[15px] leading-relaxed text-ink">{report.sections.callToAction}</p>
+                    ) : null}
+                  </div>
+                </article>
+              ) : null}
+
+              {report.sections.wisdoms.length > 0 ? (
+                <section className="card-surface rounded-2xl border border-success/30 bg-success/[0.04] p-5">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-success">{t('report.wisdoms')}</p>
+                  <ul className="mt-3 space-y-2">
+                    {report.sections.wisdoms.map((w, i) => (
+                      <li key={i} className="flex gap-3 text-[14px] leading-relaxed text-ink">
+                        <span className="text-success">✦</span>
+                        <span className="flex-1">{w}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
+
+              {report.sections.shadows.length > 0 ? (
+                <section className="card-surface rounded-2xl border border-cosmic/40 bg-cosmic/[0.06] p-5">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-cosmic">{t('report.shadows')}</p>
+                  <ul className="mt-3 space-y-2">
+                    {report.sections.shadows.map((s, i) => (
+                      <li key={i} className="flex gap-3 text-[14px] leading-relaxed text-ink">
+                        <span className="text-cosmic">◐</span>
+                        <span className="flex-1">{s}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
+
+              {/* Ağır görseller */}
               <div className="card-surface rounded-3xl border border-gold/30 p-4 md:p-6">
                 <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
                   {t('report.sky3d')}
@@ -226,26 +266,6 @@ export default function ReportPage() {
               </div>
             </div>
           ) : null}
-        </section>
-
-        {/* Detaylı sistem kartları — tıklanabilir */}
-        <section className="mt-14">
-          <h2 className="mb-4 text-center font-display text-2xl text-ink">
-            {t('report.concepts')}
-          </h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            {concepts.map((c) => (
-              <ConceptCard
-                key={c.kicker + c.title}
-                kicker={c.kicker}
-                title={c.title}
-                highlight={c.highlight}
-                short={c.short}
-                details={c.details}
-                accent={c.accent}
-              />
-            ))}
-          </div>
         </section>
 
         {/* İkili uyum CTA — büyük, görsel */}
@@ -305,6 +325,16 @@ export default function ReportPage() {
           </Link>
         </div>
       </div>
+    </div>
+  );
+}
+
+function LayerDivider({ label }: { label: string }) {
+  return (
+    <div className="mt-16 flex items-center gap-4">
+      <span className="h-px flex-1 bg-gradient-to-r from-transparent via-panelBorderStrong to-transparent" />
+      <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-faint">{label}</span>
+      <span className="h-px flex-1 bg-gradient-to-l from-transparent via-panelBorderStrong to-transparent" />
     </div>
   );
 }
