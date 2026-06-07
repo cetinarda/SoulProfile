@@ -52,25 +52,25 @@
   --bg: #faf6ee;
   --bg-elev-1: #f5efe2;
   --bg-elev-2: #ede5d3;
-  --panel: rgba(120, 95, 175, 0.04);
-  --panel-elev: rgba(120, 95, 175, 0.07);
-  --panel-border: rgba(60, 40, 100, 0.1);
-  --panel-border-strong: rgba(60, 40, 100, 0.18);
+  --panel: rgba(120, 95, 175, 0.05);
+  --panel-elev: rgba(120, 95, 175, 0.09);
+  --panel-border: rgba(60, 40, 100, 0.14);
+  --panel-border-strong: rgba(60, 40, 100, 0.24);
 
-  /* Ink */
-  --ink: #1f1936;
-  --muted: rgba(31, 25, 54, 0.7);
-  --faint: rgba(31, 25, 54, 0.42);
+  /* Ink — WCAG AA için kontrast yükseltildi */
+  --ink: #1c1733;
+  --muted: rgba(28, 23, 51, 0.78);
+  --faint: rgba(28, 23, 51, 0.58);
 
-  /* Accent — gün ışığında daha doygun */
-  --gold: #b88b1f;
-  --gold-soft: #d9a939;
-  --cosmic: #5b3ed1;
-  --cosmic-deep: #3a1f9e;
-  --nebula: #d44ba8;
-  --starlight: #4080bd;
-  --success: #2e9b6c;
-  --danger: #c53b3b;
+  /* Accent — gün ışığında daha doygun + AA kontrast */
+  --gold: #9a7218;
+  --gold-soft: #c89527;
+  --cosmic: #4a30b3;
+  --cosmic-deep: #2e1880;
+  --nebula: #b83a8e;
+  --starlight: #2e6da6;
+  --success: #1f7a52;
+  --danger: #a82828;
 
   /* Vellum — light için biraz daha doygun */
   --vellum-chemistry: #b8862f;
@@ -213,6 +213,16 @@ main {
   main { animation: none; }
   html { scroll-behavior: auto; }
   html, body { transition: none; }
+}
+
+/* Kullanıcının manuel hareket azaltma tercihi — Andy Bell tarzı global kill switch */
+[data-motion='reduced'] *,
+[data-motion='reduced'] *::before,
+[data-motion='reduced'] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
 }
 
 /* ============================================================
@@ -392,3 +402,7 @@ input, textarea {
 [data-theme='light'] ::-webkit-scrollbar-thumb {
   background: rgba(184, 139, 31, 0.25);
 }
+
+/* Scrollbar gizli — yatay tab nav için */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }

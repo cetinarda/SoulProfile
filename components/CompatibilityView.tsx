@@ -117,6 +117,10 @@ export function CompatibilityView({
     if (i === tab) return;
     tap('light');
     setTab(i);
+    const btn = tabBtnRefs.current[i];
+    if (btn && 'scrollIntoView' in btn) {
+      btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
   }
 
   const layerScores = useMemo(
@@ -169,11 +173,11 @@ export function CompatibilityView({
         </p>
       </header>
 
-      {/* Tab navigasyonu — shared-element pill (Crouton pattern) */}
+      {/* Tab navigasyonu — shared-element pill (Crouton pattern), mobile yatay scroll */}
       <nav
         ref={navRef}
         role="tablist"
-        className="relative mx-auto flex max-w-2xl flex-wrap items-center justify-center gap-1 rounded-full border border-panelBorder bg-panel/30 p-1.5 backdrop-blur-md"
+        className="scrollbar-hide relative mx-auto flex max-w-2xl flex-nowrap items-center justify-start gap-1 overflow-x-auto rounded-full border border-panelBorder bg-panel/30 p-1.5 backdrop-blur-md md:justify-center"
       >
         {pill ? (
           <span

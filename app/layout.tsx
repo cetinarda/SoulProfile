@@ -82,7 +82,7 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-// FOUC önleyici — HTML render olmadan önce data-theme set edilir
+// FOUC önleyici — HTML render olmadan önce data-theme + data-motion set edilir
 const themeInitScript = `
 (function(){
   try {
@@ -94,6 +94,16 @@ const themeInitScript = `
     document.documentElement.style.colorScheme = t;
   } catch(e) {
     document.documentElement.dataset.theme = 'dark';
+  }
+  try {
+    var m = localStorage.getItem('soulprofile.motion');
+    var r;
+    if (m === 'reduced') r = 'reduced';
+    else if (m === 'full') r = 'full';
+    else r = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full';
+    document.documentElement.dataset.motion = r;
+  } catch(e) {
+    document.documentElement.dataset.motion = 'full';
   }
 })();
 `;

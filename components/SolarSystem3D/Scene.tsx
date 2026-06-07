@@ -237,16 +237,21 @@ function FallbackEarth() {
 }
 
 export default function Scene({ chart, onSelect, selected }: Props) {
+  const isCoarse =
+    typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+  const starCount = isCoarse ? 1500 : 3000;
+
   return (
     <Canvas
       camera={{ position: [0, 5, 16], fov: 55 }}
-      gl={{ antialias: true, alpha: true }}
+      gl={{ antialias: !isCoarse, alpha: true, powerPreference: 'high-performance' }}
+      dpr={[1, 2]}
       style={{ background: 'transparent', touchAction: 'none' }}
     >
       <ambientLight intensity={0.35} />
       <directionalLight position={[10, 10, 5]} intensity={0.8} color="#fff" />
 
-      <Stars radius={120} depth={50} count={3000} factor={3} fade speed={0.5} />
+      <Stars radius={120} depth={50} count={starCount} factor={3} fade speed={0.5} />
 
       {/* Yörünge halkaları */}
       {PLANETS.map((p) =>

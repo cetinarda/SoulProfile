@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { PageLayout, Section, Bullet } from '@/components/PageLayout';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { MotionToggle } from '@/components/MotionToggle';
 import { useSoulStore } from '@/lib/store';
 
 export default function Settings() {
@@ -47,6 +48,16 @@ export default function Settings() {
         <p>Uygulamanın temasını seç. "Sistem" cihazının ayarına uyar.</p>
         <div className="mt-2">
           <ThemeToggle />
+        </div>
+      </Section>
+
+      <Section heading="Erişilebilirlik · Hareket">
+        <p>
+          Animasyonları azaltmak gözünü yorduğun an hayatını kolaylaştırır. Cihazın
+          ayarını okuyabiliriz; istersen elle de seçebilirsin.
+        </p>
+        <div className="mt-2">
+          <MotionToggle />
         </div>
       </Section>
 
