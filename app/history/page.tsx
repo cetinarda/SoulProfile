@@ -40,7 +40,7 @@ export default function HistoryPage() {
           </Link>
         </Section>
       ) : (
-        <div className="grid gap-3">
+        <div className="grid gap-4">
           {reports.map((r) => {
             const sun = r.chart.planets.find((p) => p.name === 'Sun');
             return (
@@ -51,16 +51,18 @@ export default function HistoryPage() {
                   setReport(r);
                   window.location.href = '/report';
                 }}
-                className="rounded-2xl border border-panelBorder bg-panel p-5 text-left transition-all hover:border-gold/50"
+                className="rounded-3xl border border-panelBorder bg-panel/30 p-7 md:p-8 text-left hover:border-gold/50 hover:bg-white/[0.03]"
               >
-                <div className="flex items-baseline justify-between gap-2">
+                <div className="flex items-baseline justify-between gap-3">
                   <h3 className="font-display text-2xl text-ink">{r.birth.fullName}</h3>
-                  <span className="text-xs text-faint">{new Date(r.savedAt).toLocaleDateString('tr-TR')}</span>
+                  <span className="text-[11px] uppercase tracking-[0.2em] text-faint">
+                    {new Date(r.savedAt).toLocaleDateString('tr-TR')}
+                  </span>
                 </div>
-                <p className="mt-1 text-sm text-gold">
+                <p className="mt-3 text-sm text-gold">
                   {r.origin.emoji} {r.origin.race}
                 </p>
-                <p className="mt-1 text-xs text-muted">
+                <p className="mt-2 text-[12px] leading-[1.85] text-muted">
                   {sun ? SIGN_NAMES_TR[sun.sign] : ''} Güneş ·{' '}
                   {SIGN_NAMES_TR[r.chart.ascendantSign]} Yükselen ·{' '}
                   {r.humanDesign.type} · Yaşam Yolu {r.numerology.lifePath}

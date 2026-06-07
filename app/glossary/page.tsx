@@ -29,17 +29,17 @@ export default function Glossary() {
       title="Kozmik sözlüğün"
       intro="Karnende karşına çıkan tüm kavramların açıklamaları. Yaşam Yolu Sayısından çakralara, Kuzey Düğümden biyoritme."
     >
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {FILTERS.map((f) => (
           <button
             key={f.key}
             type="button"
             onClick={() => setFilter(f.key)}
             className={clsx(
-              'rounded-full border px-4 py-2 text-sm transition-colors',
+              'rounded-full border px-5 py-2.5 text-[13px]',
               filter === f.key
-                ? 'border-gold bg-gold text-[#1a0a40] font-bold'
-                : 'border-panelBorder bg-panel text-muted hover:border-gold/40 hover:text-ink',
+                ? 'border-gold/60 bg-gold text-[#1a0a40] font-bold shadow-[0_8px_24px_-10px_rgba(245,208,97,0.45)]'
+                : 'border-panelBorder bg-panel/30 text-muted hover:border-gold/40 hover:bg-white/[0.03] hover:text-ink',
             )}
           >
             {f.label}
@@ -47,14 +47,14 @@ export default function Glossary() {
         ))}
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-5">
         {items.map((entry) => (
           <article
             key={entry.id}
-            className="rounded-2xl border border-panelBorder bg-panel p-5"
+            className="rounded-3xl border border-panelBorder bg-panel/30 p-7 md:p-8"
           >
-            <h3 className="text-base font-bold text-ink">{entry.term}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted">{entry.description}</p>
+            <h3 className="font-display text-xl text-ink">{entry.term}</h3>
+            <p className="mt-4 text-[14px] leading-[1.85] text-muted">{entry.description}</p>
           </article>
         ))}
       </div>

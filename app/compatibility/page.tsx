@@ -18,7 +18,7 @@ import { canRunCompat, recordCompat } from '@/lib/entitlements';
 import { PremiumGate } from '@/components/PremiumGate';
 
 const inputClass =
-  'w-full rounded-xl border border-panelBorder bg-panel px-4 py-3.5 text-ink placeholder:text-faint focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold';
+  'w-full rounded-2xl border border-panelBorder bg-panel/30 px-5 py-4 text-[15px] text-ink placeholder:text-faint backdrop-blur-sm focus:border-gold/70 focus:bg-panel/50 focus:outline-none';
 
 export default function CompatibilityPage() {
   const { t, locale } = useT();
@@ -147,10 +147,10 @@ export default function CompatibilityPage() {
         <p className="mt-3 text-base leading-relaxed text-muted">{t('compat.subtitle')}</p>
 
         {/* Kişi 1 — sen */}
-        <div className="mt-8 rounded-2xl border border-gold/30 bg-gold/[0.05] p-5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">{t('compat.person1')}</p>
-          <p className="mt-2 font-display text-2xl text-ink">{me.birth.fullName}</p>
-          <p className="mt-1 text-sm text-muted">
+        <div className="mt-12 rounded-3xl border border-gold/30 bg-gold/[0.04] p-6 md:p-7">
+          <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-gold">{t('compat.person1')}</p>
+          <p className="mt-3 font-display text-2xl text-ink">{me.birth.fullName}</p>
+          <p className="mt-3 text-[13px] leading-[1.75] text-muted">
             {mySun ? (locale === 'tr' ? SIGN_NAMES_TR[mySun.sign] : mySun.sign) : ''} {locale === 'tr' ? 'Güneş' : 'Sun'} ·{' '}
             {locale === 'tr' ? SIGN_NAMES_TR[me.chart.ascendantSign] : me.chart.ascendantSign} {locale === 'tr' ? 'Yükselen' : 'Rising'} ·{' '}
             {me.humanDesign.type} · {locale === 'tr' ? 'Yaşam Yolu' : 'Life Path'}{' '}
@@ -159,10 +159,10 @@ export default function CompatibilityPage() {
         </div>
 
         {/* Kişi 2 — form */}
-        <div className="mt-4 rounded-2xl border border-panelBorder bg-panel p-5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-cosmic">{t('compat.person2')}</p>
+        <div className="mt-5 rounded-3xl border border-panelBorder bg-panel/30 p-6 md:p-7">
+          <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-cosmic">{t('compat.person2')}</p>
 
-          <div className="mt-4 space-y-4">
+          <div className="mt-6 space-y-4">
             <input
               type="text"
               value={name}

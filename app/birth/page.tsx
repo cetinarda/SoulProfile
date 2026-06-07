@@ -262,7 +262,7 @@ export default function BirthPage() {
 }
 
 const inputClass =
-  'w-full rounded-xl border border-panelBorder bg-panel px-4 py-3.5 text-ink placeholder:text-faint focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold';
+  'w-full rounded-2xl border border-panelBorder bg-panel/30 px-5 py-4 text-[15px] text-ink placeholder:text-faint backdrop-blur-sm focus:border-gold/70 focus:bg-panel/50 focus:outline-none';
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (

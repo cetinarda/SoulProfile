@@ -18,7 +18,7 @@ export function TopBar() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-panelBorder bg-bg/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-panelBorder/60 bg-bg/55 backdrop-blur-xl">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-4">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-2xl text-gold">✦</span>

@@ -16,7 +16,7 @@ import type { BirthInput, GalacticReport } from '@/lib/types';
 import { useT } from '@/lib/i18n';
 
 const inputClass =
-  'w-full rounded-xl border border-panelBorder bg-panel px-4 py-3.5 text-ink placeholder:text-faint focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold';
+  'w-full rounded-2xl border border-panelBorder bg-panel/30 px-5 py-4 text-[15px] text-ink placeholder:text-faint backdrop-blur-sm focus:border-gold/70 focus:bg-panel/50 focus:outline-none';
 
 export default function MatchPageWrapper() {
   return (
@@ -194,12 +194,12 @@ function MatchPage() {
         </p>
 
         {/* Davet eden */}
-        <div className="mt-8 rounded-2xl border border-gold/30 bg-gold/[0.05] p-5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">
+        <div className="mt-12 rounded-3xl border border-gold/30 bg-gold/[0.04] p-6 md:p-7">
+          <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-gold">
             {locale === 'tr' ? 'SENİ DAVET EDEN' : 'WHO INVITED YOU'}
           </p>
-          <p className="mt-2 font-display text-2xl text-ink">{inviterBirth?.fullName}</p>
-          <p className="mt-1 text-sm text-muted">
+          <p className="mt-3 font-display text-2xl text-ink">{inviterBirth?.fullName}</p>
+          <p className="mt-3 text-[13px] leading-[1.75] text-muted">
             {inviterBirth?.birthDate} · {inviterBirth?.birthPlace}
           </p>
         </div>
