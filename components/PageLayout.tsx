@@ -28,7 +28,7 @@ export function PageLayout({ kicker, title, intro, children, variant = 'cosmic' 
 
 export function Section({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-3xl border border-panelBorder bg-panel/30 p-7 md:p-8">
+    <section className="card-surface rounded-3xl border border-panelBorder p-7 md:p-8">
       <h2 className="mb-5 text-[11px] font-bold uppercase tracking-[0.3em] text-gold">{heading}</h2>
       <div className="space-y-4 text-[15px] leading-[1.85] text-ink">{children}</div>
     </section>

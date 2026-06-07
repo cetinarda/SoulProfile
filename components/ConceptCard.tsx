@@ -20,7 +20,7 @@ export function ConceptCard({ kicker, title, highlight, short, details, accent =
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="group rounded-3xl border border-panelBorder bg-panel/30 p-6 md:p-7 text-left hover:border-gold/50 hover:bg-white/[0.03]"
+        className="card-surface group rounded-3xl border border-panelBorder p-6 md:p-7 text-left hover:border-gold/50 hover:bg-white/[0.03]"
       >
         <p className="text-[10px] font-bold uppercase tracking-[0.35em]" style={{ color: accent }}>
           {kicker}
@@ -69,7 +69,7 @@ export function ConceptCard({ kicker, title, highlight, short, details, accent =
             <div className="mt-8 space-y-6">
               <p className="text-[15px] leading-[1.85] text-ink">{short}</p>
               {details.map((d, i) => (
-                <section key={i} className="rounded-2xl border border-panelBorder bg-panel/30 p-5 md:p-6">
+                <section key={i} className="card-surface-elev rounded-2xl border border-panelBorder p-5 md:p-6">
                   <h3 className={clsx('text-[11px] font-bold uppercase tracking-[0.3em]')} style={{ color: accent }}>
                     {d.heading}
                   </h3>

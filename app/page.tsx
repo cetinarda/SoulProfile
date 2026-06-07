@@ -67,7 +67,7 @@ export default function Welcome() {
             </Link>
             <Link
               href="/birth"
-              className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-bg/30 px-7 py-5 text-sm font-bold text-ink backdrop-blur-md hover:border-gold/70 hover:bg-gold/[0.04]"
+              className="card-surface inline-flex items-center gap-2 rounded-full border border-gold/30 px-7 py-5 text-sm font-bold text-ink hover:border-gold/70 hover:bg-gold/[0.04]"
             >
               <span>✦</span> {t('home.cta.secondary')}
             </Link>
@@ -87,7 +87,7 @@ export default function Welcome() {
           {steps.map((s) => (
             <div
               key={s.n}
-              className="relative rounded-3xl border border-panelBorder bg-panel/60 p-7 backdrop-blur transition-all hover:border-gold/40"
+              className="card-surface relative rounded-3xl border border-panelBorder p-7 transition-all hover:border-gold/40"
             >
               <div className="mb-3 flex items-center gap-3">
                 <span className="font-display text-3xl text-gold/40">{s.n}</span>
@@ -171,7 +171,7 @@ export default function Welcome() {
           ].map((a) => (
             <div
               key={a.key}
-              className="rounded-3xl border bg-panel/40 p-6"
+              className="card-surface rounded-3xl border p-6"
               style={{ borderColor: `${a.accent}40` }}
             >
               <div className="text-3xl">{a.glyph}</div>
@@ -193,7 +193,7 @@ export default function Welcome() {
           {systems.map((s) => (
             <div
               key={s.title}
-              className="rounded-2xl border border-panelBorder bg-panel/40 p-4 backdrop-blur transition-colors hover:border-gold/40"
+              className="card-surface rounded-2xl border border-panelBorder p-4 transition-colors hover:border-gold/40"
             >
               <div className="flex items-start gap-3">
                 <span className="text-2xl">{s.emoji}</span>

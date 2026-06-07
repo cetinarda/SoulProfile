@@ -51,7 +51,7 @@ export default function HistoryPage() {
                   setReport(r);
                   window.location.href = '/report';
                 }}
-                className="rounded-3xl border border-panelBorder bg-panel/30 p-7 md:p-8 text-left hover:border-gold/50 hover:bg-white/[0.03]"
+                className="card-surface rounded-3xl border border-panelBorder p-7 md:p-8 text-left hover:border-gold/50 hover:bg-white/[0.03]"
               >
                 <div className="flex items-baseline justify-between gap-3">
                   <h3 className="font-display text-2xl text-ink">{r.birth.fullName}</h3>

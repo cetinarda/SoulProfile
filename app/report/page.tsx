@@ -204,19 +204,19 @@ export default function ReportPage() {
 
           {showExplore ? (
             <div className="mt-4 space-y-6">
-              <div className="rounded-3xl border border-gold/30 bg-panel/60 p-4 backdrop-blur md:p-6">
+              <div className="card-surface rounded-3xl border border-gold/30 p-4 md:p-6">
                 <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
                   {t('report.sky3d')}
                 </p>
                 <SolarSystem3D chart={report.chart} />
               </div>
-              <div className="rounded-3xl border border-panelBorder bg-panel/60 p-4 backdrop-blur md:p-6">
+              <div className="card-surface rounded-3xl border border-panelBorder p-4 md:p-6">
                 <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
                   {t('report.tree')}
                 </p>
                 <StarTreeOfLife birthISO={birthISO} />
               </div>
-              <div className="rounded-3xl border border-panelBorder bg-panel/60 p-4 backdrop-blur md:p-6">
+              <div className="card-surface rounded-3xl border border-panelBorder p-4 md:p-6">
                 <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
                   {t('report.wheel')}
                 </p>

@@ -51,7 +51,7 @@ export default function Glossary() {
         {items.map((entry) => (
           <article
             key={entry.id}
-            className="rounded-3xl border border-panelBorder bg-panel/30 p-7 md:p-8"
+            className="card-surface rounded-3xl border border-panelBorder p-7 md:p-8"
           >
             <h3 className="font-display text-xl text-ink">{entry.term}</h3>
             <p className="mt-4 text-[14px] leading-[1.85] text-muted">{entry.description}</p>

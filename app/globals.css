@@ -263,6 +263,47 @@ main {
     0 30px 80px -30px rgba(192, 165, 220, 0.5);
 }
 
+/* ============================================================
+   CARD SURFACES — Liquid Glass disiplini (Apple 2024+)
+   İçerik kartları OPAK. Blur sadece nav + transient overlay'de.
+   Okunabilirlik > efekt.
+   ============================================================ */
+
+.card-surface {
+  background-color: var(--bg-elev-1);
+}
+
+.card-surface-elev {
+  background-color: var(--bg-elev-2);
+}
+
+.card-surface-soft {
+  background-color: var(--bg-elev-1);
+}
+
+[data-theme='light'] .card-surface-soft {
+  background-color: rgba(255, 255, 255, 0.55);
+}
+
+.input-surface {
+  background-color: var(--bg-elev-1);
+  transition:
+    background-color 200ms ease-out,
+    border-color 200ms ease-out,
+    box-shadow 200ms ease-out;
+}
+
+.input-surface:focus,
+.input-surface:focus-visible {
+  background-color: var(--bg-elev-2);
+  box-shadow: 0 0 0 4px rgba(245, 208, 97, 0.14);
+}
+
+[data-theme='light'] .input-surface:focus,
+[data-theme='light'] .input-surface:focus-visible {
+  box-shadow: 0 0 0 4px rgba(184, 139, 31, 0.14);
+}
+
 /* Welcome / hero card gradient backgrounds — theme-aware */
 .surface-warm-grad {
   background: linear-gradient(to bottom right, #15043a, #1a0a40, #2a0a5a);

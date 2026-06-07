@@ -16,7 +16,7 @@ import type { BirthInput, GalacticReport } from '@/lib/types';
 import { useT } from '@/lib/i18n';
 
 const inputClass =
-  'w-full rounded-2xl border border-panelBorder bg-panel/30 px-5 py-4 text-[15px] text-ink placeholder:text-faint backdrop-blur-sm focus:border-gold/70 focus:bg-panel/50 focus:outline-none';
+  'input-surface w-full rounded-2xl border border-panelBorder px-5 py-4 text-[15px] text-ink placeholder:text-faint focus:border-gold/70 focus:outline-none';
 
 export default function MatchPageWrapper() {
   return (

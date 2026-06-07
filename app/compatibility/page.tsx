@@ -18,7 +18,7 @@ import { canRunCompat, recordCompat } from '@/lib/entitlements';
 import { PremiumGate } from '@/components/PremiumGate';
 
 const inputClass =
-  'w-full rounded-2xl border border-panelBorder bg-panel/30 px-5 py-4 text-[15px] text-ink placeholder:text-faint backdrop-blur-sm focus:border-gold/70 focus:bg-panel/50 focus:outline-none';
+  'input-surface w-full rounded-2xl border border-panelBorder px-5 py-4 text-[15px] text-ink placeholder:text-faint focus:border-gold/70 focus:outline-none';
 
 export default function CompatibilityPage() {
   const { t, locale } = useT();
@@ -159,7 +159,7 @@ export default function CompatibilityPage() {
         </div>
 
         {/* Kişi 2 — form */}
-        <div className="mt-5 rounded-3xl border border-panelBorder bg-panel/30 p-6 md:p-7">
+        <div className="card-surface mt-5 rounded-3xl border border-panelBorder p-6 md:p-7">
           <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-cosmic">{t('compat.person2')}</p>
 
           <div className="mt-6 space-y-4">

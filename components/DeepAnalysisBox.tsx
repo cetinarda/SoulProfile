@@ -21,7 +21,7 @@ type Props = {
 
 function Section({ title, children, accent }: { title: string; children: React.ReactNode; accent: string }) {
   return (
-    <section className="rounded-2xl border bg-bg/30 p-5" style={{ borderColor: `${accent}40` }}>
+    <section className="card-surface rounded-2xl border p-5" style={{ borderColor: `${accent}40` }}>
       <h4 className="font-display text-xl text-ink" style={{ borderLeft: `3px solid ${accent}`, paddingLeft: '0.6rem' }}>
         {title}
       </h4>
@@ -242,13 +242,13 @@ export function DeepAnalysisBox({ a, b, result }: Props) {
       </Section>
 
       <Section title={L === 'tr' ? 'Karşılıklı Öğretim' : 'Reciprocal Teaching'} accent="#C9A0A6">
-        <div className="rounded-xl border border-white/10 bg-bg/30 p-4">
+        <div className="card-surface-elev rounded-xl border border-panelBorder p-4">
           <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">
             {result.nameA} → {result.nameB}
           </p>
           <p className="mt-2">{analysis.whatEachTeaches.aTeachesB}</p>
         </div>
-        <div className="rounded-xl border border-white/10 bg-bg/30 p-4">
+        <div className="card-surface-elev rounded-xl border border-panelBorder p-4">
           <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">
             {result.nameB} → {result.nameA}
           </p>

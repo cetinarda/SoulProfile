@@ -165,7 +165,7 @@ export function CompatibilityView({
       {/* TAB 1 — Beş Pencere: 4 katman skoru + tek pusula */}
       {tab === 1 ? (
         <section className="space-y-5">
-          <div className="grid grid-cols-2 gap-y-8 gap-x-4 rounded-3xl border border-panelBorder bg-panel/30 p-8 md:grid-cols-4 md:p-10">
+          <div className="card-surface grid grid-cols-2 gap-y-8 gap-x-4 rounded-3xl border border-panelBorder p-8 md:grid-cols-4 md:p-10">
             {LAYER.map((layer, i) => (
               <button
                 key={layer.key}
@@ -181,7 +181,7 @@ export function CompatibilityView({
             ))}
           </div>
 
-          <article className="rounded-2xl border border-panelBorder bg-panel/40 p-5">
+          <article className="card-surface rounded-2xl border border-panelBorder p-5">
             <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">
               {locale === 'tr' ? 'BİRLİKTE' : 'TOGETHER'}
             </p>
@@ -203,7 +203,7 @@ export function CompatibilityView({
       {/* TAB 2 — Aynalar: birbirine ne yansıttıklarınız */}
       {tab === 2 ? (
         <section className="space-y-6">
-          <div className="rounded-3xl border border-panelBorder bg-panel/30 p-6 md:p-7">
+          <div className="card-surface rounded-3xl border border-panelBorder p-6 md:p-7">
             <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">
               {locale === 'tr' ? 'BİRBİRİNİZE NE YANSITIYORSUNUZ' : 'WHAT YOU REFLECT IN EACH OTHER'}
             </p>
@@ -216,14 +216,14 @@ export function CompatibilityView({
 
           <div className="space-y-4">
             {mirrors.length === 0 ? (
-              <p className="rounded-2xl border border-panelBorder bg-panel/30 p-6 text-sm leading-[1.75] text-muted">
+              <p className="card-surface rounded-2xl border border-panelBorder p-6 text-sm leading-[1.75] text-muted">
                 {locale === 'tr'
                   ? 'Belirgin bir koşullama yok — ikiniz de bağımsız enerji alanlarında dans ediyorsunuz.'
                   : 'No prominent conditioning — you both dance in independent energy fields.'}
               </p>
             ) : (
               mirrors.map((m, i) => (
-                <div key={i} className="rounded-2xl border border-panelBorder bg-panel/30 p-5 md:p-6">
+                <div key={i} className="card-surface rounded-2xl border border-panelBorder p-5 md:p-6">
                   <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">{m.centerTr}</p>
                   <p className="mt-2 text-[12px] text-muted">{m.statusLabel}</p>
                   <p className="mt-4 text-[14px] leading-[1.75] text-ink">{m.meaning}</p>
@@ -258,7 +258,7 @@ export function CompatibilityView({
             </p>
             <div className="mt-6 grid gap-5 md:grid-cols-3">
               {compass.cards.map((c) => (
-                <div key={c.position} className="rounded-2xl border border-white/10 bg-bg/40 p-6 text-center">
+                <div key={c.position} className="card-surface-elev rounded-2xl border border-panelBorder p-6 text-center">
                   <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: '#C7B8E8' }}>
                     {locale === 'tr' ? c.positionTr : c.positionEn}
                   </p>
@@ -320,7 +320,7 @@ export function CompatibilityView({
       ) : null}
 
       {/* Derinleş — opsiyonel detay */}
-      <details className="rounded-2xl border border-panelBorder bg-panel/30 px-4 py-3 [&_summary::-webkit-details-marker]:hidden">
+      <details className="card-surface rounded-2xl border border-panelBorder px-4 py-3 [&_summary::-webkit-details-marker]:hidden">
         <summary className="flex cursor-pointer items-center justify-between text-[12px] font-bold text-muted">
           <span>{locale === 'tr' ? 'Derinleş — tam motor çıktısı' : 'Go deeper — full engine output'}</span>
           <span className="text-gold">↓</span>
@@ -382,7 +382,7 @@ function PersonCard({
 }) {
   return (
     <div
-      className="rounded-3xl border bg-panel/40 p-6 text-center"
+      className="card-surface rounded-3xl border p-6 text-center"
       style={{ borderColor: `${accent}40` }}
     >
       <p className="text-[10px] font-bold uppercase tracking-[0.4em]" style={{ color: accent }}>
