@@ -42,23 +42,24 @@ export default function Welcome() {
     <div className="relative">
       <CosmicBackground variant="galaxy" />
 
-      {/* HERO */}
-      <section className="mx-auto max-w-5xl px-6 pb-10 pt-16 md:pt-24">
+      {/* HERO — uzayda asılı sakin alan */}
+      <section className="mx-auto max-w-5xl px-6 pb-16 pt-20 md:pt-32">
         <div className="text-center">
-          <p className="text-[11px] font-bold uppercase tracking-[0.5em] text-gold">
+          <p className="text-[10px] font-bold uppercase tracking-[0.6em] text-gold/80">
             {t('home.kicker')}
           </p>
-          <h1 className="mx-auto mt-5 max-w-3xl font-display text-5xl leading-[1.05] text-ink md:text-7xl">
+          <h1 className="mx-auto mt-8 max-w-3xl font-display text-4xl leading-[1.1] text-ink md:text-6xl">
             {t('home.title1')} <span className="text-gold">{t('home.title2')}</span>
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted md:text-lg">
+          <p className="mx-auto mt-7 max-w-xl text-[15px] leading-[1.75] text-muted md:text-[17px]">
             {t('home.subtitle')}
           </p>
 
-          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/compatibility"
-              className="group inline-flex items-center gap-3 rounded-full bg-gold px-10 py-5 text-base font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-105"
+              className="group inline-flex items-center gap-3 rounded-full bg-gold px-10 py-5 text-base font-bold tracking-wide text-[#1a0a40] hover:scale-[1.03]"
+              style={{ boxShadow: '0 20px 60px -20px rgba(245, 208, 97, 0.55)' }}
             >
               <span className="text-xl">⚯</span>
               {t('home.cta.primary')}
@@ -66,18 +67,18 @@ export default function Welcome() {
             </Link>
             <Link
               href="/birth"
-              className="inline-flex items-center gap-2 rounded-full border-2 border-gold/40 bg-bg/40 px-7 py-5 text-sm font-bold text-ink backdrop-blur transition-colors hover:border-gold hover:bg-gold/[0.05]"
+              className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-bg/30 px-7 py-5 text-sm font-bold text-ink backdrop-blur-md hover:border-gold/70 hover:bg-gold/[0.04]"
             >
               <span>✦</span> {t('home.cta.secondary')}
             </Link>
           </div>
 
-          <p className="mt-4 text-xs text-faint">{t('home.cta.note')}</p>
+          <p className="mt-6 text-[11px] leading-relaxed text-faint">{t('home.cta.note')}</p>
         </div>
       </section>
 
       {/* NASIL ÇALIŞIR */}
-      <section className="mx-auto max-w-5xl px-6 py-14">
+      <section className="mx-auto max-w-5xl px-6 py-20">
         <div className="mb-8 text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold">{t('home.how.kicker')}</p>
           <h2 className="mt-2 font-display text-3xl text-ink md:text-4xl">{t('home.how.title')}</h2>
@@ -100,7 +101,7 @@ export default function Welcome() {
       </section>
 
       {/* İKİ ANA YOL */}
-      <section className="mx-auto max-w-5xl px-6 py-14">
+      <section className="mx-auto max-w-5xl px-6 py-20">
         <div className="mb-8 text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold">{t('home.paths.kicker')}</p>
           <h2 className="mt-2 font-display text-3xl text-ink md:text-4xl">{t('home.paths.title')}</h2>
@@ -157,7 +158,7 @@ export default function Welcome() {
       </section>
 
       {/* 3 SEMBOLİK ARKETİP — twin flame yerine */}
-      <section className="mx-auto max-w-5xl px-6 py-14">
+      <section className="mx-auto max-w-5xl px-6 py-20">
         <div className="mb-8 text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold">{t('home.archetypes.kicker')}</p>
           <h2 className="mt-2 font-display text-3xl text-ink md:text-4xl">{t('home.archetypes.title')}</h2>
@@ -183,7 +184,7 @@ export default function Welcome() {
       </section>
 
       {/* 9 SİSTEM */}
-      <section className="mx-auto max-w-5xl px-6 py-14">
+      <section className="mx-auto max-w-5xl px-6 py-20">
         <div className="mb-8 text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold">{t('home.systems.kicker')}</p>
           <h2 className="mt-2 font-display text-3xl text-ink md:text-4xl">{t('home.systems.title')}</h2>
@@ -207,7 +208,7 @@ export default function Welcome() {
       </section>
 
       {/* FINAL CTA */}
-      <section className="mx-auto max-w-5xl px-6 py-14">
+      <section className="mx-auto max-w-5xl px-6 py-20">
         <div className="grid items-center gap-10 md:grid-cols-[1fr_0.85fr]">
           <div className="relative mx-auto aspect-[9/16] w-full max-w-xs overflow-hidden rounded-[28px] border border-panelBorder bg-[#0a0524] p-6 card-glow">
             <div className="absolute inset-0 bg-galaxy opacity-90" />

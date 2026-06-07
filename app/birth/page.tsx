@@ -108,7 +108,7 @@ export default function BirthPage() {
   }
 
   return (
-    <div className="relative min-h-[80vh] py-14 md:py-20">
+    <div className="relative min-h-[80vh] py-20 md:py-28">
       {loading ? <CosmicLoader /> : null}
       <CosmicBackground variant="aurora" />
       <div className="mx-auto max-w-xl px-6">

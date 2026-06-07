@@ -121,20 +121,23 @@ export function CompatibilityView({
         </p>
       </header>
 
-      {/* Tab navigasyonu */}
-      <nav className="flex flex-wrap items-center justify-center gap-2 rounded-full border border-panelBorder bg-panel/40 p-1">
+      {/* Tab navigasyonu — sakin pasif/aktif */}
+      <nav className="mx-auto flex max-w-2xl flex-wrap items-center justify-center gap-1 rounded-full border border-panelBorder bg-panel/30 p-1.5 backdrop-blur-md">
         {TAB_LABEL[locale].map((label, i) => (
           <button
             key={label}
             type="button"
             onClick={() => setTab(i as Tab)}
             className={clsx(
-              'rounded-full px-4 py-2 text-[12px] font-bold tracking-wide transition-colors',
-              tab === i ? 'bg-gold text-[#1a0a40]' : 'text-muted hover:text-ink',
+              'rounded-full px-4 py-2.5 text-[12px] font-bold tracking-wide',
+              tab === i
+                ? 'bg-gold text-[#1a0a40] shadow-[0_8px_24px_-8px_rgba(245,208,97,0.4)]'
+                : 'text-muted hover:bg-white/5 hover:text-ink',
             )}
             aria-pressed={tab === i}
           >
-            <span className="opacity-60">{(i + 1).toString().padStart(2, '0')}.</span> {label}
+            <span className="opacity-50">{(i + 1).toString().padStart(2, '0')}</span>
+            <span className="ml-1.5">{label}</span>
           </button>
         ))}
       </nav>
@@ -162,7 +165,7 @@ export function CompatibilityView({
       {/* TAB 1 — Beş Pencere: 4 katman skoru + tek pusula */}
       {tab === 1 ? (
         <section className="space-y-5">
-          <div className="grid grid-cols-2 gap-4 rounded-3xl border border-panelBorder bg-panel/40 p-6 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-y-8 gap-x-4 rounded-3xl border border-panelBorder bg-panel/30 p-8 md:grid-cols-4 md:p-10">
             {LAYER.map((layer, i) => (
               <button
                 key={layer.key}
