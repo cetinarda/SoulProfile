@@ -7,6 +7,7 @@ import type { CompatibilityResult } from './index';
 import { sanitizeName, delim } from '../narrative/sanitize';
 import { getApiBase } from '../api-base';
 import { getSupabase } from '../supabase';
+import { fetchWithTimeout } from '../fetch-timeout';
 
 export type DeepAnalysis = {
   generatedAt: string;
@@ -313,14 +314,18 @@ export async function generateDeepAnalysis(
   }
 
   try {
-    const res = await fetch(`${getApiBase()}/api/ai/deep-analysis`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    const res = await fetchWithTimeout(
+      `${getApiBase()}/api/ai/deep-analysis`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ a, b, r, locale }),
       },
-      body: JSON.stringify({ a, b, r, locale }),
-    });
+      20_000, // Premium derin analiz daha uzun sürüyor
+    );
     if (res.status === 401 || res.status === 403) {
       // Premium gerekiyor — UI tarafında PremiumGate açılır; fallback fallback
       return deepFallback(a, b, r, locale);

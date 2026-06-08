@@ -3,6 +3,7 @@ import { SIGN_NAMES_TR } from '../content/astrology-content';
 import { LIFE_PATH_MEANINGS, PERSONAL_YEAR_MEANINGS } from '../content/numerology-content';
 import { NORTH_NODE_GUIDE, SOUTH_NODE_RELEASE } from '../content/astrology-content';
 import { getApiBase } from '../api-base';
+import { fetchWithTimeout } from '../fetch-timeout';
 
 function fallbackSections(
   report: Omit<GalacticReport, 'narrative' | 'summary' | 'sections'>,
@@ -97,7 +98,7 @@ export async function generateNarrative(
   const summary = buildSummary(report);
 
   try {
-    const res = await fetch(`${getApiBase()}/api/ai/narrative`, {
+    const res = await fetchWithTimeout(`${getApiBase()}/api/ai/narrative`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ report, locale }),

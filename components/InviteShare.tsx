@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { inviteUrl } from '@/lib/compatibility/invite';
 import { useT } from '@/lib/i18n';
 import type { BirthInput } from '@/lib/types';
+import { shareInvite, copyToClipboard } from '@/lib/native/share';
 
 export function InviteShare({ birth }: { birth: BirthInput }) {
   const { locale } = useT();
@@ -22,33 +23,28 @@ export function InviteShare({ birth }: { birth: BirthInput }) {
   }, [birth]);
 
   async function copy() {
-    try {
-      await navigator.clipboard.writeText(url);
+    const ok = await copyToClipboard(url);
+    if (ok) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // sessizce başarısız
     }
   }
 
   async function share() {
     setWorking(true);
     try {
-      const text =
-        locale === 'tr'
-          ? `Senin ile uyumumu görelim — ${url}`
-          : `Let's see our compatibility — ${url}`;
-      if (typeof navigator !== 'undefined' && navigator.share) {
-        await navigator.share({
-          title: locale === 'tr' ? 'İkili Kozmik Uyum' : 'Dual Cosmic Compatibility',
-          text,
-          url,
-        });
-      } else {
-        await copy();
+      const result = await shareInvite({
+        title: locale === 'tr' ? 'İkili Kozmik Uyum' : 'Dual Cosmic Compatibility',
+        text:
+          locale === 'tr'
+            ? `Senin ile uyumumu görelim — ${url}`
+            : `Let's see our compatibility — ${url}`,
+        url,
+      });
+      if (result === 'clipboard') {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
       }
-    } catch {
-      // kullanıcı iptal etti
     } finally {
       setWorking(false);
     }

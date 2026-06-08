@@ -3,6 +3,7 @@ import type { CompatibilityResult } from './index';
 import { SIGN_NAMES_TR } from '../content/astrology-content';
 import { sanitizeName, delim } from '../narrative/sanitize';
 import { getApiBase } from '../api-base';
+import { fetchWithTimeout } from '../fetch-timeout';
 
 export type CompatNarrative = {
   overview: string;
@@ -171,7 +172,7 @@ export async function generateCompatNarrative(
   locale: 'tr' | 'en' = 'tr',
 ): Promise<CompatNarrative> {
   try {
-    const res = await fetch(`${getApiBase()}/api/ai/compat-narrative`, {
+    const res = await fetchWithTimeout(`${getApiBase()}/api/ai/compat-narrative`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ a, b, r, locale }),
