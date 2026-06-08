@@ -10,8 +10,11 @@ const config: CapacitorConfig = {
   },
   ios: {
     contentInset: 'always',
-    backgroundColor: '#05060f',
-    limitsNavigationsToAppBoundDomains: true,
+    backgroundColor: '#07091a',
+    // App-Bound Domains'i kapatıyoruz — Info.plist'te WKAppBoundDomains
+    // tam yapılandırıldıktan sonra true'ya çekilir. Yanlış kombinasyon
+    // WebView navigation'ı tamamen bloke ediyor (Link/onClick çalışmaz).
+    limitsNavigationsToAppBoundDomains: false,
     scheme: 'SoulProfile',
     preferredContentMode: 'mobile',
     scrollEnabled: true,

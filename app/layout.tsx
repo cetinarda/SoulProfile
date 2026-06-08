@@ -83,14 +83,13 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-// FOUC önleyici — HTML render olmadan önce data-theme + data-motion set edilir
+// FOUC önleyici — HTML render olmadan önce data-theme + data-motion set edilir.
+// Default: dark. Kullanıcı /settings'te açıkça 'light' seçerse override.
 const themeInitScript = `
 (function(){
   try {
     var t = localStorage.getItem('soulprofile.theme');
-    if (t !== 'light' && t !== 'dark') {
-      t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-    }
+    if (t !== 'light' && t !== 'dark') t = 'dark';
     document.documentElement.dataset.theme = t;
     document.documentElement.style.colorScheme = t;
   } catch(e) {

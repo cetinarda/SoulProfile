@@ -6,9 +6,8 @@ import { initTheme, useThemeStore, type Theme } from '@/lib/theme/store';
 import { useT } from '@/lib/i18n';
 
 const OPTIONS: { value: Theme; tr: string; en: string; glyph: string }[] = [
-  { value: 'auto',  tr: 'Sistem', en: 'Auto',  glyph: '◐' },
-  { value: 'light', tr: 'Aydınlık', en: 'Light', glyph: '☀' },
   { value: 'dark',  tr: 'Karanlık', en: 'Dark',  glyph: '☾' },
+  { value: 'light', tr: 'Aydınlık', en: 'Light', glyph: '☀' },
 ];
 
 export function ThemeToggle({ compact = false }: { compact?: boolean }) {

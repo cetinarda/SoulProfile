@@ -3,69 +3,43 @@
 import { create } from 'zustand';
 import { syncStatusBar } from '@/lib/native/status-bar';
 
-export type Theme = 'auto' | 'light' | 'dark';
+export type Theme = 'light' | 'dark';
 
 const STORAGE_KEY = 'soulprofile.theme';
+const DEFAULT_THEME: Theme = 'dark';
 
 function readStored(): Theme {
-  if (typeof localStorage === 'undefined') return 'auto';
+  if (typeof localStorage === 'undefined') return DEFAULT_THEME;
   const v = localStorage.getItem(STORAGE_KEY);
-  return v === 'light' || v === 'dark' || v === 'auto' ? v : 'auto';
-}
-
-function systemPref(): 'light' | 'dark' {
-  if (typeof window === 'undefined') return 'dark';
-  return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-}
-
-function effective(theme: Theme): 'light' | 'dark' {
-  return theme === 'auto' ? systemPref() : theme;
+  return v === 'light' || v === 'dark' ? v : DEFAULT_THEME;
 }
 
 type State = {
   theme: Theme;
-  resolved: 'light' | 'dark';
+  resolved: Theme;
   setTheme: (t: Theme) => void;
 };
 
 export const useThemeStore = create<State>((set) => ({
-  theme: 'auto',
-  resolved: 'dark',
+  theme: DEFAULT_THEME,
+  resolved: DEFAULT_THEME,
   setTheme: (theme) => {
     if (typeof localStorage !== 'undefined') localStorage.setItem(STORAGE_KEY, theme);
-    const resolved = effective(theme);
     if (typeof document !== 'undefined') {
-      document.documentElement.dataset.theme = resolved;
-      document.documentElement.style.colorScheme = resolved;
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
     }
-    syncStatusBar(resolved);
-    set({ theme, resolved });
+    syncStatusBar(theme);
+    set({ theme, resolved: theme });
   },
 }));
 
-/** İlk yüklemede çağrılır */
 export function initTheme() {
   const stored = readStored();
-  const resolved = effective(stored);
   if (typeof document !== 'undefined') {
-    document.documentElement.dataset.theme = resolved;
-    document.documentElement.style.colorScheme = resolved;
+    document.documentElement.dataset.theme = stored;
+    document.documentElement.style.colorScheme = stored;
   }
-  useThemeStore.setState({ theme: stored, resolved });
-  syncStatusBar(resolved);
-
-  // System tema değişikliği auto modda canlı yansır
-  if (typeof window !== 'undefined' && window.matchMedia) {
-    const mq = window.matchMedia('(prefers-color-scheme: light)');
-    mq.addEventListener('change', () => {
-      const s = useThemeStore.getState();
-      if (s.theme === 'auto') {
-        const newResolved = systemPref();
-        document.documentElement.dataset.theme = newResolved;
-        document.documentElement.style.colorScheme = newResolved;
-        syncStatusBar(newResolved);
-        useThemeStore.setState({ resolved: newResolved });
-      }
-    });
-  }
+  useThemeStore.setState({ theme: stored, resolved: stored });
+  syncStatusBar(stored);
 }
