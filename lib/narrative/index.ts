@@ -1,14 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk';
 import type { GalacticReport, Mission, NarrativeSections } from '../types';
-import { buildSystemPrompt, buildUserPrompt } from './prompt';
-import { isStructured, parseNarrative } from './parse';
 import { SIGN_NAMES_TR } from '../content/astrology-content';
 import { LIFE_PATH_MEANINGS, PERSONAL_YEAR_MEANINGS } from '../content/numerology-content';
 import { NORTH_NODE_GUIDE, SOUTH_NODE_RELEASE } from '../content/astrology-content';
-
-function getAnthropicKey(): string | undefined {
-  return process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY;
-}
+import { getApiBase } from '../api-base';
 
 function fallbackSections(
   report: Omit<GalacticReport, 'narrative' | 'summary' | 'sections'>,
@@ -101,30 +95,29 @@ export async function generateNarrative(
   locale: 'tr' | 'en' = 'tr',
 ): Promise<{ narrative: string; summary: string; sections: NarrativeSections }> {
   const summary = buildSummary(report);
-  const key = getAnthropicKey();
-
-  if (!key) {
-    const sections = fallbackSections(report, locale);
-    return { narrative: sectionsToNarrative(sections), summary, sections };
-  }
 
   try {
-    const client = new Anthropic({ apiKey: key, dangerouslyAllowBrowser: true });
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 2400,
-      system: buildSystemPrompt(locale),
-      messages: [{ role: 'user', content: buildUserPrompt(report) }],
+    const res = await fetch(`${getApiBase()}/api/ai/narrative`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ report, locale }),
     });
-    const text = message.content
-      .map((b) => (b.type === 'text' ? b.text : ''))
-      .join('\n')
-      .trim();
-    const parsed = parseNarrative(text);
-    const sections = isStructured(parsed) ? parsed : fallbackSections(report, locale);
-    return { narrative: sectionsToNarrative(sections), summary, sections };
+    if (!res.ok) {
+      const sections = fallbackSections(report, locale);
+      return { narrative: sectionsToNarrative(sections), summary, sections };
+    }
+    const data = (await res.json()) as { sections?: NarrativeSections; useFallback?: boolean };
+    if (data.useFallback || !data.sections) {
+      const sections = fallbackSections(report, locale);
+      return { narrative: sectionsToNarrative(sections), summary, sections };
+    }
+    return {
+      narrative: sectionsToNarrative(data.sections),
+      summary,
+      sections: data.sections,
+    };
   } catch (err) {
-    console.warn('[narrative] Claude API failed, using fallback', err);
+    console.warn('[narrative] API failed, using fallback', err);
     const sections = fallbackSections(report, locale);
     return { narrative: sectionsToNarrative(sections), summary, sections };
   }

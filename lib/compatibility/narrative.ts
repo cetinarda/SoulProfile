@@ -1,8 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk';
 import type { GalacticReport } from '../types';
 import type { CompatibilityResult } from './index';
 import { SIGN_NAMES_TR } from '../content/astrology-content';
 import { sanitizeName, delim } from '../narrative/sanitize';
+import { getApiBase } from '../api-base';
 
 export type CompatNarrative = {
   overview: string;
@@ -12,11 +12,7 @@ export type CompatNarrative = {
   advice: string;
 };
 
-function getKey(): string | undefined {
-  return process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY;
-}
-
-function system(locale: 'tr' | 'en' = 'tr'): string {
+export function compatSystemPrompt(locale: 'tr' | 'en' = 'tr'): string {
   if (locale === 'en') {
     return `You are the relationship-compatibility interpreter for the "SoulProfile" app. You
 compare two people's astrology + Human Design + numerology derived from birth data and describe
@@ -57,7 +53,7 @@ KURALLAR:
 - Diğer başlıklar 1 paragraf (3-4 cümle).`;
 }
 
-function userPrompt(a: GalacticReport, b: GalacticReport, r: CompatibilityResult): string {
+export function compatUserPrompt(a: GalacticReport, b: GalacticReport, r: CompatibilityResult): string {
   const sun = (rep: GalacticReport) => SIGN_NAMES_TR[rep.chart.planets.find((p) => p.name === 'Sun')!.sign];
   const moon = (rep: GalacticReport) => SIGN_NAMES_TR[rep.chart.planets.find((p) => p.name === 'Moon')!.sign];
 
@@ -89,7 +85,7 @@ HESAPLANAN BAĞLAR:
 5 başlıkla yaz: ## Genel, ## Human Design Dansı, ## Güçlü Yanlar, ## Sürtünme Noktaları, ## Tavsiye.`;
 }
 
-function parse(text: string): CompatNarrative {
+export function parseCompatNarrative(text: string): CompatNarrative {
   const sections: Record<string, string[]> = {};
   let cur = '';
   for (const line of text.split('\n')) {
@@ -119,7 +115,7 @@ function parse(text: string): CompatNarrative {
   };
 }
 
-function fallback(a: GalacticReport, b: GalacticReport, r: CompatibilityResult, locale: 'tr' | 'en' = 'tr'): CompatNarrative {
+export function fallbackCompatNarrative(a: GalacticReport, b: GalacticReport, r: CompatibilityResult, locale: 'tr' | 'en' = 'tr'): CompatNarrative {
   const electro = r.hdConnections.filter((c) => c.kind === 'electromagnetic');
   const companion = r.hdConnections.filter((c) => c.kind === 'companionship');
   const aCond = r.hdCenters.filter((c) => c.status === 'a-conditions-b');
@@ -174,22 +170,20 @@ export async function generateCompatNarrative(
   r: CompatibilityResult,
   locale: 'tr' | 'en' = 'tr',
 ): Promise<CompatNarrative> {
-  const key = getKey();
-  if (!key) return fallback(a, b, r, locale);
   try {
-    const client = new Anthropic({ apiKey: key, dangerouslyAllowBrowser: true });
-    const msg = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1800,
-      system: system(locale),
-      messages: [{ role: 'user', content: userPrompt(a, b, r) }],
+    const res = await fetch(`${getApiBase()}/api/ai/compat-narrative`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ a, b, r, locale }),
     });
-    const text = msg.content.map((c) => (c.type === 'text' ? c.text : '')).join('\n').trim();
-    const parsed = parse(text);
-    if (parsed.overview.length > 20 && parsed.strengths.length >= 2) return parsed;
-    return fallback(a, b, r, locale);
+    if (!res.ok) return fallbackCompatNarrative(a, b, r, locale);
+    const data = (await res.json()) as { narrative?: CompatNarrative; useFallback?: boolean };
+    if (data.useFallback || !data.narrative) return fallbackCompatNarrative(a, b, r, locale);
+    const n = data.narrative;
+    if (n.overview && n.overview.length > 20 && (n.strengths?.length ?? 0) >= 2) return n;
+    return fallbackCompatNarrative(a, b, r, locale);
   } catch (e) {
-    console.warn('[compat] narrative fallback', e);
-    return fallback(a, b, r, locale);
+    console.warn('[compat] narrative fetch fallback', e);
+    return fallbackCompatNarrative(a, b, r, locale);
   }
 }

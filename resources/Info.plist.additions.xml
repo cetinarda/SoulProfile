@@ -31,7 +31,8 @@
 <array>
   <string>soulprofile.life</string>
   <string>www.soulprofile.life</string>
-  <string>api.anthropic.com</string>
+  <!-- AI çağrıları soulprofile.life/api/ai üzerinden — Anthropic doğrudan
+       client'tan ÇAĞRILMIYOR (security/iOS-server-side). -->
   <string>api.stripe.com</string>
   <string>checkout.stripe.com</string>
   <string>api.revenuecat.com</string>

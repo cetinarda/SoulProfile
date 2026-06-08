@@ -2,10 +2,11 @@
 // 7 bölümlük detaylı çift okuması. Claude API + fallback.
 // Apple 4.3 uyumu: predictive değil sembolik dil; "olacak" yerine "olabilir/açar".
 
-import Anthropic from '@anthropic-ai/sdk';
 import type { GalacticReport } from '../types';
 import type { CompatibilityResult } from './index';
 import { sanitizeName, delim } from '../narrative/sanitize';
+import { getApiBase } from '../api-base';
+import { getSupabase } from '../supabase';
 
 export type DeepAnalysis = {
   generatedAt: string;
@@ -24,11 +25,7 @@ export type DeepAnalysis = {
   closingBlessing: string;     // Kapanış cümlesi
 };
 
-function getKey(): string | undefined {
-  return process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY;
-}
-
-function buildSystem(locale: 'tr' | 'en'): string {
+export function deepBuildSystem(locale: 'tr' | 'en'): string {
   if (locale === 'en') {
     return `You are the deep relationship reader for the "SoulProfile" app. From two people's
 astrology + Human Design + numerology + Vedic Ashtakuta + tarot compass, you write a long,
@@ -149,7 +146,7 @@ okuma, tarihsel iddia değil.)
 (1-2 cümle: şefkatli bir kapanış kutsamasi.)`;
 }
 
-function buildUser(a: GalacticReport, b: GalacticReport, r: CompatibilityResult): string {
+export function deepBuildUser(a: GalacticReport, b: GalacticReport, r: CompatibilityResult): string {
   const sun = (rep: GalacticReport) => rep.chart.planets.find((p) => p.name === 'Sun')!;
   const moon = (rep: GalacticReport) => rep.chart.planets.find((p) => p.name === 'Moon')!;
   const nn = (rep: GalacticReport) => rep.chart.planets.find((p) => p.name === 'NorthNode')!;
@@ -200,7 +197,7 @@ UYUM MOTORU SKORLARI:
 A = ${delim(safeNameA)}, B = ${delim(safeNameB)}`;
 }
 
-function parseSections(text: string): Partial<DeepAnalysis> {
+export function deepParseSections(text: string): Partial<DeepAnalysis> {
   const buckets: Record<string, string[]> = {};
   const lines = text.split('\n');
   let cur = '';
@@ -242,7 +239,7 @@ function parseSections(text: string): Partial<DeepAnalysis> {
   };
 }
 
-function fallback(a: GalacticReport, b: GalacticReport, r: CompatibilityResult, locale: 'tr' | 'en'): DeepAnalysis {
+export function deepFallback(a: GalacticReport, b: GalacticReport, r: CompatibilityResult, locale: 'tr' | 'en'): DeepAnalysis {
   const nameA = r.nameA;
   const nameB = r.nameB;
   const aHD = a.humanDesign;
@@ -307,44 +304,34 @@ export async function generateDeepAnalysis(
   r: CompatibilityResult,
   locale: 'tr' | 'en' = 'tr',
 ): Promise<DeepAnalysis> {
-  const key = getKey();
-  if (!key) return fallback(a, b, r, locale);
+  // Auth token — server route entitlement gate'i bunu okur
+  let token: string | undefined;
+  const sb = getSupabase();
+  if (sb) {
+    const { data } = await sb.auth.getSession();
+    token = data.session?.access_token;
+  }
 
   try {
-    const client = new Anthropic({ apiKey: key, dangerouslyAllowBrowser: true });
-    const msg = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
-      system: buildSystem(locale),
-      messages: [{ role: 'user', content: buildUser(a, b, r) }],
-    });
-    const text = msg.content.map((c) => (c.type === 'text' ? c.text : '')).join('\n').trim();
-    const parsed = parseSections(text);
-    const fb = fallback(a, b, r, locale);
-    // Eksik alanları fallback'ten doldur
-    const merged: DeepAnalysis = {
-      generatedAt: new Date().toISOString(),
-      soulContract: parsed.soulContract || fb.soulContract,
-      whyMet: parsed.whyMet || fb.whyMet,
-      whatEachTeaches: {
-        aTeachesB: parsed.whatEachTeaches?.aTeachesB || fb.whatEachTeaches.aTeachesB,
-        bTeachesA: parsed.whatEachTeaches?.bTeachesA || fb.whatEachTeaches.bTeachesA,
+    const res = await fetch(`${getApiBase()}/api/ai/deep-analysis`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      conflictPattern: parsed.conflictPattern || fb.conflictPattern,
-      separationDynamic: parsed.separationDynamic || fb.separationDynamic,
-      reunionField: parsed.reunionField || fb.reunionField,
-      longTermResonance: parsed.longTermResonance || fb.longTermResonance,
-      karmicTheme: parsed.karmicTheme || fb.karmicTheme,
-      practiceForCouple:
-        (parsed.practiceForCouple && parsed.practiceForCouple.length >= 3
-          ? parsed.practiceForCouple
-          : fb.practiceForCouple) ?? fb.practiceForCouple,
-      closingBlessing: parsed.closingBlessing || fb.closingBlessing,
-    };
-    return merged;
+      body: JSON.stringify({ a, b, r, locale }),
+    });
+    if (res.status === 401 || res.status === 403) {
+      // Premium gerekiyor — UI tarafında PremiumGate açılır; fallback fallback
+      return deepFallback(a, b, r, locale);
+    }
+    if (!res.ok) return deepFallback(a, b, r, locale);
+    const data = (await res.json()) as { analysis?: DeepAnalysis; useFallback?: boolean };
+    if (data.useFallback || !data.analysis) return deepFallback(a, b, r, locale);
+    return data.analysis;
   } catch (e) {
-    console.warn('[deep-analysis] fallback', e);
-    return fallback(a, b, r, locale);
+    console.warn('[deep-analysis] fetch fallback', e);
+    return deepFallback(a, b, r, locale);
   }
 }
 

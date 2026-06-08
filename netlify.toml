@@ -20,4 +20,7 @@
     Permissions-Policy = "camera=(self), microphone=(), geolocation=(), payment=(self), interest-cohort=()"
     # CSP: 'unsafe-inline' theme/motion FOUC script için zorunlu (data-attribute set ediyor).
     # 'unsafe-eval' three.js + react/Anthropic SDK dynamic eval için. Sıkıştırma sonraki sprint.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com; connect-src 'self' https://*.supabase.co https://api.anthropic.com https://geocoding-api.open-meteo.com https://api.stripe.com https://api.revenuecat.com; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; frame-src https://js.stripe.com https://hooks.stripe.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com; object-src 'none'; worker-src 'self' blob:;"
+    # Anthropic api.anthropic.com client-side connect-src'den ÇIKARILDI —
+    # AI çağrıları artık /api/ai/* arkasında, key tarayıcıya inmiyor.
+    # Capacitor build https://soulprofile.life'a fetch atar (cross-origin OK).
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com; connect-src 'self' https://soulprofile.life https://*.supabase.co https://geocoding-api.open-meteo.com https://api.stripe.com https://api.revenuecat.com; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; frame-src https://js.stripe.com https://hooks.stripe.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com; object-src 'none'; worker-src 'self' blob:;"
