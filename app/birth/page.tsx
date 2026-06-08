@@ -34,12 +34,51 @@ export default function BirthPage() {
   async function onPhotoChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const result = evt.target?.result as string;
-      setBirth({ photoUri: result });
-    };
-    reader.readAsDataURL(file);
+
+    const MAX_BYTES = 5 * 1024 * 1024;
+    const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
+    if (file.size > MAX_BYTES) {
+      setError(locale === 'tr' ? 'Fotoğraf 5 MB sınırını aşıyor.' : 'Photo exceeds 5 MB limit.');
+      return;
+    }
+    if (!ALLOWED.includes(file.type)) {
+      setError(locale === 'tr' ? 'Sadece JPEG, PNG veya WebP destekleniyor.' : 'Only JPEG, PNG, or WebP supported.');
+      return;
+    }
+
+    // Re-encode via canvas — yüklenen dosyayı temizle, embedded script veya
+    // metadata varsa düşür. Çıktı her zaman JPEG.
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (evt) => resolve(evt.target?.result as string);
+        reader.onerror = () => reject(new Error('read failed'));
+        reader.readAsDataURL(file);
+      });
+
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const im = document.createElement('img');
+        im.onload = () => resolve(im);
+        im.onerror = () => reject(new Error('decode failed'));
+        im.src = dataUrl;
+      });
+
+      const MAX_DIM = 1024;
+      const scale = Math.min(1, MAX_DIM / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('canvas');
+      ctx.drawImage(img, 0, 0, w, h);
+      const clean = canvas.toDataURL('image/jpeg', 0.85);
+      setBirth({ photoUri: clean });
+      setError(null);
+    } catch {
+      setError(locale === 'tr' ? 'Fotoğraf işlenemedi.' : 'Could not process photo.');
+    }
   }
 
   async function searchPlace(value: string) {

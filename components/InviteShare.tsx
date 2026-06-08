@@ -1,16 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { inviteUrl } from '@/lib/compatibility/invite';
 import { useT } from '@/lib/i18n';
 import type { BirthInput } from '@/lib/types';
 
 export function InviteShare({ birth }: { birth: BirthInput }) {
-  const { t, locale } = useT();
+  const { locale } = useT();
   const [copied, setCopied] = useState(false);
   const [working, setWorking] = useState(false);
+  const [url, setUrl] = useState<string>('');
 
-  const url = inviteUrl(birth);
+  useEffect(() => {
+    let cancelled = false;
+    inviteUrl(birth).then((u) => {
+      if (!cancelled) setUrl(u);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [birth]);
 
   async function copy() {
     try {

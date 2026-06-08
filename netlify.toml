@@ -16,3 +16,8 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    Permissions-Policy = "camera=(self), microphone=(), geolocation=(), payment=(self), interest-cohort=()"
+    # CSP: 'unsafe-inline' theme/motion FOUC script için zorunlu (data-attribute set ediyor).
+    # 'unsafe-eval' three.js + react/Anthropic SDK dynamic eval için. Sıkıştırma sonraki sprint.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com; connect-src 'self' https://*.supabase.co https://api.anthropic.com https://geocoding-api.open-meteo.com https://api.stripe.com https://api.revenuecat.com; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; frame-src https://js.stripe.com https://hooks.stripe.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com; object-src 'none'; worker-src 'self' blob:;"

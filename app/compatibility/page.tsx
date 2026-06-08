@@ -41,6 +41,7 @@ export default function CompatibilityPage() {
   const [result, setResult] = useState<CompatibilityResult | null>(null);
   const [narrative, setNarrative] = useState<CompatNarrative | null>(null);
   const [otherReport, setOtherReport] = useState<GalacticReport | null>(null);
+  const [consent, setConsent] = useState(false);
 
   useEffect(() => {
     setHydrated(true);
@@ -72,6 +73,10 @@ export default function CompatibilityPage() {
     if (!me) return;
     if (!name || !date || !place) {
       setError(t('compat.error'));
+      return;
+    }
+    if (!consent) {
+      setError(t('compat.consentError'));
       return;
     }
     if (!canRunCompat()) {
@@ -225,6 +230,20 @@ export default function CompatibilityPage() {
           </div>
         </div>
 
+        {/* Consent — GDPR Art.6 + Apple 5.1.1(ii). Üçüncü kişinin doğum
+            verisini sisteme girmeden önce onayı şart. */}
+        <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-panelBorder bg-panel/20 p-4">
+          <input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            className="mt-0.5 h-5 w-5 shrink-0 accent-cosmic"
+          />
+          <span className="text-[13px] leading-relaxed text-muted">
+            {t('compat.consent')}
+          </span>
+        </label>
+
         {error ? (
           <p className="mt-4 rounded-lg border border-danger/40 bg-danger/10 p-3 text-sm text-danger">
             {error}
@@ -234,7 +253,7 @@ export default function CompatibilityPage() {
         <button
           type="button"
           onClick={compare}
-          disabled={loading}
+          disabled={loading || !consent}
           className="group mt-5 flex w-full items-center justify-center gap-3 rounded-full bg-cosmic py-5 text-base font-bold tracking-wide text-white shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-60"
         >
           {loading ? (

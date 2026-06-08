@@ -6,12 +6,15 @@ import { PageLayout, Section, Bullet } from '@/components/PageLayout';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { MotionToggle } from '@/components/MotionToggle';
 import { useSoulStore } from '@/lib/store';
+import { purgeAccount } from '@/lib/supabase/reports';
 
 export default function Settings() {
   const router = useRouter();
   const report = useSoulStore((s) => s.report);
   const reset = useSoulStore((s) => s.reset);
   const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   function exportData() {
     if (!report) {
@@ -21,20 +24,27 @@ export default function Settings() {
     const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
+    const today = new Date().toISOString().slice(0, 10);
     a.href = url;
-    a.download = `soulprofile-${report.birth.fullName.replace(/\s+/g, '-').toLowerCase()}.json`;
+    a.download = `soulprofile-export-${today}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
 
-  function deleteData() {
-    reset();
-    if (typeof localStorage !== 'undefined') {
-      localStorage.clear();
+  async function deleteData() {
+    setDeleting(true);
+    setDeleteError(null);
+    const result = await purgeAccount();
+    if (!result.ok) {
+      setDeleteError(result.error ?? 'Silme başarısız');
+      setDeleting(false);
+      return;
     }
+    reset();
     setConfirming(false);
+    setDeleting(false);
     router.replace('/');
   }
 
@@ -77,9 +87,15 @@ export default function Settings() {
 
       <Section heading="Verilerini Sil">
         <p>
-          Bu cihazdaki tüm SoulProfile verisi (karne, oturum, tercih) silinir. Geri alınamaz.
-          Hesap özelliği geldiğinde sunucudaki kayıtların da bu adımla silinecek.
+          Hesabını sildiğinde: bu cihazdaki tüm SoulProfile verisi, sunucudaki karne kayıtların,
+          ödeme yetki kayıtların ve yüklediğin fotoğraflar kalıcı olarak silinir. Bu işlem geri
+          alınamaz (KVKK / GDPR Art.17 — unutulma hakkı).
         </p>
+        {deleteError ? (
+          <p className="mt-2 rounded-lg border border-danger/40 bg-danger/10 p-2.5 text-[12px] text-danger">
+            {deleteError}
+          </p>
+        ) : null}
         {!confirming ? (
           <button
             type="button"
@@ -93,14 +109,16 @@ export default function Settings() {
             <button
               type="button"
               onClick={deleteData}
-              className="rounded-full bg-danger px-5 py-2 text-sm font-bold text-white"
+              disabled={deleting}
+              className="rounded-full bg-danger px-5 py-2 text-sm font-bold text-white disabled:opacity-60"
             >
-              Evet, sil
+              {deleting ? 'Siliniyor...' : 'Evet, hepsini sil'}
             </button>
             <button
               type="button"
               onClick={() => setConfirming(false)}
-              className="rounded-full border border-panelBorder px-5 py-2 text-sm text-muted"
+              disabled={deleting}
+              className="rounded-full border border-panelBorder px-5 py-2 text-sm text-muted disabled:opacity-60"
             >
               Vazgeç
             </button>

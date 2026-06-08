@@ -1,6 +1,7 @@
-// Basit MVP davet linki: doğum verisini base64 URL-safe encode et,
-// /match?i=<token> ile karşılaşan kişinin doğum verisi taşınır.
-// Backend YOK — viral döngünün ilk versiyonu.
+// Davet token'ı — HMAC-SHA256 imza + 30 gün expiry.
+// PII (ad/koordinat) hâlâ URL'de ama tamper edilemez ve süresi dolar.
+// Sürekli tek-kişi paylaşımı için en uygun trade-off; bir sonraki adım
+// opaque ID + sunucu-side storage olur.
 
 import type { BirthInput } from '../types';
 
@@ -13,18 +14,29 @@ type InvitePayload = {
   lat: number;
   lon: number;
   tz: string;
+  e: number;       // expiry epoch (ms)
+  v: 2;            // schema version
 };
+
+const SCHEMA = 2;
+const TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 gün
+// App-level integrity salt — secret değil; clientside bundle'da. Amacı:
+// rastgele tampering'i durdurmak ve API uyumluluğu sağlamak. Hassas
+// confidentiality için server-side opaque-ID gerekir (sonraki sprint).
+const SALT = 'soulprofile.invite.v2';
 
 function toPayload(b: BirthInput): InvitePayload {
   return {
-    n: b.fullName,
+    n: b.fullName.slice(0, 80),
     d: b.birthDate,
     t: b.birthTime,
     tk: b.birthTimeKnown ? 1 : 0,
-    p: b.birthPlace,
+    p: b.birthPlace.slice(0, 120),
     lat: b.latitude,
     lon: b.longitude,
     tz: b.timezone,
+    e: Date.now() + TTL_MS,
+    v: SCHEMA,
   };
 }
 
@@ -41,43 +53,80 @@ function fromPayload(p: InvitePayload): BirthInput {
   };
 }
 
+function bytesToB64Url(bytes: Uint8Array): string {
+  let s = '';
+  for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]!);
+  return (typeof btoa !== 'undefined' ? btoa(s) : Buffer.from(s, 'binary').toString('base64'))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/g, '');
+}
+
+function b64UrlToBytes(s: string): Uint8Array {
+  const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
+  const std = s.replace(/-/g, '+').replace(/_/g, '/') + pad;
+  const bin = typeof atob !== 'undefined' ? atob(std) : Buffer.from(std, 'base64').toString('binary');
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
 function b64UrlEncode(s: string): string {
-  if (typeof btoa !== 'undefined') {
-    return btoa(unescape(encodeURIComponent(s)))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/g, '');
-  }
-  return Buffer.from(s, 'utf-8').toString('base64')
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  return bytesToB64Url(new TextEncoder().encode(s));
 }
 
 function b64UrlDecode(s: string): string {
-  const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
-  const std = s.replace(/-/g, '+').replace(/_/g, '/') + pad;
-  if (typeof atob !== 'undefined') {
-    return decodeURIComponent(escape(atob(std)));
+  return new TextDecoder().decode(b64UrlToBytes(s));
+}
+
+async function hmac(data: string): Promise<string> {
+  const c =
+    typeof globalThis.crypto !== 'undefined' && globalThis.crypto.subtle
+      ? globalThis.crypto
+      : null;
+  if (!c) {
+    // Node fallback yok — synchronous bağlamda kullanma; runtime'da window var
+    return '';
   }
-  return Buffer.from(std, 'base64').toString('utf-8');
+  const key = await c.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(SALT),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign', 'verify'],
+  );
+  const sig = await c.subtle.sign('HMAC', key, new TextEncoder().encode(data));
+  return bytesToB64Url(new Uint8Array(sig));
 }
 
-export function encodeInvite(birth: BirthInput): string {
+export async function encodeInvite(birth: BirthInput): Promise<string> {
   const payload = toPayload(birth);
-  return b64UrlEncode(JSON.stringify(payload));
+  const body = b64UrlEncode(JSON.stringify(payload));
+  const sig = await hmac(body);
+  return `${body}.${sig}`;
 }
 
-export function decodeInvite(token: string): BirthInput | null {
+export async function decodeInvite(token: string): Promise<BirthInput | null> {
   try {
-    const json = b64UrlDecode(token);
+    const [body, sig] = token.split('.');
+    if (!body || !sig) return null;
+    const expected = await hmac(body);
+    if (expected !== sig) return null;
+    const json = b64UrlDecode(body);
     const payload = JSON.parse(json) as InvitePayload;
+    if (payload.v !== SCHEMA) return null;
     if (!payload.d || !payload.lat || !payload.lon) return null;
+    if (typeof payload.e !== 'number' || payload.e < Date.now()) return null;
     return fromPayload(payload);
   } catch {
     return null;
   }
 }
 
-export function inviteUrl(birth: BirthInput, origin?: string): string {
+export async function inviteUrl(birth: BirthInput, origin?: string): Promise<string> {
   const base = origin ?? (typeof window !== 'undefined' ? window.location.origin : 'https://soulprofile.life');
-  return `${base}/match?i=${encodeURIComponent(encodeInvite(birth))}`;
+  const token = await encodeInvite(birth);
+  // URL fragment'a koymak server log'larda PII bırakmaz — fakat sosyal medya
+  // paylaşımlarında fragment bazı platformlarda korunmuyor. Compromise: query.
+  return `${base}/match?i=${encodeURIComponent(token)}`;
 }

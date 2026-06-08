@@ -27,11 +27,26 @@ export async function POST(request: Request) {
     );
   }
 
-  const origin = request.headers.get('origin') ?? 'https://soulprofile.life';
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://soulprofile.life';
+  const origin = (() => {
+    const reqOrigin = request.headers.get('origin');
+    if (!reqOrigin) return APP_URL;
+    try {
+      const u = new URL(reqOrigin);
+      const allowed = [APP_URL, 'http://localhost:3000', 'http://localhost:8888'];
+      const allowedHosts = allowed.map((a) => new URL(a).host);
+      if (allowedHosts.includes(u.host) || u.host.endsWith('.netlify.app')) {
+        return reqOrigin;
+      }
+    } catch {
+      /* ignore */
+    }
+    return APP_URL;
+  })();
 
   const params = new URLSearchParams();
   params.set('mode', 'payment');
-  params.set('success_url', `${origin}/premium?success=1`);
+  params.set('success_url', `${origin}/premium?session_id={CHECKOUT_SESSION_ID}`);
   params.set('cancel_url', `${origin}/premium?canceled=1`);
   params.append('line_items[0][price]', priceId);
   params.append('line_items[0][quantity]', '1');

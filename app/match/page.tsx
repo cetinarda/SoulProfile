@@ -58,22 +58,28 @@ function MatchPage() {
       setInviteValid(false);
       return;
     }
-    const decoded = decodeInvite(token);
-    if (!decoded) {
-      setInviteValid(false);
-      return;
-    }
-    setInviterBirth(decoded);
-    // İnviter'ın karnesini hesapla (arka planda)
-    buildGalacticReport(decoded, locale)
-      .then((r) => {
+    let cancelled = false;
+    (async () => {
+      const decoded = await decodeInvite(token);
+      if (cancelled) return;
+      if (!decoded) {
+        setInviteValid(false);
+        return;
+      }
+      setInviterBirth(decoded);
+      try {
+        const r = await buildGalacticReport(decoded, locale);
+        if (cancelled) return;
         setInviter(r);
         setInviteValid(true);
-      })
-      .catch((e) => {
+      } catch (e) {
         console.error(e);
-        setInviteValid(false);
-      });
+        if (!cancelled) setInviteValid(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [params, locale]);
 
   async function searchPlace(v: string) {

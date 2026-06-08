@@ -19,15 +19,32 @@ export default function PremiumPage() {
   const [owned, setOwned] = useState(false);
 
   useEffect(() => {
-    // Stripe başarı dönüşü → premium ver
+    // Stripe başarı dönüşü → server-side session doğrulaması, sonra premium
     const params = new URLSearchParams(window.location.search);
-    if (params.get('success') === '1') {
-      grantPremium();
+    const sessionId = params.get('session_id');
+    if (sessionId && /^cs_(test|live)_[A-Za-z0-9]+$/.test(sessionId)) {
+      fetch(`/api/verify-session?session_id=${encodeURIComponent(sessionId)}`)
+        .then((r) => r.json())
+        .then((data: { ok?: boolean }) => {
+          if (data.ok) {
+            grantPremium();
+            setOwned(true);
+            setInfo(
+              locale === 'tr'
+                ? 'Ödemen onaylandı. Tam erişim açık.'
+                : 'Payment confirmed. Full access unlocked.',
+            );
+            window.history.replaceState({}, '', '/premium');
+          }
+        })
+        .catch(() => {
+          /* sessiz */
+        });
     }
     setOwned(hasPremium());
     // iOS Capacitor ortamında RevenueCat init
     initIAP();
-  }, []);
+  }, [locale]);
 
   async function buy() {
     setError(null);
