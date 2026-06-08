@@ -70,6 +70,25 @@ for (const w of FORBIDDEN) {
   }
 }
 
+// 6b. NEXT_PUBLIC_ANTHROPIC_API_KEY hâlâ kullanılıyor mu? (regression)
+const grepDir = (dir) => {
+  const lib = read(`${dir}`) ?? '';
+  if (/NEXT_PUBLIC_ANTHROPIC_API_KEY/.test(lib)) {
+    errors.push(`${dir}: NEXT_PUBLIC_ANTHROPIC_API_KEY tarayıcıya inlinelanır. Server-only ANTHROPIC_API_KEY kullan.`);
+  }
+};
+[
+  'lib/narrative/index.ts',
+  'lib/compatibility/narrative.ts',
+  'lib/compatibility/deep-analysis.ts',
+].forEach(grepDir);
+
+// 6c. dangerouslyAllowBrowser kullanımı (client-side Anthropic SDK regression)
+const envExample = read('.env.example') ?? '';
+if (/^NEXT_PUBLIC_ANTHROPIC_API_KEY/m.test(envExample)) {
+  errors.push('.env.example NEXT_PUBLIC_ANTHROPIC_API_KEY içeriyor — server-only ANTHROPIC_API_KEY olmalı.');
+}
+
 // 7. ITS encryption flag bahsi (info.plist doc'unda)
 const uploadDoc = read('docs/APP_STORE_UPLOAD.md') ?? '';
 if (!uploadDoc.includes('ITSAppUsesNonExemptEncryption')) {

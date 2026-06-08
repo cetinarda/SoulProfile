@@ -1,27 +1,22 @@
 // Supabase yapılandırıldığında karneleri saklar/listeler.
-// Yapılandırılmamışsa localStorage'a düşer — kullanıcı kaybetmez.
+// Yapılandırılmamışsa şifreli localStorage'a düşer — PII koruması.
 
 import { getSupabase } from './index';
 import type { GalacticReport } from '../types';
+import { secureGet, secureSet, secureRemove } from '../secure-storage';
 
 const LS_KEY = 'soulprofile.reports.v1';
 
 type StoredReport = GalacticReport & { savedAt: string };
 
-function loadLocal(): StoredReport[] {
-  if (typeof localStorage === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    return raw ? (JSON.parse(raw) as StoredReport[]) : [];
-  } catch {
-    return [];
-  }
+async function loadLocal(): Promise<StoredReport[]> {
+  const data = await secureGet<StoredReport[]>(LS_KEY);
+  return data ?? [];
 }
 
-function saveLocal(reports: StoredReport[]) {
-  if (typeof localStorage === 'undefined') return;
+async function saveLocal(reports: StoredReport[]) {
   try {
-    localStorage.setItem(LS_KEY, JSON.stringify(reports));
+    await secureSet(LS_KEY, reports);
   } catch {
     /* quota or private mode */
   }
@@ -43,9 +38,9 @@ export async function saveReport(report: GalacticReport): Promise<StoredReport> 
     }
   }
 
-  const list = loadLocal();
+  const list = await loadLocal();
   const dedupe = list.filter((r) => r.id !== stored.id);
-  saveLocal([stored, ...dedupe].slice(0, 30));
+  await saveLocal([stored, ...dedupe].slice(0, 30));
   return stored;
 }
 
@@ -68,7 +63,7 @@ export async function listReports(): Promise<StoredReport[]> {
       }
     }
   }
-  return loadLocal();
+  return await loadLocal();
 }
 
 export async function clearAllReports(): Promise<void> {
@@ -79,9 +74,7 @@ export async function clearAllReports(): Promise<void> {
       await sb.from('reports').delete().eq('user_id', user.user.id);
     }
   }
-  if (typeof localStorage !== 'undefined') {
-    localStorage.removeItem(LS_KEY);
-  }
+  secureRemove(LS_KEY);
 }
 
 /**

@@ -101,7 +101,14 @@ docs/                 SETUP + PREMIUM_ROADMAP
 Environment variables (Netlify Site settings → Environment):
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `NEXT_PUBLIC_ANTHROPIC_API_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (server-only, webhook'lar için)
+- `ANTHROPIC_API_KEY` (server-only, /api/ai Edge routes)
+- `STRIPE_SECRET_KEY` (server-only)
+- `STRIPE_WEBHOOK_SECRET` (server-only)
+- `REVENUECAT_WEBHOOK_SECRET` (server-only)
+- `NEXT_PUBLIC_REVENUECAT_IOS_KEY`, `NEXT_PUBLIC_REVENUECAT_ANDROID_KEY` (public-by-design)
+- `NEXT_PUBLIC_STRIPE_PRICE_UNLOCK` (public-by-design)
+- `NEXT_PUBLIC_APP_URL`
 
 ## iOS App (yol haritası)
 

@@ -3,10 +3,20 @@
 
 import { NextResponse } from 'next/server';
 import { PRODUCT } from '@/lib/payments/skus';
+import { rateLimit, rateKey } from '../ai/_shared';
 
 export const runtime = 'edge';
 
 export async function POST(request: Request) {
+  // Rate limit — IP-bazlı, 5 checkout/dakika. Anonim session açma DoS koruması.
+  const limit = rateLimit(rateKey(request, 'checkout'), 5);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: 'Çok hızlı deneme. Birkaç saniye bekle.', retryAfter: limit.retryAfter },
+      { status: 429 },
+    );
+  }
+
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   if (!stripeKey) {
     return NextResponse.json({ error: 'Stripe henüz yapılandırılmadı.' }, { status: 503 });

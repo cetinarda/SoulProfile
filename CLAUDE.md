@@ -138,10 +138,14 @@ Footer + karne alt köşesi + ToS — 3 yerde tekrar.
 - JSON export (data portability) MUST HAVE
 
 ### 6. AI / Claude entegrasyonu
-- MVP için `dangerouslyAllowBrowser: true` kullanılabilir
-- Prod'a çıkmadan API key'i Supabase Edge Function arkasına taşı
-- Fallback narrative her zaman olsun (yapılandırılmış 7 bölüm şeması)
-- Model: `claude-sonnet-4-6`. Ucuz için `claude-haiku-4-5-20251001`
+- Anthropic SDK SADECE server-side: `/api/ai/*` Edge route'lar arkasında.
+- Client `lib/narrative/index.ts`, `lib/compatibility/narrative.ts`,
+  `lib/compatibility/deep-analysis.ts` `fetch` ile route çağırır.
+- Env: `ANTHROPIC_API_KEY` (server-only, NEXT_PUBLIC_ önekisiz).
+- Rate limit token bucket Edge isolate'inde + premium gate (deep-analysis).
+- Capacitor iOS: `lib/api-base.ts` absolute URL `https://soulprofile.life`.
+- Fallback narrative her zaman olsun (yapılandırılmış 7 bölüm şeması).
+- Model: `claude-sonnet-4-6`. Ucuz için `claude-haiku-4-5-20251001`.
 
 ### 7. Paylaşılabilir görsel (viral mekanik)
 - 9:16 storyformat (1080×1920 hedef)
@@ -179,7 +183,7 @@ Her tüketici uygulaması için `marketing/` altına:
 | `npm ci` lockfile mismatch | Tam `npm install` ile lockfile üret, `--package-lock-only` KULLANMA |
 | Expo peer dep çakışması | Next.js'e geç |
 | `sweph` native binding web'de patlıyor | `astronomy-engine` (saf JS) |
-| Anthropic SDK browser reddediyor | `dangerouslyAllowBrowser: true` (MVP) |
+| Anthropic key tarayıcıya sızar | Sadece server-side: `/api/ai/*` Edge route + `ANTHROPIC_API_KEY` |
 | Tailwind class'lar build'de uçuyor | `tailwind.config.ts` content array'inde `lib/**/*.tsx` de olmalı |
 | ASC 180° yanlış (DSC veriyor) | flatlib formülü: `atan2(cos, -(sin*cos+tan*sin))` |
 | Capacitor config tsc hatası | tsconfig.json `exclude`'a ekle |
