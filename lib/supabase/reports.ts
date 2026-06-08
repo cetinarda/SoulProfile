@@ -122,14 +122,17 @@ export async function purgeAccount(): Promise<{ ok: boolean; error?: string }> {
     ]);
 
     // 3. Auth user'ın kendisini Edge Function ile sil (service_role gerektirir).
-    // Endpoint mevcut değilse de DB satırları silindi; auth.users orphan olur.
     try {
-      await fetch('/api/account/delete', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${(await sb.auth.getSession()).data.session?.access_token ?? ''}` },
-      });
+      const { data: sessionData } = await sb.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (token) {
+        await fetch('/api/account/delete', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
     } catch {
-      /* Edge Function yoksa geç */
+      /* Edge Function yoksa geç — DB satırları zaten silindi */
     }
 
     await sb.auth.signOut();
