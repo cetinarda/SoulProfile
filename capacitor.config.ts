@@ -4,7 +4,6 @@ const config: CapacitorConfig = {
   appId: 'life.soulprofile.app',
   appName: 'SoulProfile',
   webDir: 'out',
-  bundledWebRuntime: false,
   server: {
     androidScheme: 'https',
     iosScheme: 'soulprofile',
