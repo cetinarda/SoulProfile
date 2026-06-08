@@ -1,8 +1,19 @@
+import { getSupabase } from '../supabase';
+
 export async function startCheckout(email?: string): Promise<void> {
+  // Auth'lu kullanıcı varsa user_id metadata'sına ekle —
+  // webhook bu ID'ye entitlement yazabilsin.
+  let userId: string | undefined;
+  const sb = getSupabase();
+  if (sb) {
+    const { data } = await sb.auth.getUser();
+    userId = data.user?.id;
+  }
+
   const res = await fetch('/api/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userEmail: email }),
+    body: JSON.stringify({ userEmail: email, userId }),
   });
   if (!res.ok) {
     const err = (await res.json().catch(() => ({}))) as { error?: string };

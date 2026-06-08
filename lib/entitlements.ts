@@ -5,12 +5,21 @@
 //  - 1 ikili uyum karşılaştırması (1 başka kişinin haritası)
 // Limit aşılınca premium ($4.99 tek seferlik) gerekir.
 // iOS Capacitor build = peşin paid app → her zaman premium.
+//
+// CANONICAL SOURCE: Supabase 'entitlements' tablosu (RLS-protected select).
+// Webhook (Stripe + RevenueCat) yazar, client okur.
+// localStorage SADECE UI cache — ana karar değil. Boot'ta refreshEntitlement()
+// canonical state'i çeker; off-line için cache 24 saat geçerli.
 
 import { isCapacitorNative } from './platform';
+import { getSupabase } from './supabase';
 
 const KEY_PREMIUM = 'soulprofile.premium';
+const KEY_PREMIUM_TS = 'soulprofile.premium.checkedAt';
 const KEY_REPORTS = 'soulprofile.usage.reports';
 const KEY_COMPAT = 'soulprofile.usage.compat';
+
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 export const FREE_REPORT_LIMIT = 1;
 export const FREE_COMPAT_LIMIT = 1;
@@ -33,11 +42,59 @@ export function hasPremium(): boolean {
 }
 
 export function grantPremium() {
-  if (typeof localStorage !== 'undefined') localStorage.setItem(KEY_PREMIUM, '1');
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(KEY_PREMIUM, '1');
+    localStorage.setItem(KEY_PREMIUM_TS, String(Date.now()));
+  }
 }
 
 export function revokePremium() {
-  if (typeof localStorage !== 'undefined') localStorage.removeItem(KEY_PREMIUM);
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem(KEY_PREMIUM);
+    localStorage.removeItem(KEY_PREMIUM_TS);
+  }
+}
+
+/**
+ * Canonical entitlement check — Supabase'ten okur, localStorage'ı senkronlar.
+ * Auth'lu kullanıcı varsa server-side truth kazanır; yoksa localStorage'a düşer.
+ * Boot'ta + premium-gated aksiyon öncesi çağrılmalı.
+ */
+export async function refreshEntitlement(): Promise<boolean> {
+  if (isCapacitorNative()) return true; // iOS paid app
+  const sb = getSupabase();
+  if (!sb) return hasPremium();
+  try {
+    const { data: userResult } = await sb.auth.getUser();
+    const user = userResult?.user;
+    if (!user) return hasPremium();
+
+    const { data, error } = await sb
+      .from('entitlements')
+      .select('active, expires_at')
+      .eq('user_id', user.id)
+      .eq('entitlement', 'premium')
+      .eq('active', true)
+      .limit(1);
+
+    if (error) return hasPremium();
+
+    const row = data?.[0] as { active?: boolean; expires_at?: string | null } | undefined;
+    const valid = !!row?.active && (!row.expires_at || new Date(row.expires_at).getTime() > Date.now());
+
+    if (valid) grantPremium();
+    else revokePremium();
+    return valid;
+  } catch {
+    return hasPremium();
+  }
+}
+
+/** localStorage cache 24 saatten eski mi? */
+export function isCacheStale(): boolean {
+  if (typeof localStorage === 'undefined') return true;
+  const ts = Number(localStorage.getItem(KEY_PREMIUM_TS) ?? '0');
+  return Date.now() - ts > CACHE_TTL_MS;
 }
 
 export function togglePremium(): boolean {

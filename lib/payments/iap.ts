@@ -7,6 +7,7 @@
 
 import { isCapacitorNative, platform } from '../platform';
 import { grantPremium, hasPremium } from '../entitlements';
+import { getSupabase } from '../supabase';
 
 export const APPLE_PRODUCT_ID = 'life.soulprofile.app.unlock';
 export const REVENUECAT_ENTITLEMENT = 'premium';
@@ -43,7 +44,15 @@ export async function initIAP(): Promise<void> {
     return;
   }
   try {
-    await Purchases.configure({ apiKey });
+    // appUserID = Supabase user.id. Webhook entitlement'i bu ID'ye yazar,
+    // refreshEntitlement() canonical state'i okur. Auth yoksa anon ID.
+    let appUserID: string | undefined;
+    const sb = getSupabase();
+    if (sb) {
+      const { data } = await sb.auth.getUser();
+      appUserID = data.user?.id;
+    }
+    await Purchases.configure(appUserID ? { apiKey, appUserID } : { apiKey });
     initialized = true;
     // Mevcut entitlement durumunu lokale yansıt
     await syncEntitlement();

@@ -5,6 +5,7 @@ import { TopBar } from '@/components/TopBar';
 import { Footer } from '@/components/Footer';
 import { PromoBanner } from '@/components/PromoBanner';
 import { SpaceIntro } from '@/components/SpaceIntro';
+import { BootSync } from '@/components/BootSync';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -115,6 +116,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="bg-bg text-ink min-h-screen flex flex-col">
+        <BootSync />
         <SpaceIntro />
         <PromoBanner />
         <TopBar />

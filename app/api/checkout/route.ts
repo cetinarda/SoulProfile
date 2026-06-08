@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Stripe henüz yapılandırılmadı.' }, { status: 503 });
   }
 
-  let body: { userEmail?: string } | null = null;
+  let body: { userEmail?: string; userId?: string } | null = null;
   try {
     body = await request.json();
   } catch {
@@ -51,6 +51,11 @@ export async function POST(request: Request) {
   params.append('line_items[0][price]', priceId);
   params.append('line_items[0][quantity]', '1');
   if (body?.userEmail) params.set('customer_email', body.userEmail);
+  // user_id metadata — webhook entitlement insert için zorunlu
+  if (body?.userId && /^[a-zA-Z0-9-]{8,}$/.test(body.userId)) {
+    params.set('client_reference_id', body.userId);
+    params.set('metadata[user_id]', body.userId);
+  }
   params.set('allow_promotion_codes', 'true');
   params.set('billing_address_collection', 'auto');
 
