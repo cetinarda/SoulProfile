@@ -253,6 +253,15 @@ main {
   animation: breathPulse 1900ms cubic-bezier(0.45, 0, 0.55, 1) infinite both;
 }
 
+/* Fail-safe: JS timer çalışmasa bile overlay CSS ile kapanır */
+@keyframes breathOverlayDismiss {
+  0%, 80%  { opacity: 1; }
+  100%     { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+.breath-overlay {
+  animation: breathOverlayDismiss 2700ms ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .breath-pulse { animation: none; }
 }
