@@ -6,7 +6,13 @@ const config: CapacitorConfig = {
   webDir: 'out',
   server: {
     androidScheme: 'https',
-    iosScheme: 'soulprofile',
+    // iOS local content scheme — Capacitor default 'capacitor://localhost'.
+    // Custom scheme (soulprofile) secure-context DEĞİL → crypto.subtle +
+    // clipboard kapanır + directory-index routing (/birth/ → index.html)
+    // kırılır → butonlar/Link çalışmaz. Default scheme en uyumlu.
+    // Deep link 'soulprofile://' ayrıca Info.plist CFBundleURLSchemes ile
+    // kaydedilir; local içerik scheme'inden bağımsız.
+    iosScheme: 'capacitor',
   },
   ios: {
     contentInset: 'always',
