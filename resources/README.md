@@ -1,41 +1,28 @@
 # SoulProfile iOS Asset Pipeline
 
-`scripts/prepare-ios.sh` çalıştırılırken bu dizinde **iki dosya** beklenir:
+Kaynak SVG'ler `assets/` dizininde — `@capacitor/assets` doğrudan SVG okur,
+PNG'e çevirmen gerekmez.
 
-## icon.png — 1024×1024 PNG
+## Kaynak dosyalar
 
-App ikonu kaynağı. Capacitor-assets bunu kullanıp tüm boyutları (`iOS Marketing` dahil) üretecek.
+- `assets/icon.svg` — 1024×1024 ana ikon (kare çerçeve + 2 nokta marka)
+- `assets/icon-foreground.svg` — Android adaptive foreground
+- `assets/icon-background.svg` — Android adaptive background
+- `assets/splash.svg` — 2732×2732 splash (logo ortada)
 
-Önerilen tasarım:
-- `public/icon.svg` referans olarak kullanılabilir (1024 brand mark hazır)
-- Figma/Sketch/Affinity'de PNG export et
-- iOS gradient background veya saydam arka plan
-- Apple guideline 9.3: yuvarlatılmış köşe çizmeyin — Apple kendi maskelemesini uygular
+Apple guideline 9.3: kaynağa yuvarlak köşe çizmeyin — iOS mask uygular.
 
-## splash.png — 2732×2732 PNG
-
-Splash screen kaynağı. Logo merkezde, etrafta fazla boşluk olmalı (Capacitor center-crop yapar).
-
-Önerilen:
-- Koyu arka plan (#05060f — `tailwind.config.ts`'teki `bg` rengi)
-- Ortada `icon.svg`'nin küçük bir versiyonu
-- Bold "SOULPROFILE" altın letterspaced (Inter Bold, ~0.3em tracking)
-
-## Üretim komutu
+## Üretim
 
 ```bash
-npx capacitor-assets generate --ios \
-  --iconBackgroundColor '#05060f' \
-  --splashBackgroundColor '#05060f'
+npx @capacitor/assets generate --ios \
+  --iconBackgroundColor '#07091a' \
+  --iconBackgroundColorDark '#07091a' \
+  --splashBackgroundColor '#07091a' \
+  --splashBackgroundColorDark '#07091a'
 ```
 
-Sonuç `ios/App/App/Assets.xcassets/` altına otomatik yazılır.
+Çıktı `ios/App/App/Assets.xcassets/AppIcon.appiconset/` ve
+`Splash.imageset/` altına yazılır.
 
-## Hızlı SVG → PNG
-
-Figma yoksa terminal ile:
-```bash
-# rsvg-convert (brew install librsvg)
-rsvg-convert -w 1024 -h 1024 public/icon.svg -o resources/icon.png
-rsvg-convert -w 2732 -h 2732 public/icon.svg -o resources/splash.png
-```
+Cap sync sırasında bunlar Xcode'a otomatik yansır.
