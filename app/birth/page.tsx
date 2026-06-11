@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { CosmicLoader } from '@/components/CosmicLoader';
-import { BreathIntro } from '@/components/BreathIntro';
 import { useSoulStore } from '@/lib/store';
 import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
 import { buildGalacticReport } from '@/lib/report';
@@ -125,10 +124,46 @@ export default function BirthPage() {
   }
 
   async function submit() {
-    if (!birth.fullName || !birth.birthDate || birth.latitude == null) {
+    if (!birth.fullName || !birth.birthDate) {
       setError(t('birth.error'));
       return;
     }
+
+    // Yer çözümü — kullanıcı öneriden seçtiyse lat/lng hazır. Seçmeden yazıp
+    // direkt submit'e bastıysa, burada bir kez daha geocode dene (öneri açılmamış
+    // olabilir). Böylece "yer giremiyorum → buton açmıyor" zinciri kırılır.
+    let lat = birth.latitude ?? null;
+    let lng = birth.longitude ?? null;
+    let tz = birth.timezone ?? 'UTC';
+    let placeName = birth.birthPlace ?? placeQuery;
+
+    if (lat == null && placeQuery.trim().length >= 2) {
+      setSearching(true);
+      try {
+        const hits = await geocodePlace(placeQuery, locale);
+        if (hits[0]) {
+          lat = hits[0].latitude;
+          lng = hits[0].longitude;
+          tz = hits[0].timezone;
+          placeName = `${hits[0].name}, ${hits[0].country}`;
+          setBirth({ birthPlace: placeName, latitude: lat, longitude: lng, timezone: tz });
+        }
+      } catch {
+        /* aşağıda hata mesajı verilir */
+      } finally {
+        setSearching(false);
+      }
+    }
+
+    if (lat == null || lng == null) {
+      setError(
+        locale === 'tr'
+          ? 'Doğum yerini bulamadık. Yer kutusuna şehir adını yazıp listeden seç (örn. "İstanbul").'
+          : 'We could not find the birthplace. Type a city in the place box and pick from the list.',
+      );
+      return;
+    }
+
     if (!canCreateReport()) {
       setGated(true);
       return;
@@ -141,10 +176,10 @@ export default function BirthPage() {
         birthDate: birth.birthDate,
         birthTime: birth.birthTime ?? '12:00',
         birthTimeKnown: birth.birthTimeKnown ?? true,
-        birthPlace: birth.birthPlace!,
-        latitude: birth.latitude,
-        longitude: birth.longitude!,
-        timezone: birth.timezone ?? 'UTC',
+        birthPlace: placeName,
+        latitude: lat,
+        longitude: lng,
+        timezone: tz,
         photoUri: birth.photoUri,
       }, locale);
       setReport(report);
@@ -168,7 +203,6 @@ export default function BirthPage() {
   }
 
   return (
-    <BreathIntro>
     <div className="relative min-h-[80vh] py-20 md:py-28">
       {loading ? <CosmicLoader /> : null}
       <CosmicBackground variant="aurora" />
@@ -319,7 +353,6 @@ export default function BirthPage() {
         </div>
       </div>
     </div>
-    </BreathIntro>
   );
 }
 

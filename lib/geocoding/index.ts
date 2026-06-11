@@ -2,11 +2,16 @@
 // https://open-meteo.com/en/docs/geocoding-api
 //
 // iOS Capacitor (capacitor://localhost origin) altında Open-Meteo CORS başlığı
-// bu scheme'i kabul etmiyor → preflight başarısız → fetch throw eder.
-// Native'de @capacitor/core CapacitorHttp plugin'ini kullanıyoruz: WebView
-// dışından native HTTP yapıyor, CORS yok.
+// bu scheme'i kabul etmiyor → WKWebView preflight başarısız → fetch throw eder.
+// Native'de @capacitor/core'un CapacitorHttp'sini kullanıyoruz: HTTP isteği
+// WebView'ın DIŞINDA, native katmanda yapılır → CORS yok.
+//
+// ÖNEMLİ: @capacitor/core STATİK import edilir. Eski kod `new Function(...import)`
+// ile dinamik import ediyordu; webpack bunu bundle'layamadığı için native'de
+// `capacitor://localhost/@capacitor/core` → 404 → her zaman fail ediyordu.
+// Statik import doğru bundle'lanır ve hem web hem native'de çalışır.
 
-import { isCapacitorNative } from '../platform';
+import { Capacitor, CapacitorHttp } from '@capacitor/core';
 
 export type GeocodeResult = {
   name: string;
@@ -24,54 +29,29 @@ type RawHit = {
   timezone: string;
 };
 
-type CapacitorHttpResponse = { data: { results?: RawHit[] } | string; status: number };
-type CapacitorHttpModule = {
-  CapacitorHttp: {
-    get: (opts: { url: string; headers?: Record<string, string> }) => Promise<CapacitorHttpResponse>;
-  };
-};
-
-let nativeHttp: CapacitorHttpModule['CapacitorHttp']['get'] | null | undefined;
-
-async function loadNativeHttp() {
-  if (nativeHttp !== undefined) return nativeHttp;
-  if (typeof window === 'undefined') {
-    nativeHttp = null;
-    return null;
-  }
-  try {
-    const dynImport = new Function('m', 'return import(m)') as (m: string) => Promise<CapacitorHttpModule>;
-    const mod = await dynImport('@capacitor/core');
-    nativeHttp = mod.CapacitorHttp.get.bind(mod.CapacitorHttp);
-  } catch {
-    nativeHttp = null;
-  }
-  return nativeHttp;
-}
-
 async function fetchJson(url: string): Promise<{ results?: RawHit[] } | null> {
-  if (isCapacitorNative()) {
-    const http = await loadNativeHttp();
-    if (http) {
-      try {
-        const res = await http({ url, headers: { Accept: 'application/json' } });
-        if (res.status >= 200 && res.status < 300) {
-          // CapacitorHttp 'data'yı JSON ise parse edip verir; string gelirse parse et.
-          if (typeof res.data === 'string') {
-            try {
-              return JSON.parse(res.data);
-            } catch {
-              return null;
-            }
+  // Native: CapacitorHttp (CORS bypass)
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const res = await CapacitorHttp.get({ url, headers: { Accept: 'application/json' } });
+      if (res.status >= 200 && res.status < 300) {
+        const d = res.data;
+        if (typeof d === 'string') {
+          try {
+            return JSON.parse(d);
+          } catch {
+            return null;
           }
-          return res.data;
         }
-        return null;
-      } catch {
-        return null;
+        return d as { results?: RawHit[] };
       }
+      return null;
+    } catch {
+      return null;
     }
   }
+
+  // Web: normal fetch (Open-Meteo web origin'lerde CORS *'a izin verir)
   try {
     const res = await fetch(url);
     if (!res.ok) return null;
