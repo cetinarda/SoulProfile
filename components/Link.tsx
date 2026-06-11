@@ -1,57 +1,75 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import type { ComponentProps, MouseEvent, ReactNode } from 'react';
 import NextLink from 'next/link';
-import { useEffect, useState } from 'react';
-import type { ComponentProps, ReactNode } from 'react';
+import { toDirUrl } from '@/lib/nav';
 
 /**
- * NextLink drop-in wrapper.
+ * NextLink drop-in — Capacitor iOS statik export uyumlu navigasyon.
  *
- * SORUN: Next App Router'ın <Link>'i statik export'ta SPA navigation
- * için `/route.txt` RSC payload'ını fetch ediyor. iOS Capacitor'da
- * `capacitor://localhost/compatibility.txt` 404 (dosya `compatibility/index.txt`),
- * Next.js "browser navigation'a düşüyorum" diyor ama gerçek navigasyon
- * her zaman tetiklenmiyor → buton tıklanıyor, sayfa açılmıyor.
+ * SORUN: Next App Router'ın <Link>'i (1) boot'ta `/route.txt` RSC payload
+ * prefetch ediyor (capacitor://'da 404), (2) click'i SPA için intercept
+ * ediyor ama statik export + capacitor:// origin'de soft-navigation
+ * çalışmıyor → "buton tıklanıyor, sayfa açılmıyor".
  *
- * ÇÖZÜM:
- *  - Web'de: NextLink (SPA hızı korunur), ama prefetch={false} —
- *    boot'taki ".txt prefetch" hataları kaybolur.
- *  - Native'de (mount sonrası): düz <a> tag → WebView native nav yapar,
- *    Capacitor scheme handler `/compatibility` path'ini gördüğünde
- *    `/compatibility/index.html`'i servis eder.
+ * ÇÖZÜM: Her zaman düz <a> render et (SSR ve client AYNI → hydration
+ * güvenli, prefetch yok). href DAİMA trailing-slash'lı directory URL
+ * (`/compatibility/`) — Capacitor WebView handler bunu kesinlikle
+ * `compatibility/index.html`'e çözer (slash'sız hali belirsiz).
  *
- * SSR/hydration: ilk render'da SSR ve client aynı (NextLink). useEffect
- * mount sonrası native algıladıysa state'i değiştirir → re-render plain
- * `<a>` ile. Hydration mismatch yok.
+ *  - Native: onClick erken çıkar → tarayıcının default <a> navigasyonu
+ *    tam-sayfa geçiş yapar (WebView handler index.html servis eder).
+ *  - Web: onClick preventDefault + router.push(path) → hızlı SPA korunur.
+ *    href yine de doğru (sağ-tık / yeni sekme / no-JS çalışır).
  */
 
-type NextLinkProps = ComponentProps<typeof NextLink>;
-type LinkProps = Omit<NextLinkProps, 'prefetch'> & {
-  children?: ReactNode;
+type AnchorRest = Omit<
+  ComponentProps<typeof NextLink>,
+  'href' | 'prefetch' | 'as' | 'children' | 'onClick'
+> & {
+  className?: string;
+  style?: React.CSSProperties;
+  onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
+  'aria-label'?: string;
+  target?: string;
 };
 
-export function Link({ href, children, ...rest }: LinkProps) {
-  const [native, setNative] = useState(false);
+function isNativePlatform(): boolean {
+  if (typeof window === 'undefined') return false;
+  const w = window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } };
+  return Boolean(w.Capacitor?.isNativePlatform?.());
+}
 
-  useEffect(() => {
-    const w = window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } };
-    if (w.Capacitor?.isNativePlatform?.()) setNative(true);
-  }, []);
+export function Link({
+  href,
+  children,
+  onClick,
+  ...rest
+}: {
+  href: string;
+  children?: ReactNode;
+} & AnchorRest) {
+  const router = useRouter();
+  const dir = toDirUrl(href);
 
-  const path = typeof href === 'string' ? href : href.pathname ?? '/';
-
-  if (native) {
-    // eslint-disable-next-line jsx-a11y/anchor-has-content
-    return (
-      <a href={path} {...(rest as Record<string, unknown>)}>
-        {children}
-      </a>
-    );
+  function handleClick(e: MouseEvent<HTMLAnchorElement>) {
+    onClick?.(e);
+    if (e.defaultPrevented) return;
+    // orta-tık / modifier → tarayıcı default davranışı
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    // dış link / yeni sekme → dokunma
+    if (rest.target === '_blank' || /^https?:|^mailto:|^tel:/.test(href)) return;
+    // native: default <a> tam-sayfa navigasyon (WebView handler çözer)
+    if (isNativePlatform()) return;
+    // web: hızlı SPA
+    e.preventDefault();
+    router.push(href);
   }
 
   return (
-    <NextLink href={href} prefetch={false} {...rest}>
+    <a href={dir} onClick={handleClick} {...rest}>
       {children}
-    </NextLink>
+    </a>
   );
 }
