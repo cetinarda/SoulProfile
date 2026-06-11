@@ -4,6 +4,7 @@
 import { getSupabase } from './index';
 import type { GalacticReport } from '../types';
 import { secureGet, secureSet, secureRemove } from '../secure-storage';
+import { getApiBase } from '../api-base';
 
 const LS_KEY = 'soulprofile.reports.v1';
 
@@ -133,7 +134,9 @@ export async function purgeAccount(): Promise<{ ok: boolean; error?: string }> {
       const { data: sessionData } = await sb.auth.getSession();
       const token = sessionData.session?.access_token;
       if (token) {
-        await fetch('/api/account/delete', {
+        // iOS Capacitor: capacitor:// origin'de relative /api yok; api-base
+        // production host'a yönlendiriyor.
+        await fetch(`${getApiBase()}/api/account/delete`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
         });

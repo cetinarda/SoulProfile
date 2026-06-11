@@ -85,14 +85,29 @@ export default function BirthPage() {
   async function searchPlace(value: string) {
     setPlaceQuery(value);
     setBirth({ birthPlace: value });
+    setError(null);
     if (value.length < 2) {
       setSuggestions([]);
       return;
     }
     setSearching(true);
     try {
-      const r = await geocodePlace(value);
+      const r = await geocodePlace(value, locale);
       setSuggestions(r);
+      if (r.length === 0 && value.length >= 3) {
+        // Sessiz başarısızlık yerine kullanıcıya geri bildir — iOS CORS / ağ sorunu.
+        setError(
+          locale === 'tr'
+            ? 'Yer bulunamadı. İnternet bağlantını kontrol et veya farklı bir yazım dene.'
+            : 'No place found. Check your connection or try a different spelling.',
+        );
+      }
+    } catch {
+      setError(
+        locale === 'tr'
+          ? 'Yer araması başarısız. İnternet bağlantını kontrol et.'
+          : 'Place search failed. Check your connection.',
+      );
     } finally {
       setSearching(false);
     }
@@ -133,10 +148,11 @@ export default function BirthPage() {
         photoUri: birth.photoUri,
       }, locale);
       setReport(report);
-      recordReport();
       // Lokal kayıt awaited — iOS hard-reload öncesi karne diske düşmüş olmalı.
       // Supabase fire-and-forget olarak içeride.
       await saveReport(report).catch((e) => console.warn('[birth] save failed', e));
+      // Quota'yı SONRA kaydet — kayıt başarılı değilse ücretsiz hak yanmasın.
+      recordReport();
       setActiveReportId(report.id);
       nav.push('/report');
     } catch (e) {

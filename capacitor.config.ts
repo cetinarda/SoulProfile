@@ -28,6 +28,13 @@ const config: CapacitorConfig = {
     overrideUserAgent: undefined,
   },
   plugins: {
+    // CapacitorHttp = native HTTP, WKWebView CORS preflight'ı bypass eder.
+    // Open-Meteo geocoding gibi capacitor:// origin'i reddeden public API'ler
+    // için kritik. fetch yerine CapacitorHttp.get() çağırırız (kod tarafında
+    // isCapacitorNative() ile gating var). enabled:true sadece izin verir.
+    CapacitorHttp: {
+      enabled: true,
+    },
     SplashScreen: {
       launchShowDuration: 700,
       launchAutoHide: true,
