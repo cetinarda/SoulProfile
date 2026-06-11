@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useNav } from '@/lib/nav';
+import { setActiveReportId } from '@/lib/active-report';
 import { PageLayout, Section } from '@/components/PageLayout';
 import { listReports } from '@/lib/supabase/reports';
 import { useSoulStore } from '@/lib/store';
@@ -51,6 +52,7 @@ export default function HistoryPage() {
                 type="button"
                 onClick={() => {
                   setReport(r);
+                  setActiveReportId(r.id);
                   nav.push('/report');
                 }}
                 className="card-surface rounded-3xl border border-panelBorder p-7 md:p-8 text-left hover:border-gold/50 hover:bg-white/[0.03]"

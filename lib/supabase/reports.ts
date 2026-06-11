@@ -25,22 +25,29 @@ async function saveLocal(reports: StoredReport[]) {
 export async function saveReport(report: GalacticReport): Promise<StoredReport> {
   const stored: StoredReport = { ...report, savedAt: new Date().toISOString() };
 
-  const sb = getSupabase();
-  if (sb) {
-    const { data: user } = await sb.auth.getUser();
-    if (user?.user) {
-      await sb.from('reports').insert({
-        user_id: user.user.id,
-        kind: 'galactic',
-        payload: report,
-        is_premium: false,
-      });
-    }
-  }
-
+  // 1. LOKAL ÖNCE — şifreli localStorage. iOS native'de hard-reload sonrası
+  // /report sayfası activeReportId üzerinden bunu okur. Supabase bekleyemeyiz.
   const list = await loadLocal();
   const dedupe = list.filter((r) => r.id !== stored.id);
   await saveLocal([stored, ...dedupe].slice(0, 30));
+
+  // 2. Supabase fire-and-forget — caller'ı bekletme.
+  const sb = getSupabase();
+  if (sb) {
+    sb.auth.getUser().then(({ data: userResult }) => {
+      const user = userResult?.user;
+      if (!user) return;
+      sb.from('reports')
+        .insert({
+          user_id: user.id,
+          kind: 'galactic',
+          payload: report,
+          is_premium: false,
+        })
+        .then(() => {}, () => {});
+    }, () => {});
+  }
+
   return stored;
 }
 

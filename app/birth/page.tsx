@@ -1,6 +1,7 @@
 'use client';
 
 import { useNav } from '@/lib/nav';
+import { setActiveReportId } from '@/lib/active-report';
 import Image from 'next/image';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
@@ -133,7 +134,10 @@ export default function BirthPage() {
       }, locale);
       setReport(report);
       recordReport();
-      saveReport(report).catch((e) => console.warn('[birth] save failed', e));
+      // Lokal kayıt awaited — iOS hard-reload öncesi karne diske düşmüş olmalı.
+      // Supabase fire-and-forget olarak içeride.
+      await saveReport(report).catch((e) => console.warn('[birth] save failed', e));
+      setActiveReportId(report.id);
       nav.push('/report');
     } catch (e) {
       console.error(e);

@@ -12,6 +12,8 @@ import { CharacterStats } from '@/components/CharacterStats';
 import { ConceptCard } from '@/components/ConceptCard';
 import { InviteShare } from '@/components/InviteShare';
 import { useSoulStore } from '@/lib/store';
+import { listReports } from '@/lib/supabase/reports';
+import { readActiveReportId, clearActiveReportId } from '@/lib/active-report';
 import { captureNode, downloadDataUrl, shareDataUrl } from '@/lib/share';
 import { premiumOpen } from '@/lib/feature-flags';
 import { buildConceptDecks } from '@/lib/concepts';
@@ -22,14 +24,44 @@ export default function ReportPage() {
   const nav = useNav();
   const { t, locale } = useT();
   const report = useSoulStore((s) => s.report);
+  const setReport = useSoulStore((s) => s.setReport);
   const cardRef = useRef<HTMLDivElement>(null);
   const [working, setWorking] = useState<'share' | 'download' | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [showDeeper, setShowDeeper] = useState(false);
 
+  // iOS Capacitor'da sayfa geçişi tam-sayfa reload → zustand sıfırlanıyor.
+  // birth/ ve history/ sayfaları nav.push'tan önce activeReportId'yi yazıyor;
+  // burada onu okuyup şifreli karne listesinden ilgili karneyi yüklüyoruz.
   useEffect(() => {
-    setHydrated(true);
-  }, []);
+    if (report) {
+      clearActiveReportId();
+      setHydrated(true);
+      return;
+    }
+    const id = readActiveReportId();
+    if (!id) {
+      setHydrated(true);
+      return;
+    }
+    let cancelled = false;
+    listReports()
+      .then((list) => {
+        if (cancelled) return;
+        const found = list.find((r) => r.id === id);
+        if (found) setReport(found);
+        clearActiveReportId();
+      })
+      .catch(() => {
+        /* lokal cache yok / şifre çözülemedi */
+      })
+      .finally(() => {
+        if (!cancelled) setHydrated(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [report, setReport]);
 
   const concepts = useMemo(() => (report ? buildConceptDecks(report) : []), [report]);
 
