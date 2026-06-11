@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import { useT } from '@/lib/i18n';
 import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
+import { BrandMark } from './BrandMark';
 
 export function TopBar() {
   const pathname = usePathname();
@@ -21,8 +22,8 @@ export function TopBar() {
   return (
     <header className="sticky top-0 z-40 border-b border-panelBorder/60 bg-bg/55 backdrop-blur-xl">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-4">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-2xl text-gold">✦</span>
+        <Link href="/" className="flex items-center gap-2.5">
+          <BrandMark size={20} className="text-gold" />
           <span className="text-[13px] font-bold tracking-[0.3em] text-ink">SOULPROFILE</span>
         </Link>
 

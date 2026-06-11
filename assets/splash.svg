@@ -15,15 +15,15 @@
   <rect width="2732" height="2732" fill="url(#bgGlow)"/>
   <rect width="2732" height="2732" fill="url(#goldGlow)"/>
 
-  <!-- Logo centered, sized for splash center-crop safe area -->
+  <!-- Logo centered — küçük ve zarif (splash center-crop safe area) -->
   <g transform="translate(1366 1366)">
-    <rect x="-228" y="-228" width="456" height="456"
-          rx="6" ry="6"
+    <rect x="-150" y="-150" width="300" height="300"
+          rx="5" ry="5"
           fill="none"
           stroke="#f5d061"
-          stroke-width="7"
-          opacity="0.95"/>
-    <circle cx="-86" cy="0" r="38" fill="#f5d061"/>
-    <circle cx="86"  cy="0" r="38" fill="#f5d061"/>
+          stroke-width="5"
+          opacity="0.92"/>
+    <circle cx="-56" cy="0" r="25" fill="#f5d061"/>
+    <circle cx="56"  cy="0" r="25" fill="#f5d061"/>
   </g>
 </svg>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useNav } from '@/lib/nav';
 import Image from 'next/image';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
@@ -15,7 +15,7 @@ import { canCreateReport, recordReport } from '@/lib/entitlements';
 import { PremiumGate } from '@/components/PremiumGate';
 
 export default function BirthPage() {
-  const router = useRouter();
+  const nav = useNav();
   const { t, locale } = useT();
   const [gated, setGated] = useState(false);
   const birth = useSoulStore((s) => s.birth);
@@ -134,7 +134,7 @@ export default function BirthPage() {
       setReport(report);
       recordReport();
       saveReport(report).catch((e) => console.warn('[birth] save failed', e));
-      router.push('/report');
+      nav.push('/report');
     } catch (e) {
       console.error(e);
       setError(locale === 'tr' ? 'Karne üretilemedi. Lütfen tekrar dene.' : 'Could not generate profile. Please try again.');

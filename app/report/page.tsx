@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useNav } from '@/lib/nav';
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
@@ -19,7 +19,7 @@ import { useT } from '@/lib/i18n';
 import { tap } from '@/lib/haptics';
 
 export default function ReportPage() {
-  const router = useRouter();
+  const nav = useNav();
   const { t, locale } = useT();
   const report = useSoulStore((s) => s.report);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -41,7 +41,7 @@ export default function ReportPage() {
           <p className="text-base text-ink">{t('report.empty')}</p>
           <button
             type="button"
-            onClick={() => router.replace('/birth')}
+            onClick={() => nav.replace('/birth')}
             className="mt-4 rounded-full bg-gold px-6 py-3 text-sm font-bold text-[#1a0a40]"
           >
             {t('report.createCard')}

@@ -62,18 +62,18 @@ export default function Welcome() {
           <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/compatibility"
-              className="group inline-flex items-center gap-3 rounded-full bg-gold px-10 py-5 text-base font-bold tracking-wide text-[#1a0a40] hover:scale-[1.03]"
-              style={{ boxShadow: '0 20px 60px -20px rgba(245, 208, 97, 0.55)' }}
+              className="group inline-flex items-center gap-2.5 rounded-full bg-gold px-7 py-3.5 text-sm font-bold tracking-wide text-[#1a0a40] transition-transform hover:scale-[1.02]"
+              style={{ boxShadow: '0 16px 44px -20px rgba(245, 208, 97, 0.5)' }}
             >
-              <span className="text-xl">⚯</span>
+              <span className="text-base">⚯</span>
               {t('home.cta.primary')}
-              <span className="transition-transform group-hover:translate-x-1">→</span>
+              <span className="transition-transform group-hover:translate-x-0.5">→</span>
             </Link>
             <Link
               href="/birth"
-              className="card-surface inline-flex items-center gap-2 rounded-full border border-gold/30 px-7 py-5 text-sm font-bold text-ink hover:border-gold/70 hover:bg-gold/[0.04]"
+              className="card-surface inline-flex items-center gap-2 rounded-full border border-gold/30 px-6 py-3.5 text-sm font-bold text-ink transition-colors hover:border-gold/70 hover:bg-gold/[0.04]"
             >
-              <span>✦</span> {t('home.cta.secondary')}
+              <span className="text-gold">✦</span> {t('home.cta.secondary')}
             </Link>
           </div>
 
@@ -127,10 +127,10 @@ export default function Welcome() {
               </ul>
               <Link
                 href="/birth"
-                className="group mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gold py-4 text-sm font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-[1.02]"
+                className="group mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gold py-3.5 text-[13px] font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-[1.01]"
               >
                 {t('home.path1.cta')}
-                <span className="transition-transform group-hover:translate-x-1">→</span>
+                <span className="transition-transform group-hover:translate-x-0.5">→</span>
               </Link>
             </div>
           </div>
@@ -151,10 +151,10 @@ export default function Welcome() {
               </ul>
               <Link
                 href="/compatibility"
-                className="group mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-cosmic py-4 text-sm font-bold tracking-wide text-white shadow-glow transition-transform hover:scale-[1.02]"
+                className="group mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-cosmic py-3.5 text-[13px] font-bold tracking-wide text-white shadow-glow transition-transform hover:scale-[1.01]"
               >
                 {t('home.path2.cta')}
-                <span className="transition-transform group-hover:translate-x-1">→</span>
+                <span className="transition-transform group-hover:translate-x-0.5">→</span>
               </Link>
             </div>
           </div>
@@ -242,11 +242,11 @@ export default function Welcome() {
             <p className="mt-4 text-sm leading-relaxed text-muted">{t('home.final.desc')}</p>
             <Link
               href="/birth"
-              className="group mt-6 inline-flex items-center gap-3 rounded-full bg-gold px-9 py-5 text-base font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-105"
+              className="group mt-6 inline-flex items-center gap-2.5 rounded-full bg-gold px-7 py-3.5 text-sm font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-[1.02]"
             >
-              <span className="text-xl">✦</span>
+              <span className="text-base">✦</span>
               {t('home.final.cta')}
-              <span className="transition-transform group-hover:translate-x-1">→</span>
+              <span className="transition-transform group-hover:translate-x-0.5">→</span>
             </Link>
             <p className="mt-4 text-xs text-faint">{t('home.final.note')}</p>
           </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useNav } from '@/lib/nav';
 import { useState } from 'react';
 import { PageLayout, Section, Bullet } from '@/components/PageLayout';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -9,7 +9,7 @@ import { useSoulStore } from '@/lib/store';
 import { purgeAccount } from '@/lib/supabase/reports';
 
 export default function Settings() {
-  const router = useRouter();
+  const nav = useNav();
   const report = useSoulStore((s) => s.report);
   const reset = useSoulStore((s) => s.reset);
   const [confirming, setConfirming] = useState(false);
@@ -45,7 +45,7 @@ export default function Settings() {
     reset();
     setConfirming(false);
     setDeleting(false);
-    router.replace('/');
+    nav.replace('/');
   }
 
   return (

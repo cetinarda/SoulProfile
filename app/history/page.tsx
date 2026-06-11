@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useNav } from '@/lib/nav';
 import { PageLayout, Section } from '@/components/PageLayout';
 import { listReports } from '@/lib/supabase/reports';
 import { useSoulStore } from '@/lib/store';
@@ -14,6 +15,7 @@ export default function HistoryPage() {
   const [reports, setReports] = useState<Saved[]>([]);
   const [loading, setLoading] = useState(true);
   const setReport = useSoulStore((s) => s.setReport);
+  const nav = useNav();
 
   useEffect(() => {
     listReports()
@@ -49,7 +51,7 @@ export default function HistoryPage() {
                 type="button"
                 onClick={() => {
                   setReport(r);
-                  window.location.href = '/report';
+                  nav.push('/report');
                 }}
                 className="card-surface rounded-3xl border border-panelBorder p-7 md:p-8 text-left hover:border-gold/50 hover:bg-white/[0.03]"
               >

@@ -4,9 +4,9 @@ import { Inter, Cormorant_Garamond } from 'next/font/google';
 import { TopBar } from '@/components/TopBar';
 import { Footer } from '@/components/Footer';
 import { PromoBanner } from '@/components/PromoBanner';
-import { SpaceIntro } from '@/components/SpaceIntro';
 import { BootSync } from '@/components/BootSync';
 import { GlobalErrorOverlay } from '@/components/GlobalErrorOverlay';
+import { CapacitorNav } from '@/components/CapacitorNav';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -117,8 +117,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="bg-bg text-ink min-h-screen flex flex-col">
         <GlobalErrorOverlay />
+        <CapacitorNav />
         <BootSync />
-        <SpaceIntro />
         <PromoBanner />
         <TopBar />
         <main className="flex-1">{children}</main>
