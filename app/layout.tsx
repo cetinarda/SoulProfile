@@ -6,6 +6,7 @@ import { Footer } from '@/components/Footer';
 import { PromoBanner } from '@/components/PromoBanner';
 import { SpaceIntro } from '@/components/SpaceIntro';
 import { BootSync } from '@/components/BootSync';
+import { GlobalErrorOverlay } from '@/components/GlobalErrorOverlay';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -115,6 +116,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="bg-bg text-ink min-h-screen flex flex-col">
+        <GlobalErrorOverlay />
         <BootSync />
         <SpaceIntro />
         <PromoBanner />
