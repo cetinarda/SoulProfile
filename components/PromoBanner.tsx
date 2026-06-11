@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@/components/Link';
 import { hasPremium } from '@/lib/entitlements';
 import { useT } from '@/lib/i18n';
 

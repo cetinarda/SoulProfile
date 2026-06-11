@@ -1,7 +1,7 @@
 'use client';
 
 import { useNav } from '@/lib/nav';
-import Link from 'next/link';
+import { Link } from '@/components/Link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { ReportCard } from '@/components/ReportCard';

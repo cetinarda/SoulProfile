@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/components/Link';
 import { Suspense, useEffect, useState, type ChangeEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CosmicBackground } from '@/components/CosmicBackground';

@@ -6,7 +6,6 @@ import { Footer } from '@/components/Footer';
 import { PromoBanner } from '@/components/PromoBanner';
 import { BootSync } from '@/components/BootSync';
 import { GlobalErrorOverlay } from '@/components/GlobalErrorOverlay';
-import { CapacitorNav } from '@/components/CapacitorNav';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -117,7 +116,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="bg-bg text-ink min-h-screen flex flex-col">
         <GlobalErrorOverlay />
-        <CapacitorNav />
         <BootSync />
         <PromoBanner />
         <TopBar />

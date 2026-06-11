@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/components/Link';
 import { useEffect, useState } from 'react';
 import { useNav } from '@/lib/nav';
 import { setActiveReportId } from '@/lib/active-report';

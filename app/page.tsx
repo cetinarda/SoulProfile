@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/components/Link';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { NowSkyChip } from '@/components/NowSkyChip';
 import { useT } from '@/lib/i18n';
