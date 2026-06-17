@@ -111,7 +111,6 @@ const tr: Dict = {
   'report.deeperHide': 'Topla',
   'report.deeperHint': 'AI bağlamı + 3D gökyüzü + yaşam ağacı + zodyak çarkı',
   'report.discoverKicker': 'Senin için ne anlama geliyor',
-  'birth.breath': 'Bir nefes al',
 
   // Compatibility
   'compat.kicker': 'İKİLİ KOZMİK UYUM',
@@ -281,7 +280,6 @@ const en: Dict = {
   'report.deeperHide': 'Collapse',
   'report.deeperHint': 'AI context + 3D sky + life tree + zodiac wheel',
   'report.discoverKicker': 'What it means for you',
-  'birth.breath': 'Take a breath',
 
   // Compatibility
   'compat.kicker': 'DUAL COSMIC COMPATIBILITY',

@@ -1,31 +1,12 @@
 'use client';
 
 // iOS Capacitor + web Share API + clipboard fallback zinciri.
-// 1) Capacitor native @capacitor/share (varsa)
+// 1) Capacitor native @capacitor/share
 // 2) navigator.share (modern web)
 // 3) navigator.clipboard.writeText (fallback)
 
-type CapacitorShare = {
-  share: (opts: { title?: string; text?: string; url?: string; dialogTitle?: string }) => Promise<unknown>;
-};
-
-let nativeShare: CapacitorShare['share'] | null | undefined;
-
-async function loadCapacitorShare() {
-  if (nativeShare !== undefined) return nativeShare;
-  if (typeof window === 'undefined') {
-    nativeShare = null;
-    return null;
-  }
-  try {
-    const dynImport = new Function('m', 'return import(m)') as (m: string) => Promise<{ Share: CapacitorShare }>;
-    const mod = await dynImport('@capacitor/share');
-    nativeShare = mod.Share.share.bind(mod.Share);
-  } catch {
-    nativeShare = null;
-  }
-  return nativeShare;
-}
+import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
 
 export async function shareInvite(opts: {
   title: string;
@@ -33,10 +14,9 @@ export async function shareInvite(opts: {
   url: string;
 }): Promise<'native' | 'web' | 'clipboard' | 'cancelled' | 'failed'> {
   // 1) Capacitor native share sheet
-  const native = await loadCapacitorShare();
-  if (native) {
+  if (Capacitor.isNativePlatform()) {
     try {
-      await native({
+      await Share.share({
         title: opts.title,
         text: opts.text,
         url: opts.url,
