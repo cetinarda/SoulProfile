@@ -17,9 +17,9 @@ import { SIGN_NAMES_TR } from '@/lib/content/astrology-content';
 import { useT } from '@/lib/i18n';
 import { canRunCompat, recordCompat } from '@/lib/entitlements';
 import { PremiumGate } from '@/components/PremiumGate';
+import { FORM_INPUT, BTN_COSMIC } from '@/lib/ui';
 
-const inputClass =
-  'input-surface w-full rounded-2xl border border-panelBorder px-5 py-4 text-[15px] text-ink placeholder:text-faint focus:border-gold/70 focus:outline-none';
+const inputClass = FORM_INPUT;
 
 export default function CompatibilityPage() {
   const { t, locale } = useT();
@@ -182,7 +182,7 @@ export default function CompatibilityPage() {
               onChange={(e) => setDate(e.target.value)}
               className={inputClass}
             />
-            <div className="grid grid-cols-[1fr_auto] gap-3">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
               <input
                 type="time"
                 value={time}
@@ -255,7 +255,7 @@ export default function CompatibilityPage() {
           type="button"
           onClick={compare}
           disabled={loading || !consent}
-          className="group mt-5 flex w-full items-center justify-center gap-3 rounded-full bg-cosmic py-5 text-base font-bold tracking-wide text-white shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-60"
+          className={`group mt-5 ${BTN_COSMIC}`}
         >
           {loading ? (
             <>

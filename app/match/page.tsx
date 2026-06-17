@@ -14,9 +14,10 @@ import { generateCompatNarrative, type CompatNarrative } from '@/lib/compatibili
 import { decodeInvite } from '@/lib/compatibility/invite';
 import type { BirthInput, GalacticReport } from '@/lib/types';
 import { useT } from '@/lib/i18n';
+import { FORM_INPUT, BTN_PRIMARY } from '@/lib/ui';
+import { PremiumLock } from '@/components/PremiumLock';
 
-const inputClass =
-  'input-surface w-full rounded-2xl border border-panelBorder px-5 py-4 text-[15px] text-ink placeholder:text-faint focus:border-gold/70 focus:outline-none';
+const inputClass = FORM_INPUT;
 
 export default function MatchPageWrapper() {
   return (
@@ -211,7 +212,7 @@ function MatchPage() {
         </div>
 
         {/* Sen */}
-        <div className="mt-4 rounded-2xl border border-panelBorder bg-panel p-5">
+        <div className="mt-4 rounded-3xl border border-panelBorder bg-panel p-6 md:p-7">
           <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-cosmic">
             {locale === 'tr' ? 'SEN' : 'YOU'}
           </p>
@@ -229,7 +230,7 @@ function MatchPage() {
               onChange={(e) => setDate(e.target.value)}
               className={inputClass}
             />
-            <div className="grid grid-cols-[1fr_auto] gap-3">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
               <input
                 type="time"
                 value={time}
@@ -288,7 +289,7 @@ function MatchPage() {
           type="button"
           onClick={compare}
           disabled={loading}
-          className="group mt-5 flex w-full items-center justify-center gap-3 rounded-full bg-gold py-5 text-base font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-60"
+          className={`group mt-5 ${BTN_PRIMARY}`}
         >
           <span className="text-xl">⚯</span>
           {loading ? t('compat.loading') : t('compat.submit')}
@@ -299,7 +300,17 @@ function MatchPage() {
           <div id="match-result" className="mt-12 space-y-10">
             <CompatibilityView result={result} narrative={narrative} />
             {inviter && meReport ? (
-              <DeepAnalysisBox a={inviter} b={meReport} result={result} />
+              <PremiumLock
+                kicker={locale === 'tr' ? 'DERİN UYUM ANALİZİ' : 'DEEP COMPATIBILITY ANALYSIS'}
+                hint={
+                  locale === 'tr'
+                    ? 'İkinizin yıldız haritalarının sentezi — kişiselleştirilmiş'
+                    : 'A personal synthesis of both your star charts'
+                }
+                previewMaxHeight={140}
+              >
+                <DeepAnalysisBox a={inviter} b={meReport} result={result} />
+              </PremiumLock>
             ) : null}
           </div>
         ) : null}

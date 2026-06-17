@@ -2,6 +2,7 @@
 
 import { useNav } from '@/lib/nav';
 import { setActiveReportId } from '@/lib/active-report';
+import { FORM_INPUT, BTN_PRIMARY } from '@/lib/ui';
 import Image from 'next/image';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
@@ -234,7 +235,7 @@ export default function BirthPage() {
             />
           </Field>
 
-          <div className="grid grid-cols-[1fr_auto] gap-3">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
             <Field label={t('birth.time')}>
               <input
                 type="time"
@@ -328,7 +329,7 @@ export default function BirthPage() {
             type="button"
             onClick={submit}
             disabled={loading}
-            className="group mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-gold py-5 text-base font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-60"
+            className={`group mt-3 ${BTN_PRIMARY}`}
           >
             {loading ? (
               <>
@@ -356,8 +357,7 @@ export default function BirthPage() {
   );
 }
 
-const inputClass =
-  'input-surface w-full rounded-2xl border border-panelBorder px-5 py-4 text-[15px] text-ink placeholder:text-faint focus:border-gold/70 focus:outline-none';
+const inputClass = FORM_INPUT;
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
