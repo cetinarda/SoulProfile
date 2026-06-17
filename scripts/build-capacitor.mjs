@@ -20,7 +20,7 @@ try {
   execSync('next build', {
     stdio: 'inherit',
     cwd: root,
-    env: { ...process.env, BUILD_TARGET: 'capacitor' },
+    env: { ...process.env, BUILD_TARGET: 'capacitor', NEXT_PUBLIC_BUILD_TARGET: 'capacitor' },
   });
 } catch (e) {
   exitCode = (e && typeof e === 'object' && 'status' in e ? Number(e.status) : 1) || 1;
