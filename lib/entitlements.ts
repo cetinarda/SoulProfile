@@ -1,10 +1,11 @@
 'use client';
 
-// Ücretsiz kullanım limiti:
-//  - 1 kendi karnesi
-//  - 1 ikili uyum karşılaştırması (1 başka kişinin haritası)
-// Limit aşılınca premium ($4.99 tek seferlik) gerekir.
-// iOS Capacitor build = peşin paid app → her zaman premium.
+// Freemium stratejisi:
+//  - Ücretsiz: SINIRSIZ karne + sınırsız uyum, AMA her karnenin/uyumun
+//    sadece "üst tabakası" (teaser) gösterilir. Derin AI yorumları,
+//    wisdoms/shadows, 3D solar, BirthChartWheel, vb. blur'lu kilit altında.
+//  - Premium ($4.99 tek seferlik): tüm blur kilitler açılır.
+//  - iOS Capacitor build = peşin paid app → her zaman premium.
 //
 // CANONICAL SOURCE: Supabase 'entitlements' tablosu (RLS-protected select).
 // Webhook (Stripe + RevenueCat) yazar, client okur.
@@ -16,27 +17,11 @@ import { getSupabase } from './supabase';
 
 const KEY_PREMIUM = 'soulprofile.premium';
 const KEY_PREMIUM_TS = 'soulprofile.premium.checkedAt';
-const KEY_REPORTS = 'soulprofile.usage.reports';
-const KEY_COMPAT = 'soulprofile.usage.compat';
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
-export const FREE_REPORT_LIMIT = 1;
-export const FREE_COMPAT_LIMIT = 1;
-
-function readInt(key: string): number {
-  if (typeof localStorage === 'undefined') return 0;
-  const v = Number(localStorage.getItem(key) ?? '0');
-  return Number.isFinite(v) ? v : 0;
-}
-
-function writeInt(key: string, n: number) {
-  if (typeof localStorage === 'undefined') return;
-  localStorage.setItem(key, String(n));
-}
-
 export function hasPremium(): boolean {
-  if (isCapacitorNative()) return true; // iOS peşin satın alındı
+  if (isCapacitorNative()) return false; // iOS — RevenueCat ile aç
   if (typeof localStorage === 'undefined') return false;
   return localStorage.getItem(KEY_PREMIUM) === '1';
 }
@@ -57,11 +42,9 @@ export function revokePremium() {
 
 /**
  * Canonical entitlement check — Supabase'ten okur, localStorage'ı senkronlar.
- * Auth'lu kullanıcı varsa server-side truth kazanır; yoksa localStorage'a düşer.
  * Boot'ta + premium-gated aksiyon öncesi çağrılmalı.
  */
 export async function refreshEntitlement(): Promise<boolean> {
-  if (isCapacitorNative()) return true; // iOS paid app
   const sb = getSupabase();
   if (!sb) return hasPremium();
   try {
@@ -106,35 +89,22 @@ export function togglePremium(): boolean {
   return true;
 }
 
-export function reportCount(): number {
-  return readInt(KEY_REPORTS);
-}
+// ─────────────────────────────────────────────────────────────
+// Geri uyumlu sayım API'si — artık SINIRSIZ. Çağrı yerleri
+// bozulmasın diye export'lar duruyor, hiç gate yok.
+// Yeni kod hasPremium() + PremiumLock ile content-level gate yapar.
 
-export function compatCount(): number {
-  return readInt(KEY_COMPAT);
-}
+export const FREE_REPORT_LIMIT = Infinity;
+export const FREE_COMPAT_LIMIT = Infinity;
 
-export function canCreateReport(): boolean {
-  return hasPremium() || reportCount() < FREE_REPORT_LIMIT;
-}
-
-export function canRunCompat(): boolean {
-  return hasPremium() || compatCount() < FREE_COMPAT_LIMIT;
-}
-
-export function recordReport() {
-  if (hasPremium()) return;
-  writeInt(KEY_REPORTS, reportCount() + 1);
-}
-
-export function recordCompat() {
-  if (hasPremium()) return;
-  writeInt(KEY_COMPAT, compatCount() + 1);
-}
-
-/** Geliştirme/iade için sıfırlama */
-export function resetUsage() {
+export function canCreateReport(): boolean { return true; }
+export function canRunCompat(): boolean { return true; }
+export function recordReport(): void { /* sayım yok */ }
+export function recordCompat(): void { /* sayım yok */ }
+export function reportCount(): number { return 0; }
+export function compatCount(): number { return 0; }
+export function resetUsage(): void {
   if (typeof localStorage === 'undefined') return;
-  localStorage.removeItem(KEY_REPORTS);
-  localStorage.removeItem(KEY_COMPAT);
+  localStorage.removeItem('soulprofile.usage.reports');
+  localStorage.removeItem('soulprofile.usage.compat');
 }

@@ -100,10 +100,10 @@ export default function PremiumPage() {
       title={locale === 'tr' ? 'Tek seferlik · Abonelik yok' : 'One-time · No subscription'}
       intro={
         owned
-          ? (locale === 'tr' ? 'Tam erişimin açık. Sınırsız karne ve ikili uyum karşılaştırması yapabilirsin.' : 'Your full access is unlocked. Enjoy unlimited profiles and compatibility checks.')
+          ? (locale === 'tr' ? 'Tam erişimin açık. Yıldızlar artık hiçbir şey saklamıyor.' : 'Your full access is unlocked. The stars hold nothing back now.')
           : (locale === 'tr'
-              ? 'İlk karnen ve ilk uyum karşılaştırman ücretsiz. Sınırsız erişim için bir kerelik öde — abonelik, gizli ücret yok.'
-              : 'Your first profile and first compatibility check are free. Pay once for unlimited access — no subscription, no hidden fees.')
+              ? 'Karnen ve uyum karşılaştırman ücretsiz — yüzeyini görüyorsun. AI yorumun, bilgelik & gölge rehberin, 3D solar sistemin ve Yaşam Ağacın sis altında. Tek bir ödeme: ömür boyu açık.'
+              : 'Your profile and compatibility checks are free — you see the surface. The AI reading, wisdom & shadow guidance, 3D solar system and Tree of Life sit behind a veil. One payment: unlocked for life.')
       }
     >
       {error ? (

@@ -1,9 +1,12 @@
 'use client';
 
 /**
- * Hafif dokunsal geri bildirim. iOS Capacitor → Impact Light, web → navigator.vibrate(8).
- * SSR-safe: window/navigator yoksa no-op.
+ * Hafif dokunsal geri bildirim. iOS Capacitor → Impact (light/medium/heavy),
+ * web → navigator.vibrate fallback. SSR-safe.
  */
+
+import { Capacitor } from '@capacitor/core';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 type Intensity = 'light' | 'medium' | 'heavy';
 
@@ -13,42 +16,19 @@ const VIBE_MS: Record<Intensity, number> = {
   heavy: 22,
 };
 
-let capacitorImpact:
-  | ((style: 'LIGHT' | 'MEDIUM' | 'HEAVY') => Promise<void>)
-  | null
-  | undefined;
-
-async function loadCapacitor() {
-  if (capacitorImpact !== undefined) return capacitorImpact;
-  if (typeof window === 'undefined') {
-    capacitorImpact = null;
-    return capacitorImpact;
-  }
-  try {
-    const dynImport = new Function('m', 'return import(m)') as (
-      m: string,
-    ) => Promise<{
-      Haptics: { impact: (opts: { style: 'LIGHT' | 'MEDIUM' | 'HEAVY' }) => Promise<void> };
-    }>;
-    const mod = await dynImport('@capacitor/haptics');
-    capacitorImpact = (style) => mod.Haptics.impact({ style });
-  } catch {
-    capacitorImpact = null;
-  }
-  return capacitorImpact;
-}
+const STYLE: Record<Intensity, ImpactStyle> = {
+  light: ImpactStyle.Light,
+  medium: ImpactStyle.Medium,
+  heavy: ImpactStyle.Heavy,
+};
 
 export function tap(intensity: Intensity = 'light') {
   if (typeof window === 'undefined') return;
-  loadCapacitor().then((impact) => {
-    if (impact) {
-      impact(intensity.toUpperCase() as 'LIGHT' | 'MEDIUM' | 'HEAVY').catch(() => {
-        webVibrate(intensity);
-      });
-    } else {
-      webVibrate(intensity);
-    }
-  });
+  if (Capacitor.isNativePlatform()) {
+    Haptics.impact({ style: STYLE[intensity] }).catch(() => webVibrate(intensity));
+    return;
+  }
+  webVibrate(intensity);
 }
 
 function webVibrate(intensity: Intensity) {
@@ -58,7 +38,7 @@ function webVibrate(intensity: Intensity) {
     try {
       nav.vibrate(VIBE_MS[intensity]);
     } catch {
-      // ignore
+      /* ignore */
     }
   }
 }
