@@ -1,38 +1,51 @@
-// SoulProfile tek seferlik satın alma modeline geçti.
-// iOS: $4.99 (peşin paid app, IAP yok)
-// Web: Stripe Checkout ile tek seferlik ödeme
-// Bundle ID tek: life.soulprofile.app
+// İki fiyat seçeneği:
+//  - Lifetime (tek seferlik non-consumable): $19.99
+//  - Monthly (aylık auto-renewable subscription): $4.99/ay
+// Her ikisi de 'premium' entitlement'ını açar → kendi haritadaki
+// yıldız/gezegen konumu + hareketi (3D/ağaç/çark) görünür olur.
 
-export type ProductKey = 'soulprofile_unlock';
+export type PlanKey = 'lifetime' | 'monthly';
 
-export type Product = {
-  key: ProductKey;
-  appleProductId?: string;     // Paid app modeli için App Store Connect'te ürün İD'sine ihtiyaç yok
-  stripePriceEnvKey: string;
-  name: string;
-  price: string;
-  priceTr: string;             // Türkiye için PPP-aware (App Store otomatik dönüştürür)
-  description: string;
-  features: string[];
+export type Plan = {
+  key: PlanKey;
+  appleProductId: string;      // App Store Connect product ID
+  rcPackageId: string;         // RevenueCat package identifier (offering içinde)
+  stripePriceEnvKey: string;   // Web Stripe price env
+  price: string;               // gösterim
+  period: 'once' | 'month';
 };
 
-export const PRODUCT: Product = {
-  key: 'soulprofile_unlock',
-  stripePriceEnvKey: 'NEXT_PUBLIC_STRIPE_PRICE_UNLOCK',
-  name: 'SoulProfile Tam Erişim',
-  price: '$4.99',
-  priceTr: '99 ₺',
-  description: 'Doğum verinden çıkan kalıcı kozmik kimlik. Tek seferlik ödeme — abonelik yok.',
-  features: [
-    'Tam galaktik karne (9 sistem sentezi)',
-    '3D solar sistem (gerçek gezegen dokuları)',
-    'Yıldız Yaşam Ağacı animasyonu',
-    'Karakter Stat oyun kartı',
-    'Tıklanabilir derin kavram detayları',
-    'AI Kozmik Anlatın (7 bölüm)',
-    'Sınırsız İkili Uyum karşılaştırması',
-    'Paylaşılabilir karne PNG\'leri',
-    'JSON dışa aktarma + veri silme',
-    'Lansman boyunca tamamen ücretsiz',
-  ],
+export const PLANS: Record<PlanKey, Plan> = {
+  lifetime: {
+    key: 'lifetime',
+    appleProductId: 'life.soulprofile.app.unlock',
+    rcPackageId: '$rc_lifetime',
+    stripePriceEnvKey: 'NEXT_PUBLIC_STRIPE_PRICE_LIFETIME',
+    price: '$19.99',
+    period: 'once',
+  },
+  monthly: {
+    key: 'monthly',
+    appleProductId: 'life.soulprofile.app.monthly',
+    rcPackageId: '$rc_monthly',
+    stripePriceEnvKey: 'NEXT_PUBLIC_STRIPE_PRICE_MONTHLY',
+    price: '$4.99',
+    period: 'month',
+  },
+};
+
+// Premium'un açtığı özellikler (gate kartlarında gösterilir).
+export const PREMIUM_FEATURES: string[] = [
+  '3D Güneş Sistemi — gezegenlerin gerçek konumu',
+  'Yıldız Yaşam Ağacı — doğumdan bugüne gezegen hareketi',
+  'Zodyak çemberi — tam doğum haritası',
+];
+
+// Geri uyumluluk için tek PRODUCT referansı (eski çağrı yerleri).
+export const PRODUCT = {
+  key: 'soulprofile_unlock' as const,
+  name: 'SoulProfile Premium',
+  price: PLANS.lifetime.price,
+  description: 'Kendi haritandaki yıldız ve gezegen konumlarını + hareketini aç.',
+  features: PREMIUM_FEATURES,
 };

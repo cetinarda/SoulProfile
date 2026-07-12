@@ -3,23 +3,23 @@
   "nonRenewingSubscriptions" : [],
   "products" : [
     {
-      "displayPrice" : "4.99",
+      "displayPrice" : "19.99",
       "familyShareable" : false,
-      "internalID" : "SP-UNLOCK-0001",
+      "internalID" : "SP-LIFETIME-0001",
       "localizations" : [
         {
-          "description" : "Yıldız hareketleri, yıldız konumları ve sınırsız ikili uyum",
-          "displayName" : "Premium Erişim",
+          "description" : "Yıldız ve gezegen konumları + hareketi — ömür boyu",
+          "displayName" : "Premium — Ömür Boyu",
           "locale" : "tr"
         },
         {
-          "description" : "Star movements, star positions and unlimited compatibility",
-          "displayName" : "Premium Access",
+          "description" : "Star & planet positions and movement — lifetime",
+          "displayName" : "Premium — Lifetime",
           "locale" : "en_US"
         }
       ],
       "productID" : "life.soulprofile.app.unlock",
-      "referenceName" : "Premium Unlock",
+      "referenceName" : "Premium Lifetime",
       "type" : "NonConsumable"
     }
   ],
@@ -32,7 +32,41 @@
     "_storefront" : "TUR",
     "_storeKitErrors" : []
   },
-  "subscriptionGroups" : [],
+  "subscriptionGroups" : [
+    {
+      "id" : "SP-SUBGROUP-0001",
+      "localizations" : [],
+      "name" : "SoulProfile Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "SP-MONTHLY-0001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Yıldız ve gezegen konumları + hareketi — aylık",
+              "displayName" : "Premium — Aylık",
+              "locale" : "tr"
+            },
+            {
+              "description" : "Star & planet positions and movement — monthly",
+              "displayName" : "Premium — Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "life.soulprofile.app.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Premium Monthly",
+          "subscriptionGroupID" : "SP-SUBGROUP-0001",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
   "version" : {
     "major" : 3,
     "minor" : 0

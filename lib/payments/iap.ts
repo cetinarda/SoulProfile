@@ -69,7 +69,7 @@ function isUnimplemented(e: unknown): boolean {
   return code === 'UNIMPLEMENTED' || /not implemented/i.test(msg);
 }
 
-export async function buyOnNative(): Promise<{ ok: boolean; error?: string }> {
+export async function buyOnNative(rcPackageId?: string): Promise<{ ok: boolean; error?: string }> {
   if (!Capacitor.isNativePlatform()) {
     return { ok: false, error: 'Native IAP unavailable' };
   }
@@ -80,7 +80,9 @@ export async function buyOnNative(): Promise<{ ok: boolean; error?: string }> {
   }
   try {
     const offerings = await Purchases.getOfferings();
-    const pkg = offerings?.current?.availablePackages?.[0];
+    const pkgs = offerings?.current?.availablePackages ?? [];
+    // İstenen paket (lifetime / monthly); yoksa ilk pakete düş.
+    const pkg = (rcPackageId && pkgs.find((p) => p.identifier === rcPackageId)) || pkgs[0];
     if (!pkg) return { ok: false, error: 'No offering configured' };
     const result = await Purchases.purchasePackage({ aPackage: pkg });
     const entitled = result?.customerInfo?.entitlements?.active?.[REVENUECAT_ENTITLEMENT];

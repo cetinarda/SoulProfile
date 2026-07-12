@@ -3,7 +3,7 @@
 import { Link } from '@/components/Link';
 import { useEffect, useState } from 'react';
 import { PageLayout } from '@/components/PageLayout';
-import { PRODUCT } from '@/lib/payments/skus';
+import { PLANS, PREMIUM_FEATURES, type Plan } from '@/lib/payments/skus';
 import { startCheckout } from '@/lib/payments/checkout';
 import { isCapacitorNative } from '@/lib/platform';
 import { grantPremium, hasPremium } from '@/lib/entitlements';
@@ -12,7 +12,7 @@ import { useT } from '@/lib/i18n';
 
 export default function PremiumPage() {
   const { t, locale } = useT();
-  const [working, setWorking] = useState(false);
+  const [working, setWorking] = useState<Plan['key'] | null>(null);
   const [restoring, setRestoring] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -46,14 +46,13 @@ export default function PremiumPage() {
     initIAP();
   }, [locale]);
 
-  async function buy() {
+  async function buy(plan: Plan) {
     setError(null);
     setInfo(null);
-    setWorking(true);
+    setWorking(plan.key);
     try {
       if (isCapacitorNative()) {
-        // iOS / Android — Apple StoreKit / Google Play Billing
-        const res = await buyOnNative();
+        const res = await buyOnNative(plan.rcPackageId);
         if (res.ok) {
           setOwned(true);
           setInfo(locale === 'tr' ? 'Tam erişim açıldı.' : 'Full access unlocked.');
@@ -63,13 +62,12 @@ export default function PremiumPage() {
           setError(res.error ?? 'Purchase failed');
         }
       } else {
-        // Web — Stripe Checkout
         await startCheckout();
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error');
     } finally {
-      setWorking(false);
+      setWorking(null);
     }
   }
 
@@ -97,13 +95,13 @@ export default function PremiumPage() {
   return (
     <PageLayout
       kicker={owned ? (locale === 'tr' ? 'TAM ERİŞİM AÇIK' : 'FULL ACCESS UNLOCKED') : (locale === 'tr' ? 'TAM ERİŞİM' : 'FULL ACCESS')}
-      title={locale === 'tr' ? 'Tek seferlik · Abonelik yok' : 'One-time · No subscription'}
+      title={locale === 'tr' ? 'Gökyüzünü aç' : 'Unlock your sky'}
       intro={
         owned
           ? (locale === 'tr' ? 'Tam erişimin açık. Yıldızlar artık hiçbir şey saklamıyor.' : 'Your full access is unlocked. The stars hold nothing back now.')
           : (locale === 'tr'
-              ? 'Karnen ve uyum karşılaştırman ücretsiz — yüzeyini görüyorsun. AI yorumun, bilgelik & gölge rehberin, 3D solar sistemin ve Yaşam Ağacın sis altında. Tek bir ödeme: ömür boyu açık.'
-              : 'Your profile and compatibility checks are free — you see the surface. The AI reading, wisdom & shadow guidance, 3D solar system and Tree of Life sit behind a veil. One payment: unlocked for life.')
+              ? 'Karnen, AI yorumun ve ikili uyum tamamen ücretsiz. Sadece haritandaki yıldız ve gezegenlerin konumu ile hareketi (3D Güneş Sistemi, Yaşam Ağacı, zodyak çemberi) premium.'
+              : 'Your profile, AI reading and compatibility are entirely free. Only the position and movement of the stars and planets in your chart (3D Solar System, Tree of Life, zodiac wheel) are premium.')
       }
     >
       {error ? (
@@ -113,19 +111,17 @@ export default function PremiumPage() {
       ) : null}
 
       <div className="rounded-3xl border border-gold/40 bg-gold/[0.05] p-8 md:p-10">
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <div>
-            <h2 className="font-display text-3xl text-ink">{PRODUCT.name}</h2>
-            <p className="mt-1 text-sm text-muted">{PRODUCT.description}</p>
-          </div>
-          <div className="text-right">
-            <p className="font-display text-4xl text-gold">{PRODUCT.price}</p>
-            <p className="text-xs text-muted">/ {PRODUCT.priceTr} · {locale === 'tr' ? 'tek seferlik' : 'one-time'}</p>
-          </div>
-        </div>
+        <h2 className="font-display text-3xl text-ink">
+          {locale === 'tr' ? 'Gökyüzünü aç' : 'Unlock your sky'}
+        </h2>
+        <p className="mt-1 text-sm text-muted">
+          {locale === 'tr'
+            ? 'Haritandaki yıldız ve gezegen konumları + hareketi. Diğer her şey ücretsiz.'
+            : 'Star & planet positions and movement in your chart. Everything else is free.'}
+        </p>
 
-        <ul className="mt-6 grid gap-2 md:grid-cols-2">
-          {PRODUCT.features.map((f) => (
+        <ul className="mt-5 grid gap-2">
+          {PREMIUM_FEATURES.map((f) => (
             <li key={f} className="flex gap-2 text-sm text-ink">
               <span className="text-gold">✦</span>
               <span>{f}</span>
@@ -133,18 +129,40 @@ export default function PremiumPage() {
           ))}
         </ul>
 
-        <button
-          type="button"
-          onClick={buy}
-          disabled={working || owned}
-          className="mt-6 w-full rounded-full bg-gold py-4 text-base font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-60"
-        >
-          {owned
-            ? (locale === 'tr' ? '✓ Tam erişim açık' : '✓ Full access unlocked')
-            : working
-            ? (locale === 'tr' ? 'İşleniyor...' : 'Processing...')
-            : (locale === 'tr' ? `${PRODUCT.price} öde, tüm erişimi aç` : `Pay ${PRODUCT.price}, unlock everything`)}
-        </button>
+        {/* İki plan */}
+        <div className="mt-6 space-y-3">
+          <button
+            type="button"
+            onClick={() => buy(PLANS.lifetime)}
+            disabled={working !== null || owned}
+            className="flex w-full items-center justify-between gap-3 rounded-2xl bg-gold px-6 py-4 text-left font-bold text-[#1a0a40] shadow-glow transition-transform hover:scale-[1.01] disabled:opacity-60"
+          >
+            <span>
+              <span className="block text-base">{locale === 'tr' ? 'Tek Seferlik' : 'One-time'}</span>
+              <span className="block text-[11px] font-semibold opacity-70">{locale === 'tr' ? 'ömür boyu erişim' : 'lifetime access'}</span>
+            </span>
+            <span className="text-xl">{working === 'lifetime' ? '…' : PLANS.lifetime.price}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => buy(PLANS.monthly)}
+            disabled={working !== null || owned}
+            className="flex w-full items-center justify-between gap-3 rounded-2xl border border-gold/40 bg-transparent px-6 py-4 text-left font-bold text-ink transition-colors hover:border-gold/70 disabled:opacity-60"
+          >
+            <span>
+              <span className="block text-base">{locale === 'tr' ? 'Aylık' : 'Monthly'}</span>
+              <span className="block text-[11px] font-semibold text-muted">{locale === 'tr' ? 'istediğin zaman iptal' : 'cancel anytime'}</span>
+            </span>
+            <span className="text-lg text-gold">{working === 'monthly' ? '…' : `${PLANS.monthly.price} ${locale === 'tr' ? '/ ay' : '/ mo'}`}</span>
+          </button>
+        </div>
+
+        {owned ? (
+          <p className="mt-4 rounded-lg border border-success/40 bg-success/10 p-2.5 text-center text-[12px] text-success">
+            {locale === 'tr' ? '✓ Tam erişim açık' : '✓ Full access unlocked'}
+          </p>
+        ) : null}
 
         {/* Restore Purchases — Apple guideline 3.1.1 zorunluluğu */}
         <button
@@ -166,19 +184,19 @@ export default function PremiumPage() {
 
         <p className="mt-3 text-center text-[11px] text-faint">
           {locale === 'tr'
-            ? 'iOS: Apple sistemi ile (App Store). Web: Stripe ile. Tek seferlik · abonelik yok.'
-            : 'iOS: Apple system (App Store). Web: Stripe. One-time · no subscription.'}
+            ? 'iOS: Apple (App Store). Aylık abonelik istediğin zaman iptal edilebilir.'
+            : 'iOS: Apple (App Store). Monthly subscription can be cancelled anytime.'}
         </p>
       </div>
 
       <div className="rounded-2xl border border-panelBorder bg-panel p-6">
         <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">
-          {locale === 'tr' ? 'NEDEN TEK FİYAT' : 'WHY ONE PRICE'}
+          {locale === 'tr' ? 'NELER ÜCRETSİZ' : "WHAT'S FREE"}
         </p>
         <p className="mt-2 text-sm leading-relaxed text-muted">
           {locale === 'tr'
-            ? 'Kimliğin sabittir — bir kez doğdun, bir kez sentezlenir. İlk karnen ve ilk uyum karşılaştırman ücretsiz. Daha fazlası için bir kere öde, sınırsız karne ve karşılaştırma yap.'
-            : 'Your identity is fixed — you were born once, synthesized once. Your first profile and first compatibility check are free. For more, pay once and get unlimited profiles and comparisons.'}
+            ? 'Doğum karnen, 9 sistem sentezi, AI Kozmik Anlatın ve sınırsız ikili uyum — hepsi ücretsiz. Sadece haritandaki yıldız/gezegen konumu ve hareketini görmek için premium: tek seferlik ya da aylık.'
+            : 'Your birth profile, 9-system synthesis, AI cosmic reading and unlimited compatibility — all free. Premium only unlocks the star/planet positions and movement in your chart: one-time or monthly.'}
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <Link

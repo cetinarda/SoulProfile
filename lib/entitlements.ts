@@ -86,38 +86,21 @@ export function togglePremium(): boolean {
 
 // ─────────────────────────────────────────────────────────────
 // Gate API'si:
-//  - Kendi karnesi: ÜCRETSİZ, sınırsız (metin/analiz).
-//  - Yıldız hareketleri + konumları (3D/ağaç/çark): HER ZAMAN premium (PremiumLock).
-//  - İkili uyum: İLK 1 ücretsiz, sonrası premium.
-
-const KEY_COMPAT = 'soulprofile.usage.compat';
+//  - Kendi karne (metin/analiz) + İkili uyum: TAMAMEN ÜCRETSİZ.
+//  - SADECE kendi haritada yıldız/gezegen konumu + hareketi (3D/ağaç/çark):
+//    premium (PremiumLock → /premium). Başka her şey açık.
 
 export const FREE_REPORT_LIMIT = Infinity;
-export const FREE_COMPAT_LIMIT = 1;
+export const FREE_COMPAT_LIMIT = Infinity;
 
-function readInt(key: string): number {
-  if (typeof localStorage === 'undefined') return 0;
-  const v = Number(localStorage.getItem(key) ?? '0');
-  return Number.isFinite(v) ? v : 0;
-}
-function writeInt(key: string, n: number) {
-  if (typeof localStorage === 'undefined') return;
-  localStorage.setItem(key, String(n));
-}
-
-export function canCreateReport(): boolean { return true; } // karne hep ücretsiz
-export function canRunCompat(): boolean {
-  return hasPremium() || compatCount() < FREE_COMPAT_LIMIT; // ilk uyum ücretsiz
-}
+export function canCreateReport(): boolean { return true; }
+export function canRunCompat(): boolean { return true; } // ikili uyum ücretsiz
 export function recordReport(): void { /* sayım yok */ }
-export function recordCompat(): void {
-  if (hasPremium()) return;
-  writeInt(KEY_COMPAT, compatCount() + 1);
-}
+export function recordCompat(): void { /* sayım yok */ }
 export function reportCount(): number { return 0; }
-export function compatCount(): number { return readInt(KEY_COMPAT); }
+export function compatCount(): number { return 0; }
 export function resetUsage(): void {
   if (typeof localStorage === 'undefined') return;
   localStorage.removeItem('soulprofile.usage.reports');
-  localStorage.removeItem(KEY_COMPAT);
+  localStorage.removeItem('soulprofile.usage.compat');
 }

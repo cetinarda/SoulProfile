@@ -2,7 +2,7 @@
 // iOS Capacitor build'inde bu rota mevcut değil (statik export); orada Apple paid app modeli geçerli.
 
 import { NextResponse } from 'next/server';
-import { PRODUCT } from '@/lib/payments/skus';
+import { PLANS } from '@/lib/payments/skus';
 import { rateLimit, rateKey } from '../ai/_shared';
 
 export const runtime = 'edge';
@@ -29,10 +29,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Geçersiz istek' }, { status: 400 });
   }
 
-  const priceId = process.env[PRODUCT.stripePriceEnvKey];
+  // Web Stripe — varsayılan lifetime planı (web ödeme ikincil; iOS App Store ana).
+  const envKey = PLANS.lifetime.stripePriceEnvKey;
+  const priceId = process.env[envKey];
   if (!priceId) {
     return NextResponse.json(
-      { error: `Stripe price ID eksik: ${PRODUCT.stripePriceEnvKey}` },
+      { error: `Stripe price ID eksik: ${envKey}` },
       { status: 503 },
     );
   }
