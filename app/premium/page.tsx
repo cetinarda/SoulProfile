@@ -216,8 +216,8 @@ export default function PremiumPage() {
 
       <p className="text-xs text-faint">
         {locale === 'tr'
-          ? "iOS App Store'da peşin $4.99 (yaklaşık 99 ₺) olarak listelenir. Web sürümünde aynı tek seferlik ödeme Stripe ile yapılır. AB ve Türkiye'de 14 gün cayma hakkın saklıdır. "
-          : 'On the iOS App Store it is listed as a $4.99 upfront purchase. On web the same one-time payment is made via Stripe. 14-day right of withdrawal applies in the EU and Türkiye. '}
+          ? 'İki seçenek: tek seferlik $19.99 (ömür boyu) ya da aylık $4.99 abonelik (istediğin zaman iptal). Aylık abonelik iptal edilene dek her ay otomatik yenilenir; App Store hesabından yönetebilirsin. AB ve Türkiye’de 14 gün cayma hakkın saklıdır. '
+          : 'Two options: $19.99 one-time (lifetime) or a $4.99 monthly subscription (cancel anytime). The monthly plan auto-renews each month until cancelled; manage it in your App Store account. 14-day right of withdrawal applies in the EU and Türkiye. '}
         <Link href="/terms" className="text-gold underline">
           {t('nav.terms')}
         </Link>

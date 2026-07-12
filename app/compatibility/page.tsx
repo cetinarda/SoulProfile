@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { CompatibilityView } from '@/components/CompatibilityView';
 import { DeepAnalysisBox } from '@/components/DeepAnalysisBox';
-import { PremiumLock } from '@/components/PremiumLock';
 import { useSoulStore } from '@/lib/store';
 import { listReports } from '@/lib/supabase/reports';
 import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
@@ -276,17 +275,7 @@ export default function CompatibilityPage() {
           <div id="compat-result" className="mt-12 space-y-10">
             <CompatibilityView result={result} narrative={narrative} />
             {me && otherReport ? (
-              <PremiumLock
-                kicker={locale === 'tr' ? 'DERİN UYUM ANALİZİ' : 'DEEP COMPATIBILITY ANALYSIS'}
-                hint={
-                  locale === 'tr'
-                    ? 'İkinizin yıldız haritalarının sentezi — kişiselleştirilmiş'
-                    : 'A personal synthesis of both your star charts'
-                }
-                previewMaxHeight={140}
-              >
-                <DeepAnalysisBox a={me} b={otherReport} result={result} />
-              </PremiumLock>
+              <DeepAnalysisBox a={me} b={otherReport} result={result} />
             ) : null}
             <div className="mt-8 text-center">
               <button

@@ -107,7 +107,7 @@ export function TopBar() {
                   onClick={() => setOpen(false)}
                   className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-gold px-4 py-2 text-xs font-bold text-[#1a0a40]"
                 >
-                  <span>✦</span> {buyLabel} · $4.99
+                  <span>✦</span> {buyLabel}
                 </Link>
               </li>
             ) : null}

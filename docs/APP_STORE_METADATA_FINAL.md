@@ -46,45 +46,51 @@ https://soulprofile.life/privacy
 - **Pre-Order:** Hayır
 - **Volume Purchase Program:** Hayır
 
+**Ücretsiz olan:** Doğum karnesi (9 sistem sentezi + AI Kozmik Anlatın) ve
+ikili uyum (derin analiz dahil) — tamamen ücretsiz.
+**Premium olan:** SADECE kendi haritadaki yıldız/gezegen konumu + hareketi
+(3D Güneş Sistemi, Yıldız Yaşam Ağacı, zodyak çemberi).
+
 ---
 
 ## 3. In-App Purchase Setup
 
-### Tek IAP ürünü
+### İKİ ürün (her ikisi de `premium` entitlement'ı açar)
 
+**A) Tek Seferlik (Non-Consumable)**
 | Field | Value |
 |---|---|
 | **Type** | Non-Consumable |
-| **Reference Name** | SoulProfile Tam Erişim |
+| **Reference Name** | Premium Lifetime |
 | **Product ID** | `life.soulprofile.app.unlock` |
-| **Price** | Tier 5 (~$4.99 / ₺99) |
+| **Price** | ~$19.99 |
 | **Availability** | All territories |
+| RevenueCat package | `$rc_lifetime` |
+
+**B) Aylık Abonelik (Auto-Renewable Subscription)**
+| Field | Value |
+|---|---|
+| **Type** | Auto-Renewable Subscription |
+| **Subscription Group** | SoulProfile Premium (yeni grup oluştur) |
+| **Reference Name** | Premium Monthly |
+| **Product ID** | `life.soulprofile.app.monthly` |
+| **Duration** | 1 Month |
+| **Price** | ~$4.99/ay |
+| RevenueCat package | `$rc_monthly` |
+
+> RevenueCat: iki ürünü de **`premium`** entitlement'a bağla; `default`
+> offering içine iki package (`$rc_lifetime`, `$rc_monthly`) ekle. Kod bu
+> paket kimliklerini arıyor (`lib/payments/skus.ts`).
 
 ### Localization
 
-**Türkçe Display Name:**
-```
-SoulProfile Tam Erişim
-```
-
-**Türkçe Description (45 char):**
-```
-Sınırsız karne + tam derinlik uyum analizi
-```
-
-**English Display Name:**
-```
-SoulProfile Full Access
-```
-
-**English Description (45 char):**
-```
-Unlimited profile + full depth analysis
-```
+**Tek Seferlik — TR:** `Premium — Ömür Boyu` · `Yıldız ve gezegen konumları + hareketi, ömür boyu`
+**Tek Seferlik — EN:** `Premium — Lifetime` · `Star & planet positions and movement, forever`
+**Aylık — TR:** `Premium — Aylık` · `Yıldız ve gezegen konumları + hareketi, aylık`
+**Aylık — EN:** `Premium — Monthly` · `Star & planet positions and movement, monthly`
 
 ### Review Screenshot
-TestFlight'taki uygulamadan Premium sayfasının ekran görüntüsü.
-Alternatif: `/premium` sayfasının iPhone simulator ekran görüntüsü (⌘+S).
+`/premium` sayfasının (iki plan görünür) iPhone ekran görüntüsü.
 
 ---
 
@@ -123,7 +129,7 @@ SoulProfile'ın ilk sürümü 🌌
 · Tam Derinlik Analizi: 10 bölümlük indirilebilir çift okuması
 · Davet linki ile iki kişi tek bağdan uyum hesaplama
 
-Verin sende kalır. Tek seferlik · abonelik yok.
+Karnen ve ikili uyum ücretsiz. Yıldız/gezegen konumu + hareketi için premium: tek seferlik $19.99 ya da aylık $4.99.
 ```
 
 **English:**
@@ -137,7 +143,7 @@ SoulProfile v1.0 🌌
 · Full Depth Analysis: a 10-section downloadable couple reading
 · Invite link — two people open their match from one tap
 
-Your data stays with you. One-time · no subscription.
+Your profile and compatibility are free. Star/planet positions & movement are premium: $19.99 one-time or $4.99/mo.
 ```
 
 ### Promotional Text (170 char) — istediğin zaman güncellenebilir, build gerektirmez
@@ -157,7 +163,7 @@ A 5-layer compatibility reading from birth data. Astrology synastry, Human Desig
 ```
 Doğduğunda yıldızlar sana ne söylüyordu — ve şimdi başka biriyle birlikte neyi yansıtıyorsunuz?
 
-SoulProfile, doğum tarih · saat · yerinden 9 analitik sistemi tek bir sentezde bir araya getirir. Bu bir falcılık uygulaması değildir; sembolik bir iç gözlem aracıdır. Doğum verisi sabittir — bu yüzden ödeme de tek seferlik. Abonelik yok, gizli ücret yok.
+SoulProfile, doğum tarih · saat · yerinden 9 analitik sistemi tek bir sentezde bir araya getirir. Bu bir falcılık uygulaması değildir; sembolik bir iç gözlem aracıdır. Karnen ve ikili uyum tamamen ücretsizdir. Yalnızca haritandaki yıldız ve gezegenlerin konumu ile hareketini görmek için premium: tek seferlik ya da aylık.
 
 NE HESAPLANIR
 
@@ -194,9 +200,9 @@ DAVET LİNKİ
 
 Karneni biriyle paylaş — link içine doğum verin şifreli gider, sunucuya hiçbir şey kaydedilmez. Karşı taraf kendi verisini girer ve ikili uyumunuzu görür.
 
-TAM DERİNLİK ANALİZİ (Premium)
+TAM DERİNLİK ANALİZİ
 
-Tek seferlik satın almayla açılan 10 bölümlük uzun okuma:
+İkili uyumla birlikte açılan 10 bölümlük uzun okuma:
 • Ruhsal Kontrat — bu iki ruh hangi müfredata kayıt oldu
 • Niye Bu Yaşamda Buluştular
 • Karşılıklı Öğretim — A→B ve B→A
@@ -220,7 +226,7 @@ Doğum verin yalnızca cihazında işlenir. Hesap zorunluluğu yoktur. İstediğ
 
 16 yaş ve üzeri için tasarlanmıştır. Eğlence ve farkındalık amaçlıdır; tıbbi, psikolojik veya finansal tavsiye yerine geçmez.
 
-Bir kerelik öde, ömür boyu kullan. Abonelik yok.
+Karnen ve uyum ücretsiz. Yıldız/gezegen konumu + hareketi için premium: $19.99 tek seferlik ya da $4.99/ay.
 ```
 
 ### Description (4000 char) — EN ana sürüm
@@ -228,7 +234,7 @@ Bir kerelik öde, ömür boyu kullan. Abonelik yok.
 ```
 When you were born, what did the stars say — and now, with someone else, what do you reflect in each other?
 
-SoulProfile brings 9 analytical systems together into one synthesis, from your birth date · time · place. This is not a fortune-telling app; it is a symbolic introspection tool. Birth data is fixed — so the payment is one-time. No subscription. No hidden fees.
+SoulProfile brings 9 analytical systems together into one synthesis, from your birth date · time · place. This is not a fortune-telling app; it is a symbolic introspection tool. Your profile and compatibility are entirely free. Only the position and movement of the stars and planets in your chart are premium: one-time or monthly.
 
 WHAT IS COMPUTED
 
@@ -291,7 +297,7 @@ Birth data is processed on your device. No account required. Delete all data any
 
 For ages 16+. For entertainment and self-awareness only; not a substitute for medical, psychological or financial advice.
 
-Pay once, use forever. No subscription.
+Profile & compatibility free. Star/planet positions & movement premium: $19.99 one-time or $4.99/mo.
 ```
 
 ### Keywords (100 char) — Türkçe pazar
@@ -400,7 +406,7 @@ Educational component (Lifestyle + Education):
 
 Pricing model:
 - Free tier: 1 cosmic profile + 1 compatibility check
-- Premium: $4.99 one-time, non-consumable in-app purchase
+- Premium: $19.99 one-time (non-consumable) OR $4.99/month (auto-renewable subscription)
   (life.soulprofile.app.unlock)
 - No subscription. No recurring billing. Restore Purchases supported
   (Guideline 3.1.1).
@@ -482,6 +488,6 @@ iPhone 6.9" (iPhone 16 Pro Max) ve iPhone 6.5" (iPhone 11 Pro Max) için **her b
 ✅ Reviewer Notes 4.3 spam reddine karşı koruyucu
 ✅ IAP product setup tek satır: `life.soulprofile.app.unlock`
 ✅ Privacy Manifest: tracking yok, sadece App Functionality
-✅ Tek-fiyat $4.99 non-consumable (abonelik karmaşası yok)
+✅ İki plan: $19.99 tek seferlik (non-consumable) + $4.99/ay (auto-renewable)
 
 **Bir sonraki adım:** `docs/APP_STORE_UPLOAD.md` Adım 9 — Archive ve TestFlight upload.

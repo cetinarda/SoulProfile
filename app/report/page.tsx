@@ -346,25 +346,25 @@ export default function ReportPage() {
           </div>
         </section>
 
-        {/* Premium showcase — sadece premium yoksa göster */}
+        {/* Premium showcase — yıldız konum/hareketi (sadece premium yoksa) */}
         {!isPremium ? (
           <section className="mt-14 rounded-2xl border border-gold/40 bg-gold/[0.06] p-6">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">
-              {locale === 'tr' ? 'TAM ERİŞİM' : 'FULL ACCESS'}
+              {locale === 'tr' ? 'GÖKYÜZÜN' : 'YOUR SKY'}
             </p>
             <h3 className="mt-2 font-display text-3xl text-ink">
-              {locale === 'tr' ? 'Sınırsız karne ve karşılaştırma' : 'Unlimited profiles & comparisons'}
+              {locale === 'tr' ? 'Yıldız ve gezegenlerin konumu + hareketi' : 'Star & planet positions and movement'}
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">
               {locale === 'tr'
-                ? 'İlk karnen ve ilk uyum karşılaştırman ücretsiz. Daha fazlası için tek seferlik $4.99 ile tam erişimi aç.'
-                : 'Your first profile and first compatibility check are free. Unlock full access with a one-time $4.99 for more.'}
+                ? 'Karnen ve ikili uyum ücretsiz. Sadece 3D Güneş Sistemi, Yıldız Yaşam Ağacı ve zodyak çemberi premium — tek seferlik $19.99 ya da aylık $4.99.'
+                : 'Your profile and compatibility are free. Only the 3D Solar System, Star Tree of Life and zodiac wheel are premium — $19.99 one-time or $4.99/mo.'}
             </p>
             <Link
               href="/premium"
               className="mt-4 inline-block rounded-full bg-gold px-6 py-3 text-sm font-bold text-[#1a0a40] shadow-glow"
             >
-              {locale === 'tr' ? 'Tam Erişimi Aç · $4.99' : 'Unlock Full Access · $4.99'}
+              {locale === 'tr' ? 'Gökyüzünü Aç' : 'Unlock Your Sky'}
             </Link>
           </section>
         ) : null}

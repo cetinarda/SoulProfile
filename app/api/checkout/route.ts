@@ -1,4 +1,4 @@
-// Web tek seferlik $4.99 ödeme — Stripe Checkout.
+// Web ödeme (ikincil) — Stripe Checkout. iOS ana kanal App Store IAP.
 // iOS Capacitor build'inde bu rota mevcut değil (statik export); orada Apple paid app modeli geçerli.
 
 import { NextResponse } from 'next/server';

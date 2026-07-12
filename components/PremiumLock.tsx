@@ -93,8 +93,8 @@ export function PremiumLock({
           </p>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             {locale === 'tr'
-              ? 'Tek seferlik ödeme · ömür boyu erişim · 30 gün iade'
-              : 'One-time purchase · lifetime access · 30-day refund'}
+              ? '$19.99 tek seferlik · ya da $4.99/ay'
+              : '$19.99 one-time · or $4.99/mo'}
           </p>
           <Link
             href="/premium"
@@ -102,7 +102,7 @@ export function PremiumLock({
             style={{ boxShadow: '0 16px 44px -20px rgba(245, 208, 97, 0.55)' }}
           >
             <span>✦</span>
-            {locale === 'tr' ? 'Tam Karneyi Aç' : 'Unlock Full Reading'}
+            {locale === 'tr' ? 'Gökyüzünü Aç' : 'Unlock Your Sky'}
             <span>→</span>
           </Link>
         </div>

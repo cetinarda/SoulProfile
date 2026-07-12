@@ -2,14 +2,11 @@
 
 import { useState } from 'react';
 import { useT } from '@/lib/i18n';
-import { hasPremium } from '@/lib/entitlements';
 import {
   deepAnalysisToMarkdown,
   generateDeepAnalysis,
   type DeepAnalysis,
 } from '@/lib/compatibility/deep-analysis';
-import { startCheckout } from '@/lib/payments/checkout';
-import { isCapacitorNative } from '@/lib/platform';
 import type { CompatibilityResult } from '@/lib/compatibility';
 import type { GalacticReport } from '@/lib/types';
 
@@ -32,34 +29,11 @@ function Section({ title, children, accent }: { title: string; children: React.R
 
 export function DeepAnalysisBox({ a, b, result }: Props) {
   const { t, locale } = useT();
-  const [premium, setPremium] = useState<boolean | null>(null);
+  // Derin uyum analizi ÜCRETSİZ (ikili uyum tamamen açık).
+  const premium = true;
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<DeepAnalysis | null>(null);
-  const [unlockWorking, setUnlockWorking] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  if (premium === null) {
-    // Hidrasyon sonrası premium durumunu kontrol et
-    if (typeof window !== 'undefined') {
-      setPremium(hasPremium());
-    }
-  }
-
-  async function unlock() {
-    setError(null);
-    if (isCapacitorNative()) {
-      setError(locale === 'tr' ? 'iOS uygulamasında peşin satın alındı.' : 'Purchased upfront on iOS.');
-      return;
-    }
-    setUnlockWorking(true);
-    try {
-      await startCheckout();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error');
-    } finally {
-      setUnlockWorking(false);
-    }
-  }
 
   async function generate() {
     setLoading(true);
@@ -87,79 +61,6 @@ export function DeepAnalysisBox({ a, b, result }: Props) {
     a_.click();
     document.body.removeChild(a_);
     URL.revokeObjectURL(url);
-  }
-
-  // Önizleme (premium yokken gösterilen)
-  if (!premium && !analysis) {
-    return (
-      <section className="relative overflow-hidden rounded-3xl border border-gold/40 bg-gradient-to-br from-[#15043a]/60 via-[#1a0a40]/50 to-[#2a0a5a]/60 p-6 md:p-8">
-        <div className="starfield opacity-20" />
-        <div className="relative">
-          <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold/20 text-3xl">
-              ✦
-            </div>
-            <div className="flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
-                {locale === 'tr' ? 'PREMIUM · TAM DERİNLİK ANALİZİ' : 'PREMIUM · FULL DEPTH ANALYSIS'}
-              </p>
-              <h3 className="mt-2 font-display text-2xl text-ink md:text-3xl">
-                {locale === 'tr'
-                  ? 'Ruh planında niye bir araya geldiniz — uzun, derin, indirilebilir'
-                  : 'Why you met at the soul level — long, deep, downloadable'}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted">
-                {locale === 'tr'
-                  ? '10 bölümlük detaylı bir okuma: Ruhsal kontrat, niye bu yaşamda buluştuğunuz, birbirinize öğretmek için hangi müfredata kayıt olduğunuz, çatışma deseni, ayrılık dinamiği, barışma alanı, uzun vadeli rezonans, karmik tema, çift için pratikler. Markdown olarak indirilebilir.'
-                  : 'A detailed 10-section reading: soul contract, why you met in this lifetime, the curriculum you signed up for to teach each other, conflict pattern, separation dynamic, reunion field, long-term resonance, karmic theme, practices for the couple. Downloadable as markdown.'}
-              </p>
-
-              {/* Blur preview */}
-              <ul className="mt-5 grid gap-2 text-[13px] text-muted md:grid-cols-2">
-                {[
-                  ['🤝', locale === 'tr' ? 'Ruhsal kontrat' : 'Soul contract'],
-                  ['⏳', locale === 'tr' ? 'Niye bu yaşamda buluştular' : 'Why they met in this lifetime'],
-                  ['↔', locale === 'tr' ? 'Karşılıklı öğretim (A→B, B→A)' : 'Reciprocal teaching'],
-                  ['⚡', locale === 'tr' ? 'Çatışma deseni' : 'Conflict pattern'],
-                  ['🚪', locale === 'tr' ? 'Ayrılık dinamiği' : 'Separation dynamic'],
-                  ['🌿', locale === 'tr' ? 'Barışma alanı' : 'Reunion field'],
-                  ['📈', locale === 'tr' ? 'Uzun vadeli rezonans' : 'Long-term resonance'],
-                  ['♾', locale === 'tr' ? 'Karmik tema' : 'Karmic theme'],
-                  ['🕯', locale === 'tr' ? 'Çift için pratikler' : 'Practices for the couple'],
-                  ['💫', locale === 'tr' ? 'Kapanış mührü' : 'Closing seal'],
-                ].map(([icon, text]) => (
-                  <li key={text} className="flex gap-2">
-                    <span>{icon}</span>
-                    <span>{text}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {error ? (
-                <p className="mt-4 rounded-lg border border-danger/40 bg-danger/10 p-3 text-sm text-danger">
-                  {error}
-                </p>
-              ) : null}
-
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  onClick={unlock}
-                  disabled={unlockWorking}
-                  className="inline-flex items-center gap-2 rounded-full bg-gold px-7 py-4 text-sm font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-105 disabled:opacity-60"
-                >
-                  <span>✦</span>
-                  {locale === 'tr' ? 'Tam Erişimi Aç · $4.99' : 'Unlock Full Access · $4.99'}
-                </button>
-                <span className="text-[11px] text-faint">
-                  {locale === 'tr' ? 'Tek seferlik · abonelik yok' : 'One-time · no subscription'}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
   }
 
   // Premium açık ama henüz üretilmedi

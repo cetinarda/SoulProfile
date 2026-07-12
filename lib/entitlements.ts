@@ -1,9 +1,10 @@
 'use client';
 
 // Freemium modeli:
-//  - ÜCRETSİZ: kullanıcı kendi karnesini tam açar (sınır yok).
-//  - PREMIUM ($4.99 tek seferlik): İKİLİ UYUM (compatibility) özelliği.
-//    Web'de Stripe, iOS'ta RevenueCat IAP ile alınır.
+//  - ÜCRETSİZ: kendi karne (metin/analiz/AI) + ikili uyum (derin analiz dahil).
+//  - PREMIUM: SADECE kendi haritada yıldız/gezegen konumu + hareketi
+//    (3D Güneş Sistemi, Yaşam Ağacı, zodyak çemberi). $19.99 tek seferlik
+//    ya da $4.99/ay. Web'de Stripe, iOS'ta RevenueCat IAP.
 //
 // CANONICAL SOURCE: Supabase 'entitlements' tablosu (web) + RevenueCat
 // entitlement (iOS). localStorage UI cache; grantPremium() satın alım/restore/

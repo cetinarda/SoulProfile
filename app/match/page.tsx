@@ -17,7 +17,6 @@ import { useT } from '@/lib/i18n';
 import { FORM_INPUT, BTN_PRIMARY } from '@/lib/ui';
 import { IS_CAPACITOR } from '@/lib/nav';
 import { AppOnlyGate } from '@/components/AppOnlyGate';
-import { PremiumLock } from '@/components/PremiumLock';
 import { LabeledField, DateField, TimeKnownField } from '@/components/LabeledField';
 
 const inputClass = FORM_INPUT;
@@ -298,17 +297,7 @@ function MatchPage() {
           <div id="match-result" className="mt-12 space-y-10">
             <CompatibilityView result={result} narrative={narrative} />
             {inviter && meReport ? (
-              <PremiumLock
-                kicker={locale === 'tr' ? 'DERİN UYUM ANALİZİ' : 'DEEP COMPATIBILITY ANALYSIS'}
-                hint={
-                  locale === 'tr'
-                    ? 'İkinizin yıldız haritalarının sentezi — kişiselleştirilmiş'
-                    : 'A personal synthesis of both your star charts'
-                }
-                previewMaxHeight={140}
-              >
-                <DeepAnalysisBox a={inviter} b={meReport} result={result} />
-              </PremiumLock>
+              <DeepAnalysisBox a={inviter} b={meReport} result={result} />
             ) : null}
           </div>
         ) : null}
