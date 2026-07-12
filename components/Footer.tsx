@@ -35,6 +35,9 @@ export function Footer() {
         <p className="mt-5 text-[11px] leading-relaxed text-faint">
           {t('footer.disclaimer')} © {new Date().getFullYear()} SoulProfile.
         </p>
+        <p className="mt-2 font-mono text-[10px] tracking-widest text-gold/60">
+          build {process.env.NEXT_PUBLIC_BUILD_ID ?? 'dev'}
+        </p>
         <DevToggle />
       </div>
     </footer>
