@@ -121,11 +121,7 @@ export default function CompatibilityPage() {
 
   if (!IS_CAPACITOR) return <AppOnlyGate />;
 
-  // İkili uyum PREMIUM — premium değilse satın al ekranı ÖNDE gösterilir.
-  if (hydrated && !premium) {
-    return <PremiumGate kind="compat" onUnlocked={() => setPremium(true)} />;
-  }
-
+  // İlk uyum ücretsiz. Hak dolduysa (canRunCompat=false) submit'te setGated → satın al.
   if (gated) {
     return <PremiumGate kind="compat" onBack={() => setGated(false)} onUnlocked={() => { setPremium(true); setGated(false); }} />;
   }

@@ -8,6 +8,7 @@ import { ReportCard } from '@/components/ReportCard';
 import { StarTreeOfLife } from '@/components/StarTreeOfLife';
 import { BirthChartWheel } from '@/components/BirthChartWheel';
 import { SolarSystem3D } from '@/components/SolarSystem3D';
+import { PremiumLock } from '@/components/PremiumLock';
 import { CharacterStats } from '@/components/CharacterStats';
 import { ConceptCard } from '@/components/ConceptCard';
 import { InviteShare } from '@/components/InviteShare';
@@ -280,7 +281,16 @@ export default function ReportPage() {
                   </div>
               ) : null}
 
-              {/* İnteraktif görseller — ücretsiz (kendi karne) */}
+              {/* Yıldız hareketleri + konumları — HER ZAMAN premium (PremiumLock → /premium) */}
+              <PremiumLock
+                kicker={locale === 'tr' ? 'GÖKYÜZÜN — İNTERAKTİF' : 'YOUR SKY — INTERACTIVE'}
+                hint={
+                  locale === 'tr'
+                    ? 'Yıldızların hareketi ve konumu — 3D Güneş Sistemi, Yaşam Ağacı ve zodyak çemberin'
+                    : 'The movement and positions of your stars — 3D Solar System, Tree of Life and your zodiac wheel'
+                }
+                previewMaxHeight={160}
+              >
               <div className="space-y-6">
                   <div className="card-surface rounded-3xl border border-gold/30 p-4 md:p-6">
                     <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
@@ -303,6 +313,7 @@ export default function ReportPage() {
                     </div>
                   </div>
                 </div>
+              </PremiumLock>
             </div>
           ) : null}
         </section>
