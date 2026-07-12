@@ -336,7 +336,6 @@ main {
   font-size: 16px;       /* iOS focus zoom + reflow engeli */
   line-height: 1.2;
   overflow: hidden;      /* içerik kutudan taşamaz */
-  text-overflow: ellipsis;
 }
 /* iOS date/time: native genişlik/yükseklik dayatmasını kır */
 input[type='date'].form-input,
@@ -346,15 +345,21 @@ input[type='time'].form-input {
   display: inline-flex;
   align-items: center;
   height: 56px;
+  white-space: nowrap;
 }
 .form-input::-webkit-date-and-time-value {
   text-align: left;
   margin: 0;
   min-height: 1.2em;     /* iOS'ta değer alanı kutuyu şişirmesin */
+  white-space: nowrap;
 }
 .form-input::-webkit-datetime-edit {
   padding: 0;
   line-height: 1.2;
+  white-space: nowrap;
+}
+.form-input::-webkit-calendar-picker-indicator {
+  margin-left: auto;     /* takvim ikonu sağa sabit */
 }
 .form-input::-webkit-calendar-picker-indicator {
   opacity: 0.6;

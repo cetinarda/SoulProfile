@@ -6,7 +6,7 @@
 import { Purchases, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
 import { Capacitor } from '@capacitor/core';
 import { platform } from '../platform';
-import { grantPremium, hasPremium } from '../entitlements';
+import { grantPremium, revokePremium, hasPremium } from '../entitlements';
 import { getSupabase } from '../supabase';
 
 export const APPLE_PRODUCT_ID = 'life.soulprofile.app.unlock';
@@ -53,7 +53,11 @@ export async function syncEntitlement(): Promise<boolean> {
       grantPremium();
       return true;
     }
-    return hasPremium();
+    // AUTHORITATIVE: RevenueCat sorgusu BAŞARILI + aktif entitlement YOK →
+    // premium değil. Stale localStorage (eski DevToggle vb.) burada temizlenir.
+    // (Sorgu hata verirse catch → cache korunur, offline paid user kilitlenmez.)
+    revokePremium();
+    return false;
   } catch {
     return hasPremium();
   }

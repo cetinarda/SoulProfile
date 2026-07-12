@@ -1,7 +1,7 @@
 'use client';
 
 import { Link } from '@/components/Link';
-import { Suspense, useEffect, useState, type ChangeEvent } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { CompatibilityView } from '@/components/CompatibilityView';
@@ -18,6 +18,7 @@ import { FORM_INPUT, BTN_PRIMARY } from '@/lib/ui';
 import { IS_CAPACITOR } from '@/lib/nav';
 import { AppOnlyGate } from '@/components/AppOnlyGate';
 import { PremiumLock } from '@/components/PremiumLock';
+import { LabeledField, DateField, TimeKnownField } from '@/components/LabeledField';
 
 const inputClass = FORM_INPUT;
 
@@ -220,46 +221,38 @@ function MatchPage() {
           <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-cosmic">
             {locale === 'tr' ? 'SEN' : 'YOU'}
           </p>
-          <div className="mt-4 space-y-4">
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t('compat.name')}
-              className={inputClass}
-            />
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className={inputClass}
-            />
-            <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
-              <input
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                disabled={!timeKnown}
-                className={inputClass}
-              />
-              <label className="flex cursor-pointer flex-col items-center justify-center gap-1">
-                <input
-                  type="checkbox"
-                  checked={timeKnown}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => setTimeKnown(e.target.checked)}
-                  className="h-5 w-5 accent-gold"
-                />
-                <span className="text-xs text-muted">{t('compat.timeKnown')}</span>
-              </label>
-            </div>
-            <div className="relative">
+          <div className="mt-4 space-y-5">
+            <LabeledField label={locale === 'tr' ? 'Adı' : 'Name'}>
               <input
                 type="text"
-                value={placeQuery}
-                onChange={(e) => searchPlace(e.target.value)}
-                placeholder={t('compat.place')}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t('compat.name')}
                 className={inputClass}
               />
+            </LabeledField>
+            <DateField
+              label={locale === 'tr' ? 'Doğum tarihi' : 'Birth date'}
+              value={date}
+              onChange={setDate}
+            />
+            <TimeKnownField
+              label={locale === 'tr' ? 'Doğum saati' : 'Birth time'}
+              value={time}
+              onChange={setTime}
+              known={timeKnown}
+              onKnownChange={setTimeKnown}
+              knownLabel={t('compat.timeKnown')}
+            />
+            <LabeledField label={locale === 'tr' ? 'Doğum yeri' : 'Birthplace'}>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={placeQuery}
+                  onChange={(e) => searchPlace(e.target.value)}
+                  placeholder={t('compat.place')}
+                  className={inputClass}
+                />
               {suggestions.length > 0 ? (
                 <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl border border-panelBorder bg-bgElevated">
                   {suggestions.map((s, i) => (
@@ -279,7 +272,8 @@ function MatchPage() {
                   ))}
                 </div>
               ) : null}
-            </div>
+              </div>
+            </LabeledField>
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { Link } from '@/components/Link';
-import { useEffect, useState, type ChangeEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { CompatibilityView } from '@/components/CompatibilityView';
 import { DeepAnalysisBox } from '@/components/DeepAnalysisBox';
@@ -20,9 +20,9 @@ import { PremiumGate } from '@/components/PremiumGate';
 import { FORM_INPUT, BTN_COSMIC } from '@/lib/ui';
 import { IS_CAPACITOR } from '@/lib/nav';
 import { AppOnlyGate } from '@/components/AppOnlyGate';
+import { LabeledField, DateField, TimeKnownField } from '@/components/LabeledField';
 
 const inputClass = FORM_INPUT;
-const fieldLabel = 'mb-1.5 block text-[11px] font-medium uppercase tracking-[0.18em] text-faint';
 
 export default function CompatibilityPage() {
   const { t, locale } = useT();
@@ -180,9 +180,8 @@ export default function CompatibilityPage() {
         <div className="card-surface mt-5 rounded-3xl border border-panelBorder p-6 md:p-7">
           <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-cosmic">{t('compat.person2')}</p>
 
-          <div className="mt-6 space-y-4">
-            <label className="block">
-              <span className={fieldLabel}>{locale === 'tr' ? 'Adı' : 'Name'}</span>
+          <div className="mt-6 space-y-5">
+            <LabeledField label={locale === 'tr' ? 'Adı' : 'Name'}>
               <input
                 type="text"
                 value={name}
@@ -190,39 +189,21 @@ export default function CompatibilityPage() {
                 placeholder={t('compat.name')}
                 className={inputClass}
               />
-            </label>
-            <label className="block">
-              <span className={fieldLabel}>{locale === 'tr' ? 'Doğum tarihi' : 'Birth date'}</span>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className={inputClass}
-              />
-            </label>
-            <div>
-              <span className={fieldLabel}>{locale === 'tr' ? 'Doğum saati' : 'Birth time'}</span>
-              <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
-                <input
-                  type="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  disabled={!timeKnown}
-                  className={inputClass}
-                />
-                <label className="flex cursor-pointer flex-col items-center justify-center gap-1">
-                  <input
-                    type="checkbox"
-                    checked={timeKnown}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setTimeKnown(e.target.checked)}
-                    className="h-5 w-5 accent-gold"
-                  />
-                  <span className="text-xs text-muted">{t('compat.timeKnown')}</span>
-                </label>
-              </div>
-            </div>
-            <label className="block">
-              <span className={fieldLabel}>{locale === 'tr' ? 'Doğum yeri' : 'Birthplace'}</span>
+            </LabeledField>
+            <DateField
+              label={locale === 'tr' ? 'Doğum tarihi' : 'Birth date'}
+              value={date}
+              onChange={setDate}
+            />
+            <TimeKnownField
+              label={locale === 'tr' ? 'Doğum saati' : 'Birth time'}
+              value={time}
+              onChange={setTime}
+              known={timeKnown}
+              onKnownChange={setTimeKnown}
+              knownLabel={t('compat.timeKnown')}
+            />
+            <LabeledField label={locale === 'tr' ? 'Doğum yeri' : 'Birthplace'}>
               <div className="relative">
                 <input
                   type="text"
@@ -251,7 +232,7 @@ export default function CompatibilityPage() {
                 </div>
               ) : null}
               </div>
-            </label>
+            </LabeledField>
           </div>
         </div>
 

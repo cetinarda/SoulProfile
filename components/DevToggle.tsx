@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { hasPremium, togglePremium, reportCount, compatCount, resetUsage } from '@/lib/entitlements';
+import { IS_CAPACITOR } from '@/lib/nav';
 
-// Production'da gösterilmez. Geliştirme/test için aç:
-//   .env.local → NEXT_PUBLIC_SHOW_DEV_TOGGLE=1
-// Netlify production env'inde tanımsız bırakırsan otomatik gizlenir.
-const SHOW = process.env.NEXT_PUBLIC_SHOW_DEV_TOGGLE === '1' || process.env.NODE_ENV !== 'production';
+// iOS/Capacitor build'inde ASLA gösterilmez (yanlışlıkla premium açıp
+// stale localStorage bırakmasın). Sadece web dev / açık env flag'inde görünür.
+const SHOW =
+  !IS_CAPACITOR &&
+  (process.env.NEXT_PUBLIC_SHOW_DEV_TOGGLE === '1' || process.env.NODE_ENV !== 'production');
 
 export function DevToggle() {
   const [mounted, setMounted] = useState(false);

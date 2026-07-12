@@ -5,6 +5,7 @@ import { setActiveReportId } from '@/lib/active-report';
 import { FORM_INPUT, BTN_PRIMARY } from '@/lib/ui';
 import { IS_CAPACITOR } from '@/lib/nav';
 import { AppOnlyGate } from '@/components/AppOnlyGate';
+import { LabeledField, DateField, TimeKnownField } from '@/components/LabeledField';
 import Image from 'next/image';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
@@ -219,7 +220,7 @@ export default function BirthPage() {
         <p className="mt-3 text-base leading-relaxed text-muted">{t('birth.subtitle')}</p>
 
         <div className="mt-8 space-y-5">
-          <Field label={t('birth.name')}>
+          <LabeledField label={t('birth.name')}>
             <input
               type="text"
               value={birth.fullName ?? ''}
@@ -228,41 +229,24 @@ export default function BirthPage() {
               autoComplete="name"
               className={inputClass}
             />
-          </Field>
+          </LabeledField>
 
-          <Field label={t('birth.date')}>
-            <input
-              type="date"
-              value={birth.birthDate ?? ''}
-              onChange={(e) => setBirth({ birthDate: e.target.value })}
-              className={inputClass}
-            />
-          </Field>
+          <DateField
+            label={t('birth.date')}
+            value={birth.birthDate ?? ''}
+            onChange={(v) => setBirth({ birthDate: v })}
+          />
 
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
-            <Field label={t('birth.time')}>
-              <input
-                type="time"
-                value={birth.birthTime ?? ''}
-                onChange={(e) => setBirth({ birthTime: e.target.value })}
-                disabled={birth.birthTimeKnown === false}
-                className={inputClass}
-              />
-            </Field>
-            <div className="flex flex-col items-center justify-end pb-2">
-              <label className="flex cursor-pointer flex-col items-center gap-1">
-                <input
-                  type="checkbox"
-                  checked={birth.birthTimeKnown !== false}
-                  onChange={(e) => setBirth({ birthTimeKnown: e.target.checked })}
-                  className="h-5 w-5 accent-gold"
-                />
-                <span className="text-xs text-muted">{t('birth.timeKnown')}</span>
-              </label>
-            </div>
-          </div>
+          <TimeKnownField
+            label={t('birth.time')}
+            value={birth.birthTime ?? ''}
+            onChange={(v) => setBirth({ birthTime: v })}
+            known={birth.birthTimeKnown !== false}
+            onKnownChange={(b) => setBirth({ birthTimeKnown: b })}
+            knownLabel={t('birth.timeKnown')}
+          />
 
-          <Field label={t('birth.place')}>
+          <LabeledField label={t('birth.place')}>
             <div className="relative">
               <input
                 type="text"
@@ -292,7 +276,7 @@ export default function BirthPage() {
                 </div>
               ) : null}
             </div>
-          </Field>
+          </LabeledField>
 
           {/* Opsiyonel profil fotoğrafı — kompakt, en sonda */}
           <button
@@ -362,12 +346,3 @@ export default function BirthPage() {
 }
 
 const inputClass = FORM_INPUT;
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block space-y-2">
-      <span className="block text-xs font-bold uppercase tracking-[0.2em] text-muted">{label}</span>
-      {children}
-    </label>
-  );
-}
