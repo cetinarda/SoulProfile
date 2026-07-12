@@ -15,7 +15,7 @@ import { generateCompatNarrative, type CompatNarrative } from '@/lib/compatibili
 import type { GalacticReport } from '@/lib/types';
 import { SIGN_NAMES_TR } from '@/lib/content/astrology-content';
 import { useT } from '@/lib/i18n';
-import { canRunCompat, recordCompat } from '@/lib/entitlements';
+import { canRunCompat, recordCompat, hasPremium } from '@/lib/entitlements';
 import { PremiumGate } from '@/components/PremiumGate';
 import { FORM_INPUT, BTN_COSMIC } from '@/lib/ui';
 import { IS_CAPACITOR } from '@/lib/nav';
@@ -30,6 +30,7 @@ export default function CompatibilityPage() {
   const [me, setMe] = useState<GalacticReport | null>(storeReport);
   const [hydrated, setHydrated] = useState(false);
   const [gated, setGated] = useState(false);
+  const [premium, setPremium] = useState(false);
 
   // İkinci kişi formu
   const [name, setName] = useState('');
@@ -49,6 +50,7 @@ export default function CompatibilityPage() {
 
   useEffect(() => {
     setHydrated(true);
+    setPremium(hasPremium());
     if (!storeReport) {
       listReports().then((r) => {
         if (r[0]) setMe(r[0]);
@@ -119,8 +121,13 @@ export default function CompatibilityPage() {
 
   if (!IS_CAPACITOR) return <AppOnlyGate />;
 
+  // İkili uyum PREMIUM — premium değilse satın al ekranı ÖNDE gösterilir.
+  if (hydrated && !premium) {
+    return <PremiumGate kind="compat" onUnlocked={() => setPremium(true)} />;
+  }
+
   if (gated) {
-    return <PremiumGate kind="compat" onBack={() => setGated(false)} />;
+    return <PremiumGate kind="compat" onBack={() => setGated(false)} onUnlocked={() => { setPremium(true); setGated(false); }} />;
   }
 
   // Kendi karnesi yoksa
