@@ -24,7 +24,7 @@ export default function DataRights() {
           Uygulama içinden: Profil → Gizlilik → "Verilerimi indir" veya "Hesabımı sil".
         </p>
         <p>
-          E-posta ile: privacy@soulprofile.life adresine kayıtlı e-postandan talebini yazarsın.
+          E-posta ile: cetinarda@gmail.com adresine kayıtlı e-postandan talebini yazarsın.
         </p>
       </Section>
 

@@ -59,7 +59,7 @@ export default function Privacy() {
         <Bullet>İşlemenin kısıtlanmasını talep etme</Bullet>
         <Bullet>Veri taşınabilirliği (JSON export)</Bullet>
         <Bullet>İtirazda bulunma</Bullet>
-        <p className="text-sm text-muted">Talepler için: privacy@soulprofile.life</p>
+        <p className="text-sm text-muted">Talepler için: cetinarda@gmail.com</p>
       </Section>
 
       <Section heading="Çocukların Verileri">

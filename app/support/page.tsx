@@ -34,11 +34,11 @@ export default function Support() {
       </Section>
 
       <Section heading="Bize Ulaş">
-        <p>Yanıt süremiz iş günleri içinde 24 saatten azdır.</p>
-        <Bullet>Genel: hello@soulprofile.life</Bullet>
-        <Bullet>Gizlilik / Veri Talepleri: privacy@soulprofile.life</Bullet>
-        <Bullet>Yasal / İş Birliği: legal@soulprofile.life</Bullet>
-        <Bullet>Basın: press@soulprofile.life</Bullet>
+        <p>Her konuda (genel, gizlilik/veri talepleri, yasal, iş birliği, basın) bize yazabilirsin. Yanıt süremiz iş günleri içinde 24 saatten azdır.</p>
+        <Bullet>
+          <strong>E-posta:</strong>{' '}
+          <a className="text-gold underline" href="mailto:cetinarda@gmail.com">cetinarda@gmail.com</a>
+        </Bullet>
       </Section>
     </PageLayout>
   );

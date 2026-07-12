@@ -132,7 +132,7 @@ export default function Settings() {
         </Bullet>
         <Bullet>
           Web (Stripe): Yakında bu sayfada "müşteri portalı" linki çıkacak. O sırada
-          support@soulprofile.life adresine yaz, ekibimiz seninle ilgilenir.
+          cetinarda@gmail.com adresine yaz, ekibimiz seninle ilgilenir.
         </Bullet>
       </Section>
 
