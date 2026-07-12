@@ -63,11 +63,21 @@ export async function syncEntitlement(): Promise<boolean> {
   }
 }
 
+function isUnimplemented(e: unknown): boolean {
+  const code = (e as { code?: string })?.code;
+  const msg = e instanceof Error ? e.message : String(e);
+  return code === 'UNIMPLEMENTED' || /not implemented/i.test(msg);
+}
+
 export async function buyOnNative(): Promise<{ ok: boolean; error?: string }> {
   if (!Capacitor.isNativePlatform()) {
     return { ok: false, error: 'Native IAP unavailable' };
   }
   if (!initialized) await initIAP();
+  if (!initialized) {
+    // configure edilemedi (UNIMPLEMENTED / key yok) → net mesaj
+    return { ok: false, error: 'IAP_NOT_READY' };
+  }
   try {
     const offerings = await Purchases.getOfferings();
     const pkg = offerings?.current?.availablePackages?.[0];
@@ -81,6 +91,7 @@ export async function buyOnNative(): Promise<{ ok: boolean; error?: string }> {
     return { ok: false, error: 'Purchase did not unlock entitlement' };
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error';
+    if (isUnimplemented(e)) return { ok: false, error: 'IAP_NOT_READY' };
     if (/cancel/i.test(msg)) return { ok: false, error: 'cancelled' };
     return { ok: false, error: msg };
   }

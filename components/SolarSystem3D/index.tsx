@@ -37,7 +37,7 @@ export function SolarSystem3D({ chart }: Props) {
 
       {selectedPlanet && selectedChartData ? (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm md:items-center md:p-6"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/85 p-0 md:items-center md:p-6"
           onClick={() => setSelected(null)}
           role="dialog"
           aria-modal="true"

@@ -37,7 +37,7 @@ export function ConceptCard({ kicker, title, highlight, short, details, accent =
 
       {open ? (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 backdrop-blur-md md:items-center md:p-8"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/85 p-0 md:items-center md:p-8"
           onClick={() => setOpen(false)}
           role="dialog"
           aria-modal="true"

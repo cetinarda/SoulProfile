@@ -32,11 +32,15 @@ export function PremiumGate({
         if (res.ok) {
           onUnlocked?.();
         } else if (res.error && res.error !== 'cancelled') {
-          setError(
-            res.error === 'No offering configured'
-              ? (locale === 'tr' ? 'Ürün henüz mağazada hazır değil.' : 'Product not ready in store yet.')
-              : res.error,
-          );
+          const map: Record<string, string> = {
+            IAP_NOT_READY:
+              locale === 'tr'
+                ? 'Satın alma servisi hazır değil (RevenueCat native eklentisi kurulmamış). pod install + cap sync gerekli.'
+                : 'Purchase service not ready (RevenueCat native plugin missing). Needs pod install + cap sync.',
+            'No offering configured':
+              locale === 'tr' ? 'Ürün henüz mağazada tanımlı değil.' : 'Product not configured in store yet.',
+          };
+          setError(map[res.error] ?? res.error);
         }
       } else {
         await startCheckout();
@@ -95,7 +99,7 @@ export function PremiumGate({
           disabled={working}
           className="mt-7 inline-flex items-center gap-2 rounded-full bg-gold px-9 py-4 text-base font-bold tracking-wide text-[#1a0a40] shadow-glow transition-transform hover:scale-105 disabled:opacity-60"
         >
-          {working ? '...' : `${t('gate.cta')} · $4.99`}
+          {working ? '...' : t('gate.cta')}
         </button>
 
         <div className="mt-4 flex flex-col items-center gap-2">
