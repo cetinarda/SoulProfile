@@ -28,7 +28,7 @@ const tr: Dict = {
     'Astroloji synastry, Human Design tanımlı–açık merkez dansı, numeroloji ritmi ve Vedik Ashtakuta kader dokusunun sentezi. 4 pencere, 5 ayna, 1 pusula — birbirinize ne yansıttığınızı sakin bir biçimde görün.',
   'home.cta.primary': 'İkili Uyumu Aç',
   'home.cta.secondary': 'Önce Kendi Karnen',
-  'home.cta.note': '✦ Karnen ve ikili uyum ücretsiz · 5 dakika sürer · Verin sende kalır',
+  'home.cta.note': '✦ İlk karnen ve uyumun ücretsiz · 5 dakika sürer · Verin sende kalır',
   'home.how.kicker': 'NASIL ÇALIŞIR',
   'home.how.title': '3 adımda kozmik kimliğin',
   'home.step1.title': 'Doğum Bilgini Gir',
@@ -68,7 +68,7 @@ const tr: Dict = {
   'home.archetypes.disclaimer': 'Bu üç arketip kişiyi etiketlemez; sembolik gözlemdir, gelecek tayini değil.',
   'home.final.kicker': 'ŞİMDİ BAŞLA',
   'home.final.title': 'Yıldızların sana söylediğini duy.',
-  'home.final.desc': '5 dakikada doğum verini gir, 9 sistemin sentezinden çıkan kozmik kimliğini al. Karnen ve ikili uyum tamamen ücretsiz.',
+  'home.final.desc': '5 dakikada doğum verini gir, 9 sistemin sentezinden çıkan kozmik kimliğini al. İlk karnen ve ilk uyumun ücretsiz.',
   'home.final.cta': 'Galaktik Karnemi Aç',
   'home.final.note': 'Doğum tarihi/saati/yeri ile başla · Profil fotoğrafı opsiyonel · Veriler sende kalır',
 
@@ -137,12 +137,12 @@ const tr: Dict = {
   'loader.title': '9 sistem konuşuyor...',
 
   // Free tier + gate
-  'free.banner': 'Karnen ve ikili uyum ücretsiz ✦ Yıldız konum + hareketi için premium: $19.99 tek seferlik ya da $4.99/ay',
-  'gate.report.title': 'Gökyüzünü aç',
-  'gate.report.desc': 'Karnen ve uyum ücretsiz. Sadece yıldız ve gezegenlerin konumu + hareketi (3D Güneş Sistemi, Yaşam Ağacı, zodyak çemberi) premium.',
-  'gate.compat.title': 'Gökyüzünü aç',
-  'gate.compat.desc': 'Karnen ve uyum ücretsiz. Sadece yıldız ve gezegenlerin konumu + hareketi premium.',
-  'gate.cta': 'Gökyüzünü Aç',
+  'free.banner': 'İlk karnen ve ilk uyumun ücretsiz ✦ Sınırsız erişim için premium: $19.99 tek seferlik ya da $4.99/ay',
+  'gate.report.title': 'Sınırsız erişim',
+  'gate.report.desc': 'İlk karnen ücretsizdi. Farklı kişilerin karnesine bakmak ve tüm özelliklere sınırsız erişim için premium.',
+  'gate.compat.title': 'Sınırsız erişim',
+  'gate.compat.desc': 'İlk uyumun ücretsizdi. Başka kişilerle uyuma bakmak ve tüm özelliklere sınırsız erişim için premium.',
+  'gate.cta': 'Sınırsız Erişimi Aç',
   'gate.back': 'Geri dön',
 
   // Compatibility view (sonuç paneli)
@@ -197,7 +197,7 @@ const en: Dict = {
     'A synthesis of astrology synastry, the Human Design defined–open center dance, numerology rhythm and the Vedic Ashtakuta fate weave. 4 windows, 5 mirrors, 1 compass — see what you reflect in each other, calmly.',
   'home.cta.primary': 'Open Dual Compatibility',
   'home.cta.secondary': 'Start with Your Own Profile',
-  'home.cta.note': '✦ Your profile and compatibility are free · takes 5 minutes · Your data stays with you',
+  'home.cta.note': '✦ Your first profile and compatibility are free · takes 5 minutes · Your data stays with you',
   'home.how.kicker': 'HOW IT WORKS',
   'home.how.title': 'Your cosmic identity in 3 steps',
   'home.step1.title': 'Enter Your Birth Data',
@@ -237,7 +237,7 @@ const en: Dict = {
   'home.archetypes.disclaimer': 'These three archetypes do not label individuals; they are symbolic observations, not future predictions.',
   'home.final.kicker': 'START NOW',
   'home.final.title': 'Hear what the stars told you.',
-  'home.final.desc': 'Enter your birth data in 5 minutes and receive the cosmic identity synthesized from 9 systems. Your profile and compatibility are entirely free.',
+  'home.final.desc': 'Enter your birth data in 5 minutes and receive the cosmic identity synthesized from 9 systems. Your first profile and compatibility are free.',
   'home.final.cta': 'Open My Cosmic Profile',
   'home.final.note': 'Start with birth date/time/place · Photo optional · Your data stays with you',
 
@@ -306,12 +306,12 @@ const en: Dict = {
   'loader.title': '9 systems are speaking...',
 
   // Free tier + gate
-  'free.banner': 'Your profile and compatibility are free ✦ Premium for star positions + movement: $19.99 one-time or $4.99/mo',
-  'gate.report.title': 'Unlock your sky',
-  'gate.report.desc': 'Your profile and compatibility are free. Only the position and movement of stars and planets (3D Solar System, Tree of Life, zodiac wheel) is premium.',
-  'gate.compat.title': 'Unlock your sky',
-  'gate.compat.desc': 'Your profile and compatibility are free. Only the position and movement of stars and planets is premium.',
-  'gate.cta': 'Unlock Your Sky',
+  'free.banner': 'Your first profile and compatibility are free ✦ Unlimited access: $19.99 one-time or $4.99/mo',
+  'gate.report.title': 'Unlimited access',
+  'gate.report.desc': 'Your first profile was free. For other people’s profiles and unlimited access to all features, go premium.',
+  'gate.compat.title': 'Unlimited access',
+  'gate.compat.desc': 'Your first compatibility was free. To match with more people and unlock unlimited access to all features, go premium.',
+  'gate.cta': 'Unlock Unlimited',
   'gate.back': 'Go back',
 
   // Compatibility view (results panel)

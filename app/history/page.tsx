@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNav } from '@/lib/nav';
 import { setActiveReportId } from '@/lib/active-report';
 import { PageLayout, Section } from '@/components/PageLayout';
-import { listReports } from '@/lib/supabase/reports';
+import { listReports, listCompat, type StoredCompat } from '@/lib/supabase/reports';
 import { useSoulStore } from '@/lib/store';
 import type { GalacticReport } from '@/lib/types';
 import { SIGN_NAMES_TR } from '@/lib/content/astrology-content';
@@ -14,13 +14,17 @@ type Saved = GalacticReport & { savedAt: string };
 
 export default function HistoryPage() {
   const [reports, setReports] = useState<Saved[]>([]);
+  const [compats, setCompats] = useState<StoredCompat[]>([]);
   const [loading, setLoading] = useState(true);
   const setReport = useSoulStore((s) => s.setReport);
   const nav = useNav();
 
   useEffect(() => {
-    listReports()
-      .then((r) => setReports(r))
+    Promise.all([listReports(), listCompat()])
+      .then(([r, c]) => {
+        setReports(r);
+        setCompats(c);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -76,6 +80,35 @@ export default function HistoryPage() {
           })}
         </div>
       )}
+
+      {/* İkili uyum arşivi — bakılan uyum haritaları */}
+      {compats.length > 0 ? (
+        <div className="mt-12">
+          <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-cosmic">
+            BAKTIĞIN UYUMLAR
+          </p>
+          <div className="mt-4 grid gap-4">
+            {compats.map((c) => (
+              <div
+                key={c.id}
+                className="card-surface rounded-3xl border border-cosmic/40 p-6 md:p-7"
+              >
+                <div className="flex items-baseline justify-between gap-3">
+                  <h3 className="font-display text-xl text-ink">
+                    {c.nameA} <span className="text-cosmic">⚯</span> {c.nameB}
+                  </h3>
+                  <span className="text-[11px] uppercase tracking-[0.2em] text-faint">
+                    {new Date(c.savedAt).toLocaleDateString('tr-TR')}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm text-cosmic">
+                  Genel uyum: %{Math.round(c.scoreOverall)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </PageLayout>
   );
 }

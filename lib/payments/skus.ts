@@ -36,9 +36,9 @@ export const PLANS: Record<PlanKey, Plan> = {
 
 // Premium'un açtığı özellikler (gate kartlarında gösterilir).
 export const PREMIUM_FEATURES: string[] = [
-  '3D Güneş Sistemi — gezegenlerin gerçek konumu',
-  'Yıldız Yaşam Ağacı — doğumdan bugüne gezegen hareketi',
-  'Zodyak çemberi — tam doğum haritası',
+  'Sınırsız karne — farklı kişilerin haritasına bak',
+  'Sınırsız ikili uyum karşılaştırması',
+  'Tüm özellikler + gelecek güncellemeler',
 ];
 
 // Geri uyumluluk için tek PRODUCT referansı (eski çağrı yerleri).
@@ -46,6 +46,6 @@ export const PRODUCT = {
   key: 'soulprofile_unlock' as const,
   name: 'SoulProfile Premium',
   price: PLANS.lifetime.price,
-  description: 'Kendi haritandaki yıldız ve gezegen konumlarını + hareketini aç.',
+  description: 'Tüm özelliklere sınırsız erişim.',
   features: PREMIUM_FEATURES,
 };

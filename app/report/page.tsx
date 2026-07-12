@@ -8,7 +8,6 @@ import { ReportCard } from '@/components/ReportCard';
 import { StarTreeOfLife } from '@/components/StarTreeOfLife';
 import { BirthChartWheel } from '@/components/BirthChartWheel';
 import { SolarSystem3D } from '@/components/SolarSystem3D';
-import { PremiumLock } from '@/components/PremiumLock';
 import { CharacterStats } from '@/components/CharacterStats';
 import { ConceptCard } from '@/components/ConceptCard';
 import { InviteShare } from '@/components/InviteShare';
@@ -281,16 +280,7 @@ export default function ReportPage() {
                   </div>
               ) : null}
 
-              {/* Yıldız hareketleri + konumları — HER ZAMAN premium (PremiumLock → /premium) */}
-              <PremiumLock
-                kicker={locale === 'tr' ? 'GÖKYÜZÜN — İNTERAKTİF' : 'YOUR SKY — INTERACTIVE'}
-                hint={
-                  locale === 'tr'
-                    ? 'Yıldızların hareketi ve konumu — 3D Güneş Sistemi, Yaşam Ağacı ve zodyak çemberin'
-                    : 'The movement and positions of your stars — 3D Solar System, Tree of Life and your zodiac wheel'
-                }
-                previewMaxHeight={160}
-              >
+              {/* İnteraktif gökyüzü — ilk karnede ücretsiz (tam) */}
               <div className="space-y-6">
                   <div className="card-surface rounded-3xl border border-gold/30 p-4 md:p-6">
                     <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
@@ -313,7 +303,6 @@ export default function ReportPage() {
                     </div>
                   </div>
                 </div>
-              </PremiumLock>
             </div>
           ) : null}
         </section>
@@ -350,21 +339,21 @@ export default function ReportPage() {
         {!isPremium ? (
           <section className="mt-14 rounded-2xl border border-gold/40 bg-gold/[0.06] p-6">
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">
-              {locale === 'tr' ? 'GÖKYÜZÜN' : 'YOUR SKY'}
+              {locale === 'tr' ? 'SINIRSIZ ERİŞİM' : 'UNLIMITED ACCESS'}
             </p>
             <h3 className="mt-2 font-display text-3xl text-ink">
-              {locale === 'tr' ? 'Yıldız ve gezegenlerin konumu + hareketi' : 'Star & planet positions and movement'}
+              {locale === 'tr' ? 'Farklı kişilere bak, sınırsız' : 'More people, unlimited'}
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">
               {locale === 'tr'
-                ? 'Karnen ve ikili uyum ücretsiz. Sadece 3D Güneş Sistemi, Yıldız Yaşam Ağacı ve zodyak çemberi premium — tek seferlik $19.99 ya da aylık $4.99.'
-                : 'Your profile and compatibility are free. Only the 3D Solar System, Star Tree of Life and zodiac wheel are premium — $19.99 one-time or $4.99/mo.'}
+                ? 'İlk karnen ve ilk uyumun ücretsiz. Farklı kişilere bakmak ve tüm özelliklere sınırsız erişim için premium — tek seferlik $19.99 ya da aylık $4.99.'
+                : 'Your first profile and compatibility are free. For other people and unlimited access to all features, go premium — $19.99 one-time or $4.99/mo.'}
             </p>
             <Link
               href="/premium"
               className="mt-4 inline-block rounded-full bg-gold px-6 py-3 text-sm font-bold text-[#1a0a40] shadow-glow"
             >
-              {locale === 'tr' ? 'Gökyüzünü Aç' : 'Unlock Your Sky'}
+              {locale === 'tr' ? 'Sınırsız Erişimi Aç' : 'Unlock Unlimited'}
             </Link>
           </section>
         ) : null}

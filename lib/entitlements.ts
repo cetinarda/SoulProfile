@@ -86,22 +86,71 @@ export function togglePremium(): boolean {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Gate API'si:
-//  - Kendi karne (metin/analiz) + İkili uyum: TAMAMEN ÜCRETSİZ.
-//  - SADECE kendi haritada yıldız/gezegen konumu + hareketi (3D/ağaç/çark):
-//    premium (PremiumLock → /premium). Başka her şey açık.
+// Gate API'si — id-tabanlı (deterministik karne/uyum kimliği):
+//  - ÜCRETSİZ: 1 karne (kişi) + 1 uyum (çift), TAM özellikli.
+//  - Aynı kişiyi/çifti tekrar görmek yeni sayılmaz (id eşleşir).
+//  - Farklı kişi/çift → premium ($19.99 tek seferlik / $4.99 ay) = sınırsız.
+// Böylece aynı cihazdan bedavaya farklı kişilere bakmanın önü kesilir.
 
-export const FREE_REPORT_LIMIT = Infinity;
-export const FREE_COMPAT_LIMIT = Infinity;
+const KEY_REPORT_IDS = 'soulprofile.used.reports';
+const KEY_COMPAT_IDS = 'soulprofile.used.compat';
 
-export function canCreateReport(): boolean { return true; }
-export function canRunCompat(): boolean { return true; } // ikili uyum ücretsiz
-export function recordReport(): void { /* sayım yok */ }
-export function recordCompat(): void { /* sayım yok */ }
-export function reportCount(): number { return 0; }
-export function compatCount(): number { return 0; }
+export const FREE_REPORT_LIMIT = 1;
+export const FREE_COMPAT_LIMIT = 1;
+
+function readSet(key: string): Set<string> {
+  if (typeof localStorage === 'undefined') return new Set();
+  try {
+    const arr = JSON.parse(localStorage.getItem(key) ?? '[]');
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch {
+    return new Set();
+  }
+}
+function addToSet(key: string, id: string) {
+  if (typeof localStorage === 'undefined') return;
+  const s = readSet(key);
+  s.add(id);
+  localStorage.setItem(key, JSON.stringify([...s]));
+}
+
+/** Bu karne (id) görülebilir mi? Premium ya da ilk/aynı kişi ise evet. */
+export function canViewReport(reportId: string): boolean {
+  if (hasPremium()) return true;
+  const used = readSet(KEY_REPORT_IDS);
+  return used.has(reportId) || used.size < FREE_REPORT_LIMIT;
+}
+export function recordReportView(reportId: string): void {
+  if (hasPremium()) return;
+  addToSet(KEY_REPORT_IDS, reportId);
+}
+
+/** Bu uyum (çift id) görülebilir mi? */
+export function canViewCompat(compatId: string): boolean {
+  if (hasPremium()) return true;
+  const used = readSet(KEY_COMPAT_IDS);
+  return used.has(compatId) || used.size < FREE_COMPAT_LIMIT;
+}
+export function recordCompatView(compatId: string): void {
+  if (hasPremium()) return;
+  addToSet(KEY_COMPAT_IDS, compatId);
+}
+
+/** İki doğum-anahtarından sıralı, deterministik çift kimliği. */
+export function compatId(keyA: string, keyB: string): string {
+  return [keyA, keyB].sort().join('~');
+}
+
+export function reportCount(): number { return readSet(KEY_REPORT_IDS).size; }
+export function compatCount(): number { return readSet(KEY_COMPAT_IDS).size; }
 export function resetUsage(): void {
   if (typeof localStorage === 'undefined') return;
-  localStorage.removeItem('soulprofile.usage.reports');
-  localStorage.removeItem('soulprofile.usage.compat');
+  localStorage.removeItem(KEY_REPORT_IDS);
+  localStorage.removeItem(KEY_COMPAT_IDS);
 }
+
+// Geri uyumluluk (eski çağrı yerleri) — artık kullanılmıyor.
+export function canCreateReport(): boolean { return true; }
+export function canRunCompat(): boolean { return true; }
+export function recordReport(): void { /* id-tabanlı recordReportView kullan */ }
+export function recordCompat(): void { /* id-tabanlı recordCompatView kullan */ }

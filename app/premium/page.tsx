@@ -95,13 +95,13 @@ export default function PremiumPage() {
   return (
     <PageLayout
       kicker={owned ? (locale === 'tr' ? 'TAM ERİŞİM AÇIK' : 'FULL ACCESS UNLOCKED') : (locale === 'tr' ? 'TAM ERİŞİM' : 'FULL ACCESS')}
-      title={locale === 'tr' ? 'Gökyüzünü aç' : 'Unlock your sky'}
+      title={locale === 'tr' ? 'Sınırsız erişim' : 'Unlimited access'}
       intro={
         owned
           ? (locale === 'tr' ? 'Tam erişimin açık. Yıldızlar artık hiçbir şey saklamıyor.' : 'Your full access is unlocked. The stars hold nothing back now.')
           : (locale === 'tr'
-              ? 'Karnen, AI yorumun ve ikili uyum tamamen ücretsiz. Sadece haritandaki yıldız ve gezegenlerin konumu ile hareketi (3D Güneş Sistemi, Yaşam Ağacı, zodyak çemberi) premium.'
-              : 'Your profile, AI reading and compatibility are entirely free. Only the position and movement of the stars and planets in your chart (3D Solar System, Tree of Life, zodiac wheel) are premium.')
+              ? 'İlk karnen ve ilk uyumun ücretsiz — tam özellikli. Farklı kişilere bakmak ve tüm özelliklere sınırsız erişim için premium.'
+              : 'Your first profile and first compatibility are free — fully featured. Go premium for other people and unlimited access to all features.')
       }
     >
       {error ? (
@@ -112,12 +112,12 @@ export default function PremiumPage() {
 
       <div className="rounded-3xl border border-gold/40 bg-gold/[0.05] p-8 md:p-10">
         <h2 className="font-display text-3xl text-ink">
-          {locale === 'tr' ? 'Gökyüzünü aç' : 'Unlock your sky'}
+          {locale === 'tr' ? 'Sınırsız erişim' : 'Unlimited access'}
         </h2>
         <p className="mt-1 text-sm text-muted">
           {locale === 'tr'
-            ? 'Haritandaki yıldız ve gezegen konumları + hareketi. Diğer her şey ücretsiz.'
-            : 'Star & planet positions and movement in your chart. Everything else is free.'}
+            ? 'İlk karnen ve uyumun ücretsiz. Daha fazlası için tek fiyat.'
+            : 'Your first profile and compatibility are free. One price for everything more.'}
         </p>
 
         <ul className="mt-5 grid gap-2">

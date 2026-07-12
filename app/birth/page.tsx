@@ -15,7 +15,7 @@ import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
 import { buildGalacticReport } from '@/lib/report';
 import { saveReport } from '@/lib/supabase/reports';
 import { useT } from '@/lib/i18n';
-import { canCreateReport, recordReport } from '@/lib/entitlements';
+import { canViewReport, recordReportView } from '@/lib/entitlements';
 import { PremiumGate } from '@/components/PremiumGate';
 
 export default function BirthPage() {
@@ -168,10 +168,6 @@ export default function BirthPage() {
       return;
     }
 
-    if (!canCreateReport()) {
-      setGated(true);
-      return;
-    }
     setError(null);
     setLoading(true);
     try {
@@ -186,12 +182,19 @@ export default function BirthPage() {
         timezone: tz,
         photoUri: birth.photoUri,
       }, locale);
+
+      // İlk karne (kişi) ücretsiz. Aynı kişi tekrar → serbest. Farklı kişi +
+      // ücretsiz hak dolmuşsa → premium. (report.id doğum verisinden deterministik)
+      if (!canViewReport(report.id)) {
+        setGated(true);
+        setLoading(false);
+        return;
+      }
+
       setReport(report);
       // Lokal kayıt awaited — iOS hard-reload öncesi karne diske düşmüş olmalı.
-      // Supabase fire-and-forget olarak içeride.
       await saveReport(report).catch((e) => console.warn('[birth] save failed', e));
-      // Quota'yı SONRA kaydet — kayıt başarılı değilse ücretsiz hak yanmasın.
-      recordReport();
+      recordReportView(report.id);
       setActiveReportId(report.id);
       nav.push('/report');
     } catch (e) {

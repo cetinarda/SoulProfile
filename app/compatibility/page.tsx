@@ -6,15 +6,15 @@ import { CosmicBackground } from '@/components/CosmicBackground';
 import { CompatibilityView } from '@/components/CompatibilityView';
 import { DeepAnalysisBox } from '@/components/DeepAnalysisBox';
 import { useSoulStore } from '@/lib/store';
-import { listReports } from '@/lib/supabase/reports';
+import { listReports, saveCompat } from '@/lib/supabase/reports';
 import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
-import { buildGalacticReport } from '@/lib/report';
+import { buildGalacticReport, birthKey } from '@/lib/report';
 import { compareReports, type CompatibilityResult } from '@/lib/compatibility';
 import { generateCompatNarrative, type CompatNarrative } from '@/lib/compatibility/narrative';
 import type { GalacticReport } from '@/lib/types';
 import { SIGN_NAMES_TR } from '@/lib/content/astrology-content';
 import { useT } from '@/lib/i18n';
-import { canRunCompat, recordCompat, hasPremium } from '@/lib/entitlements';
+import { canViewCompat, recordCompatView, compatId, hasPremium } from '@/lib/entitlements';
 import { PremiumGate } from '@/components/PremiumGate';
 import { FORM_INPUT, BTN_COSMIC } from '@/lib/ui';
 import { IS_CAPACITOR } from '@/lib/nav';
@@ -84,10 +84,6 @@ export default function CompatibilityPage() {
       setError(t('compat.consentError'));
       return;
     }
-    if (!canRunCompat()) {
-      setGated(true);
-      return;
-    }
     setError(null);
     setLoading(true);
     try {
@@ -101,9 +97,27 @@ export default function CompatibilityPage() {
         longitude: place.longitude,
         timezone: place.timezone,
       }, locale);
+
+      // İlk uyum (çift) ücretsiz; aynı çift tekrar → serbest; farklı çift +
+      // hak dolmuşsa → premium.
+      const cid = compatId(birthKey(me.birth), birthKey(other.birth));
+      if (!canViewCompat(cid)) {
+        setGated(true);
+        setLoading(false);
+        return;
+      }
+
       const res = compareReports(me, other, locale);
       const narr = await generateCompatNarrative(me, other, res, locale);
-      recordCompat();
+      recordCompatView(cid);
+      saveCompat({
+        id: cid,
+        nameA: res.nameA,
+        nameB: res.nameB,
+        birthA: me.birth,
+        birthB: other.birth,
+        scoreOverall: res.scoreOverall,
+      }).catch(() => {});
       setOtherReport(other);
       setResult(res);
       setNarrative(narr);
@@ -277,7 +291,14 @@ export default function CompatibilityPage() {
             {me && otherReport ? (
               <DeepAnalysisBox a={me} b={otherReport} result={result} />
             ) : null}
-            <div className="mt-8 text-center">
+            {/* Başka birine bak — banner */}
+            <div className="mt-4 overflow-hidden rounded-3xl border border-cosmic/50 bg-gradient-to-br from-[#0b0524] via-[#1e1a6e] to-[#9d3cb1]/30 p-6 text-center md:p-7">
+              <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-cosmic">
+                {locale === 'tr' ? 'DEVAM ET' : 'KEEP GOING'}
+              </p>
+              <h3 className="mt-2 font-display text-2xl text-ink md:text-3xl">
+                {locale === 'tr' ? 'Başka biriyle uyumuna bak' : 'See your match with someone else'}
+              </h3>
               <button
                 type="button"
                 onClick={() => {
@@ -287,10 +308,11 @@ export default function CompatibilityPage() {
                   setDate('');
                   setPlaceQuery('');
                   setPlace(null);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="text-sm text-muted hover:text-gold"
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-cosmic px-7 py-3 text-sm font-bold text-white shadow-glow transition-transform hover:scale-[1.02]"
               >
-                {t('compat.again')}
+                <span>⚯</span> {t('compat.again')}
               </button>
             </div>
           </div>

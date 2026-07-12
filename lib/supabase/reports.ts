@@ -2,13 +2,40 @@
 // Yapılandırılmamışsa şifreli localStorage'a düşer — PII koruması.
 
 import { getSupabase } from './index';
-import type { GalacticReport } from '../types';
+import type { GalacticReport, BirthInput } from '../types';
 import { secureGet, secureSet, secureRemove } from '../secure-storage';
 import { getApiBase } from '../api-base';
 
 const LS_KEY = 'soulprofile.reports.v1';
+const LS_COMPAT_KEY = 'soulprofile.compat.v1';
 
 type StoredReport = GalacticReport & { savedAt: string };
+
+// İkili uyum arşivi — bakılan uyum haritaları (şifreli localStorage).
+export type StoredCompat = {
+  id: string;               // deterministik çift kimliği
+  nameA: string;
+  nameB: string;
+  birthA: BirthInput;       // yeniden açmak için
+  birthB: BirthInput;
+  scoreOverall: number;
+  savedAt: string;
+};
+
+export async function saveCompat(entry: Omit<StoredCompat, 'savedAt'>): Promise<void> {
+  try {
+    const list = (await secureGet<StoredCompat[]>(LS_COMPAT_KEY)) ?? [];
+    const dedupe = list.filter((c) => c.id !== entry.id);
+    const stored: StoredCompat = { ...entry, savedAt: new Date().toISOString() };
+    await secureSet(LS_COMPAT_KEY, [stored, ...dedupe].slice(0, 50));
+  } catch {
+    /* quota / private mode */
+  }
+}
+
+export async function listCompat(): Promise<StoredCompat[]> {
+  return (await secureGet<StoredCompat[]>(LS_COMPAT_KEY)) ?? [];
+}
 
 async function loadLocal(): Promise<StoredReport[]> {
   const data = await secureGet<StoredReport[]>(LS_KEY);

@@ -74,12 +74,12 @@ export function PremiumGate({
           ✦
         </div>
         <h1 className="font-display text-4xl text-ink">
-          {locale === 'tr' ? 'Gökyüzünü aç' : 'Unlock your sky'}
+          {locale === 'tr' ? 'Sınırsız erişim' : 'Unlimited access'}
         </h1>
         <p className="mx-auto mt-3 max-w-md text-muted">
           {locale === 'tr'
-            ? 'Haritandaki yıldız ve gezegenlerin konumu ile hareketi premium. Diğer her şey ücretsiz.'
-            : 'The position and movement of the stars and planets in your chart are premium. Everything else is free.'}
+            ? 'İlk karnen ve ilk uyumun ücretsizdi. Sınırsız karne, sınırsız uyum ve tüm özellikler için premium.'
+            : 'Your first profile and first compatibility were free. Go premium for unlimited profiles, unlimited compatibility and all features.'}
         </p>
 
         <ul className="mx-auto mt-6 max-w-sm space-y-2 text-left text-sm text-ink">

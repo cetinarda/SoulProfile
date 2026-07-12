@@ -12,6 +12,25 @@ import { calculateNorse } from '../systems/norse';
 import { calculateTarot } from '../systems/tarot';
 import type { BirthInput, GalacticReport } from '../types';
 
+/**
+ * Deterministik karne kimliği — aynı doğum verisi HER ZAMAN aynı id üretir.
+ * Böylece: (1) aynı kişiyi tekrar görmek yeni karne saymaz, (2) farklı kişi
+ * yeni id → ücretsiz limit kontrolü çalışır, (3) karne "sabit kalır".
+ */
+export function birthKey(input: BirthInput): string {
+  const raw = [
+    (input.fullName ?? '').trim().toLowerCase(),
+    input.birthDate ?? '',
+    input.birthTimeKnown === false ? 'notime' : (input.birthTime ?? '12:00'),
+    (input.birthPlace ?? '').trim().toLowerCase(),
+    input.latitude != null ? input.latitude.toFixed(3) : '',
+    input.longitude != null ? input.longitude.toFixed(3) : '',
+  ].join('|');
+  let h = 5381;
+  for (let i = 0; i < raw.length; i++) h = ((h << 5) + h + raw.charCodeAt(i)) >>> 0;
+  return `r_${h.toString(36)}`;
+}
+
 function buildBirthISO(date: string, time: string, timezone: string): string {
   const [yyyy, mm, dd] = date.split('-').map(Number);
   const [hh, min] = (time || '12:00').split(':').map(Number);
@@ -67,7 +86,7 @@ export async function buildGalacticReport(
   };
 
   const partial = {
-    id: `${Date.now()}`,
+    id: birthKey(input),
     createdAt: new Date().toISOString(),
     birth: input,
     chart,
