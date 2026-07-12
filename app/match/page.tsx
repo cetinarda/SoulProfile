@@ -15,6 +15,8 @@ import { decodeInvite } from '@/lib/compatibility/invite';
 import type { BirthInput, GalacticReport } from '@/lib/types';
 import { useT } from '@/lib/i18n';
 import { FORM_INPUT, BTN_PRIMARY } from '@/lib/ui';
+import { IS_CAPACITOR } from '@/lib/nav';
+import { AppOnlyGate } from '@/components/AppOnlyGate';
 import { PremiumLock } from '@/components/PremiumLock';
 
 const inputClass = FORM_INPUT;
@@ -137,6 +139,8 @@ function MatchPage() {
       setLoading(false);
     }
   }
+
+  if (!IS_CAPACITOR) return <AppOnlyGate />;
 
   // Geçersiz davet
   if (inviteValid === false) {

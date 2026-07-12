@@ -18,8 +18,11 @@ import { useT } from '@/lib/i18n';
 import { canRunCompat, recordCompat } from '@/lib/entitlements';
 import { PremiumGate } from '@/components/PremiumGate';
 import { FORM_INPUT, BTN_COSMIC } from '@/lib/ui';
+import { IS_CAPACITOR } from '@/lib/nav';
+import { AppOnlyGate } from '@/components/AppOnlyGate';
 
 const inputClass = FORM_INPUT;
+const fieldLabel = 'mb-1.5 block text-[11px] font-medium uppercase tracking-[0.18em] text-faint';
 
 export default function CompatibilityPage() {
   const { t, locale } = useT();
@@ -114,6 +117,8 @@ export default function CompatibilityPage() {
     }
   }
 
+  if (!IS_CAPACITOR) return <AppOnlyGate />;
+
   if (gated) {
     return <PremiumGate kind="compat" onBack={() => setGated(false)} />;
   }
@@ -169,45 +174,56 @@ export default function CompatibilityPage() {
           <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-cosmic">{t('compat.person2')}</p>
 
           <div className="mt-6 space-y-4">
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t('compat.name')}
-              className={inputClass}
-            />
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className={inputClass}
-            />
-            <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
-              <input
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                disabled={!timeKnown}
-                className={inputClass}
-              />
-              <label className="flex cursor-pointer flex-col items-center justify-center gap-1">
-                <input
-                  type="checkbox"
-                  checked={timeKnown}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => setTimeKnown(e.target.checked)}
-                  className="h-5 w-5 accent-gold"
-                />
-                <span className="text-xs text-muted">{t('compat.timeKnown')}</span>
-              </label>
-            </div>
-            <div className="relative">
+            <label className="block">
+              <span className={fieldLabel}>{locale === 'tr' ? 'Adı' : 'Name'}</span>
               <input
                 type="text"
-                value={placeQuery}
-                onChange={(e) => searchPlace(e.target.value)}
-                placeholder={t('compat.place')}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t('compat.name')}
                 className={inputClass}
               />
+            </label>
+            <label className="block">
+              <span className={fieldLabel}>{locale === 'tr' ? 'Doğum tarihi' : 'Birth date'}</span>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className={inputClass}
+              />
+            </label>
+            <div>
+              <span className={fieldLabel}>{locale === 'tr' ? 'Doğum saati' : 'Birth time'}</span>
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
+                <input
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  disabled={!timeKnown}
+                  className={inputClass}
+                />
+                <label className="flex cursor-pointer flex-col items-center justify-center gap-1">
+                  <input
+                    type="checkbox"
+                    checked={timeKnown}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setTimeKnown(e.target.checked)}
+                    className="h-5 w-5 accent-gold"
+                  />
+                  <span className="text-xs text-muted">{t('compat.timeKnown')}</span>
+                </label>
+              </div>
+            </div>
+            <label className="block">
+              <span className={fieldLabel}>{locale === 'tr' ? 'Doğum yeri' : 'Birthplace'}</span>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={placeQuery}
+                  onChange={(e) => searchPlace(e.target.value)}
+                  placeholder={t('compat.place')}
+                  className={inputClass}
+                />
               {suggestions.length > 0 ? (
                 <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl border border-panelBorder bg-bgElevated">
                   {suggestions.map((s, i) => (
@@ -227,7 +243,8 @@ export default function CompatibilityPage() {
                   ))}
                 </div>
               ) : null}
-            </div>
+              </div>
+            </label>
           </div>
         </div>
 

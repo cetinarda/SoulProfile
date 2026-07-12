@@ -3,6 +3,8 @@
 import { Link } from '@/components/Link';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { NowSkyChip } from '@/components/NowSkyChip';
+import { StoreBadges } from '@/components/StoreBadges';
+import { IS_CAPACITOR } from '@/lib/nav';
 import { useT } from '@/lib/i18n';
 
 export default function Welcome() {
@@ -59,25 +61,37 @@ export default function Welcome() {
             {t('home.subtitle')}
           </p>
 
-          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/compatibility"
-              className="group inline-flex items-center gap-2.5 rounded-full bg-gold px-7 py-3.5 text-sm font-bold tracking-wide text-[#1a0a40] transition-transform hover:scale-[1.02]"
-              style={{ boxShadow: '0 16px 44px -20px rgba(245, 208, 97, 0.5)' }}
-            >
-              <span className="text-base">⚯</span>
-              {t('home.cta.primary')}
-              <span className="transition-transform group-hover:translate-x-0.5">→</span>
-            </Link>
-            <Link
-              href="/birth"
-              className="card-surface inline-flex items-center gap-2 rounded-full border border-gold/30 px-6 py-3.5 text-sm font-bold text-ink transition-colors hover:border-gold/70 hover:bg-gold/[0.04]"
-            >
-              <span className="text-gold">✦</span> {t('home.cta.secondary')}
-            </Link>
-          </div>
-
-          <p className="mt-6 text-[11px] leading-relaxed text-faint">{t('home.cta.note')}</p>
+          {IS_CAPACITOR ? (
+            <>
+              <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <Link
+                  href="/compatibility"
+                  className="group inline-flex items-center gap-2.5 rounded-full bg-gold px-7 py-3.5 text-sm font-bold tracking-wide text-[#1a0a40] transition-transform hover:scale-[1.02]"
+                  style={{ boxShadow: '0 16px 44px -20px rgba(245, 208, 97, 0.5)' }}
+                >
+                  <span className="text-base">⚯</span>
+                  {t('home.cta.primary')}
+                  <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                </Link>
+                <Link
+                  href="/birth"
+                  className="card-surface inline-flex items-center gap-2 rounded-full border border-gold/30 px-6 py-3.5 text-sm font-bold text-ink transition-colors hover:border-gold/70 hover:bg-gold/[0.04]"
+                >
+                  <span className="text-gold">✦</span> {t('home.cta.secondary')}
+                </Link>
+              </div>
+              <p className="mt-6 text-[11px] leading-relaxed text-faint">{t('home.cta.note')}</p>
+            </>
+          ) : (
+            <div className="mt-12">
+              <StoreBadges className="justify-center" />
+              <p className="mt-6 text-[11px] leading-relaxed text-faint">
+                {locale === 'tr'
+                  ? 'SoulProfile mobil uygulamada. Web sürümü çok yakında.'
+                  : 'SoulProfile is in the mobile app. Web version coming very soon.'}
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

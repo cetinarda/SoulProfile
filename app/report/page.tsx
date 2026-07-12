@@ -11,7 +11,6 @@ import { SolarSystem3D } from '@/components/SolarSystem3D';
 import { CharacterStats } from '@/components/CharacterStats';
 import { ConceptCard } from '@/components/ConceptCard';
 import { InviteShare } from '@/components/InviteShare';
-import { PremiumLock } from '@/components/PremiumLock';
 import { useSoulStore } from '@/lib/store';
 import { listReports } from '@/lib/supabase/reports';
 import { readActiveReportId, clearActiveReportId } from '@/lib/active-report';
@@ -232,15 +231,6 @@ export default function ReportPage() {
             <div className="mt-6 space-y-6">
               {/* AI'nın derin parçaları — PREMIUM (sis altında) */}
               {(report.sections.astrology || report.sections.humanDesign || report.sections.callToAction) ? (
-                <PremiumLock
-                  kicker={locale === 'tr' ? 'YILDIZLARIN DERİN SESİ' : 'THE STARS SPEAK DEEPLY'}
-                  hint={
-                    locale === 'tr'
-                      ? 'Astroloji, Human Design ve eylem çağrısı senin için kişisel olarak yazılıyor'
-                      : 'Astrology, Human Design and your call to action — personally written for you'
-                  }
-                  previewMaxHeight={140}
-                >
                   <article className="card-surface rounded-3xl border border-panelBorder p-6 md:p-8">
                     <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">{t('report.narrative')}</p>
                     <div className="mt-4 space-y-4">
@@ -255,20 +245,10 @@ export default function ReportPage() {
                       ) : null}
                     </div>
                   </article>
-                </PremiumLock>
               ) : null}
 
-              {/* Wisdoms + Shadows — PREMIUM */}
+              {/* Bilgelik + Gölge — ücretsiz (kendi karne) */}
               {(report.sections.wisdoms.length > 0 || report.sections.shadows.length > 0) ? (
-                <PremiumLock
-                  kicker={locale === 'tr' ? 'BİLGELİK VE GÖLGE' : 'WISDOM & SHADOW'}
-                  hint={
-                    locale === 'tr'
-                      ? 'Sana özel rehberlik ve içsel uyarılar — yıldızların kişisel mesajı'
-                      : 'Personal guidance and shadow alerts — the stars\' message just for you'
-                  }
-                  previewMaxHeight={140}
-                >
                   <div className="space-y-6">
                     {report.sections.wisdoms.length > 0 ? (
                       <section className="card-surface rounded-2xl border border-success/30 bg-success/[0.04] p-5">
@@ -298,20 +278,10 @@ export default function ReportPage() {
                       </section>
                     ) : null}
                   </div>
-                </PremiumLock>
               ) : null}
 
-              {/* Ağır görseller — PREMIUM */}
-              <PremiumLock
-                kicker={locale === 'tr' ? 'GÖKYÜZÜN — İNTERAKTİF' : 'YOUR SKY — INTERACTIVE'}
-                hint={
-                  locale === 'tr'
-                    ? '3D Güneş Sistemi, Yaşam Ağacı animasyonu ve zodyak haritan'
-                    : '3D Solar System, Tree of Life animation and your zodiac wheel'
-                }
-                previewMaxHeight={160}
-              >
-                <div className="space-y-6">
+              {/* İnteraktif görseller — ücretsiz (kendi karne) */}
+              <div className="space-y-6">
                   <div className="card-surface rounded-3xl border border-gold/30 p-4 md:p-6">
                     <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-gold">
                       {t('report.sky3d')}
@@ -333,7 +303,6 @@ export default function ReportPage() {
                     </div>
                   </div>
                 </div>
-              </PremiumLock>
             </div>
           ) : null}
         </section>

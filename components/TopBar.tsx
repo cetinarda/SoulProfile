@@ -2,9 +2,10 @@
 
 import { Link } from '@/components/Link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { useT } from '@/lib/i18n';
+import { hasPremium } from '@/lib/entitlements';
 import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
 import { BrandMark } from './BrandMark';
@@ -12,8 +13,17 @@ import { BrandMark } from './BrandMark';
 export function TopBar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { t } = useT();
+  const [premium, setPremium] = useState(true); // SSR'da gizle, mount'ta karar ver
+  const { t, locale } = useT();
 
+  useEffect(() => {
+    setPremium(hasPremium());
+    // Boot senkronundan (RevenueCat/Supabase) sonra da güncelle
+    const id = window.setInterval(() => setPremium(hasPremium()), 2000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const buyLabel = locale === 'tr' ? 'Satın Al' : 'Buy';
   const navLinks = [
     { href: '/birth', label: t('nav.birth') },
     { href: '/compatibility', label: t('nav.compatibility') },
@@ -45,12 +55,21 @@ export function TopBar() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <LanguageToggle />
-          <Link
-            href="/birth"
-            className="hidden rounded-full bg-gold px-4 py-2 text-xs font-bold tracking-wide text-[#1a0a40] transition-transform hover:scale-105 sm:inline-block"
-          >
-            {t('cta.openCard')}
-          </Link>
+          {!premium ? (
+            <Link
+              href="/premium"
+              className="hidden rounded-full bg-gold px-4 py-2 text-xs font-bold tracking-wide text-[#1a0a40] transition-transform hover:scale-105 sm:inline-flex sm:items-center sm:gap-1.5"
+            >
+              <span>✦</span> {buyLabel}
+            </Link>
+          ) : (
+            <Link
+              href="/birth"
+              className="hidden rounded-full bg-gold px-4 py-2 text-xs font-bold tracking-wide text-[#1a0a40] transition-transform hover:scale-105 sm:inline-block"
+            >
+              {t('cta.openCard')}
+            </Link>
+          )}
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -81,6 +100,17 @@ export function TopBar() {
                 {t('nav.history')}
               </Link>
             </li>
+            {!premium ? (
+              <li>
+                <Link
+                  href="/premium"
+                  onClick={() => setOpen(false)}
+                  className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-gold px-4 py-2 text-xs font-bold text-[#1a0a40]"
+                >
+                  <span>✦</span> {buyLabel} · $4.99
+                </Link>
+              </li>
+            ) : null}
           </ul>
         </nav>
       ) : null}

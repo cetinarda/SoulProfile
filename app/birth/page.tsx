@@ -3,6 +3,8 @@
 import { useNav } from '@/lib/nav';
 import { setActiveReportId } from '@/lib/active-report';
 import { FORM_INPUT, BTN_PRIMARY } from '@/lib/ui';
+import { IS_CAPACITOR } from '@/lib/nav';
+import { AppOnlyGate } from '@/components/AppOnlyGate';
 import Image from 'next/image';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
@@ -198,6 +200,8 @@ export default function BirthPage() {
       setLoading(false);
     }
   }
+
+  if (!IS_CAPACITOR) return <AppOnlyGate />;
 
   if (gated) {
     return <PremiumGate kind="report" onBack={() => setGated(false)} />;

@@ -1,18 +1,14 @@
 'use client';
 
-// Freemium stratejisi:
-//  - Ücretsiz: SINIRSIZ karne + sınırsız uyum, AMA her karnenin/uyumun
-//    sadece "üst tabakası" (teaser) gösterilir. Derin AI yorumları,
-//    wisdoms/shadows, 3D solar, BirthChartWheel, vb. blur'lu kilit altında.
-//  - Premium ($4.99 tek seferlik): tüm blur kilitler açılır.
-//  - iOS Capacitor build = peşin paid app → her zaman premium.
+// Freemium modeli:
+//  - ÜCRETSİZ: kullanıcı kendi karnesini tam açar (sınır yok).
+//  - PREMIUM ($4.99 tek seferlik): İKİLİ UYUM (compatibility) özelliği.
+//    Web'de Stripe, iOS'ta RevenueCat IAP ile alınır.
 //
-// CANONICAL SOURCE: Supabase 'entitlements' tablosu (RLS-protected select).
-// Webhook (Stripe + RevenueCat) yazar, client okur.
-// localStorage SADECE UI cache — ana karar değil. Boot'ta refreshEntitlement()
-// canonical state'i çeker; off-line için cache 24 saat geçerli.
+// CANONICAL SOURCE: Supabase 'entitlements' tablosu (web) + RevenueCat
+// entitlement (iOS). localStorage UI cache; grantPremium() satın alım/restore/
+// webhook sonrası yazar. hasPremium() her iki platformda localStorage okur.
 
-import { isCapacitorNative } from './platform';
 import { getSupabase } from './supabase';
 
 const KEY_PREMIUM = 'soulprofile.premium';
@@ -21,7 +17,6 @@ const KEY_PREMIUM_TS = 'soulprofile.premium.checkedAt';
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 export function hasPremium(): boolean {
-  if (isCapacitorNative()) return false; // iOS — RevenueCat ile aç
   if (typeof localStorage === 'undefined') return false;
   return localStorage.getItem(KEY_PREMIUM) === '1';
 }
@@ -90,15 +85,15 @@ export function togglePremium(): boolean {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Geri uyumlu sayım API'si — artık SINIRSIZ. Çağrı yerleri
-// bozulmasın diye export'lar duruyor, hiç gate yok.
-// Yeni kod hasPremium() + PremiumLock ile content-level gate yapar.
+// Gate API'si:
+//  - Kendi karnesi: ÜCRETSİZ, sınırsız.
+//  - İkili uyum: PREMIUM şart.
 
 export const FREE_REPORT_LIMIT = Infinity;
-export const FREE_COMPAT_LIMIT = Infinity;
+export const FREE_COMPAT_LIMIT = 0;
 
-export function canCreateReport(): boolean { return true; }
-export function canRunCompat(): boolean { return true; }
+export function canCreateReport(): boolean { return true; } // karne hep ücretsiz
+export function canRunCompat(): boolean { return hasPremium(); } // uyum premium
 export function recordReport(): void { /* sayım yok */ }
 export function recordCompat(): void { /* sayım yok */ }
 export function reportCount(): number { return 0; }
