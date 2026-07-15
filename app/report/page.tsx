@@ -11,6 +11,7 @@ import { SolarSystem3D } from '@/components/SolarSystem3D';
 import { CharacterStats } from '@/components/CharacterStats';
 import { ConceptCard } from '@/components/ConceptCard';
 import { InviteShare } from '@/components/InviteShare';
+import { CompatibilityOutlook } from '@/components/CompatibilityOutlook';
 import { useSoulStore } from '@/lib/store';
 import { listReports } from '@/lib/supabase/reports';
 import { readActiveReportId, clearActiveReportId } from '@/lib/active-report';
@@ -306,6 +307,9 @@ export default function ReportPage() {
             </div>
           ) : null}
         </section>
+
+        {/* Uyum Ufku — bu harita kimlerle rezonansa girer (deterministik) */}
+        <CompatibilityOutlook report={report} />
 
         {/* İkili uyum CTA — büyük, görsel */}
         <section className="mt-14 overflow-hidden rounded-3xl border border-cosmic/50 bg-gradient-to-br from-[#0b0524] via-[#1e1a6e] to-[#9d3cb1]/40 p-7 md:p-9">

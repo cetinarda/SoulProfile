@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { CompatibilityView } from '@/components/CompatibilityView';
 import { DeepAnalysisBox } from '@/components/DeepAnalysisBox';
+import { CompatShare } from '@/components/CompatCard';
 import { useSoulStore } from '@/lib/store';
 import { listReports, saveCompat } from '@/lib/supabase/reports';
 import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
@@ -287,6 +288,10 @@ export default function CompatibilityPage() {
 
         {result && narrative ? (
           <div id="compat-result" className="mt-12 space-y-10">
+            {/* Paylaşılabilir uyum kartı — radar + rezonans */}
+            {me && otherReport ? (
+              <CompatShare a={me} b={otherReport} result={result} />
+            ) : null}
             <CompatibilityView result={result} narrative={narrative} />
             {me && otherReport ? (
               <DeepAnalysisBox a={me} b={otherReport} result={result} />

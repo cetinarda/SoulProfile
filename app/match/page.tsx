@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { CompatibilityView } from '@/components/CompatibilityView';
 import { DeepAnalysisBox } from '@/components/DeepAnalysisBox';
+import { CompatShare } from '@/components/CompatCard';
 import { CosmicLoader } from '@/components/CosmicLoader';
 import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
 import { buildGalacticReport } from '@/lib/report';
@@ -295,6 +296,9 @@ function MatchPage() {
 
         {result && narrative ? (
           <div id="match-result" className="mt-12 space-y-10">
+            {inviter && meReport ? (
+              <CompatShare a={inviter} b={meReport} result={result} />
+            ) : null}
             <CompatibilityView result={result} narrative={narrative} />
             {inviter && meReport ? (
               <DeepAnalysisBox a={inviter} b={meReport} result={result} />
