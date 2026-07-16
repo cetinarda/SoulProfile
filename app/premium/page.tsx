@@ -7,7 +7,7 @@ import { PLANS, PREMIUM_FEATURES, type Plan } from '@/lib/payments/skus';
 import { startCheckout } from '@/lib/payments/checkout';
 import { isCapacitorNative } from '@/lib/platform';
 import { grantPremium, hasPremium } from '@/lib/entitlements';
-import { initIAP, buyOnNative, restorePurchases } from '@/lib/payments/iap';
+import { initIAP, buyOnNative, restorePurchases, syncEntitlement } from '@/lib/payments/iap';
 import { useT } from '@/lib/i18n';
 
 export default function PremiumPage() {
@@ -42,8 +42,12 @@ export default function PremiumPage() {
         });
     }
     setOwned(hasPremium());
-    // iOS Capacitor ortamında RevenueCat init
-    initIAP();
+    // iOS: RevenueCat configure + entitlement senkronu — bitince premium'u
+    // yeniden oku (satın alım sonrası "yeniden satın al" sormasın).
+    initIAP()
+      .then(() => syncEntitlement())
+      .then(() => setOwned(hasPremium()))
+      .catch(() => {});
   }, [locale]);
 
   async function buy(plan: Plan) {

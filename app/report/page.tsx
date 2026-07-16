@@ -12,9 +12,10 @@ import { CharacterStats } from '@/components/CharacterStats';
 import { ConceptCard } from '@/components/ConceptCard';
 import { InviteShare } from '@/components/InviteShare';
 import { CompatibilityOutlook } from '@/components/CompatibilityOutlook';
+import { TodaySky } from '@/components/TodaySky';
 import { useSoulStore } from '@/lib/store';
 import { listReports } from '@/lib/supabase/reports';
-import { readActiveReportId, clearActiveReportId } from '@/lib/active-report';
+import { readActiveReportId } from '@/lib/active-report';
 import { captureNode, downloadDataUrl, shareDataUrl } from '@/lib/share';
 import { premiumOpen } from '@/lib/feature-flags';
 import { buildConceptDecks } from '@/lib/concepts';
@@ -36,22 +37,19 @@ export default function ReportPage() {
   // burada onu okuyup şifreli karne listesinden ilgili karneyi yüklüyoruz.
   useEffect(() => {
     if (report) {
-      clearActiveReportId();
       setHydrated(true);
       return;
     }
+    // Kendi karnesi HER ZAMAN açılabilir: activeReportId varsa onu,
+    // yoksa EN SON kaydedilen karneyi yükle. (id artık temizlenmiyor —
+    // menüden /report'a her girişte son karne gelir.)
     const id = readActiveReportId();
-    if (!id) {
-      setHydrated(true);
-      return;
-    }
     let cancelled = false;
     listReports()
       .then((list) => {
         if (cancelled) return;
-        const found = list.find((r) => r.id === id);
+        const found = (id ? list.find((r) => r.id === id) : undefined) ?? list[0];
         if (found) setReport(found);
-        clearActiveReportId();
       })
       .catch(() => {
         /* lokal cache yok / şifre çözülemedi */
@@ -147,6 +145,9 @@ export default function ReportPage() {
             {working === 'download' ? t('report.preparing') : t('report.download')}
           </button>
         </div>
+
+        {/* Bugünün Gökyüzü — günlük transit motoru (geri gelme sebebi) */}
+        <TodaySky report={report} />
 
         {/* Birini davet et — viral motor (Aha tabakası) */}
         <section className="mt-14">

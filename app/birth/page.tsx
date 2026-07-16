@@ -7,13 +7,13 @@ import { IS_CAPACITOR } from '@/lib/nav';
 import { AppOnlyGate } from '@/components/AppOnlyGate';
 import { LabeledField, DateField, TimeKnownField } from '@/components/LabeledField';
 import Image from 'next/image';
-import { useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { CosmicLoader } from '@/components/CosmicLoader';
 import { useSoulStore } from '@/lib/store';
 import { geocodePlace, type GeocodeResult } from '@/lib/geocoding';
 import { buildGalacticReport } from '@/lib/report';
-import { saveReport } from '@/lib/supabase/reports';
+import { saveReport, listReports } from '@/lib/supabase/reports';
 import { useT } from '@/lib/i18n';
 import { canViewReport, recordReportView } from '@/lib/entitlements';
 import { PremiumGate } from '@/components/PremiumGate';
@@ -35,14 +35,42 @@ export default function BirthPage() {
   const [suggestions, setSuggestions] = useState<GeocodeResult[]>([]);
   const [searching, setSearching] = useState(false);
 
+  // Formu son kayıtlı karnenin doğum verisiyle önceden doldur — kullanıcı
+  // doğum tarihini/verisini görüp DEĞİŞTİREBİLSİN (native reload'da zustand
+  // boşalıyordu; menüden gelince tekrar baştan sormasın).
+  useEffect(() => {
+    if (birth.fullName || birth.birthDate) return; // zaten dolu
+    let cancelled = false;
+    listReports().then((list) => {
+      if (cancelled || !list[0]) return;
+      const b = list[0].birth;
+      setBirth({
+        fullName: b.fullName,
+        birthDate: b.birthDate,
+        birthTime: b.birthTime,
+        birthTimeKnown: b.birthTimeKnown,
+        birthPlace: b.birthPlace,
+        latitude: b.latitude,
+        longitude: b.longitude,
+        timezone: b.timezone,
+        photoUri: b.photoUri,
+      });
+      setPlaceQuery(b.birthPlace ?? '');
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function onPhotoChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const MAX_BYTES = 5 * 1024 * 1024;
-    const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
+    const MAX_BYTES = 25 * 1024 * 1024; // iPhone HEIC/JPEG fotoları için bol
+    const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
     if (file.size > MAX_BYTES) {
-      setError(locale === 'tr' ? 'Fotoğraf 5 MB sınırını aşıyor.' : 'Photo exceeds 5 MB limit.');
+      setError(locale === 'tr' ? 'Fotoğraf 25 MB sınırını aşıyor.' : 'Photo exceeds 25 MB limit.');
       return;
     }
     if (!ALLOWED.includes(file.type)) {

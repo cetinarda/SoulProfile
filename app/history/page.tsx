@@ -23,7 +23,8 @@ export default function HistoryPage() {
     Promise.all([listReports(), listCompat()])
       .then(([r, c]) => {
         setReports(r);
-        setCompats(c);
+        // En yüksek rezonans üstte — arşivde rekabet/merak mekaniği.
+        setCompats([...c].sort((x, y) => y.scoreOverall - x.scoreOverall));
       })
       .finally(() => setLoading(false));
   }, []);
@@ -88,22 +89,34 @@ export default function HistoryPage() {
             BAKTIĞIN UYUMLAR
           </p>
           <div className="mt-4 grid gap-4">
-            {compats.map((c) => (
+            {compats.map((c, i) => (
               <div
                 key={c.id}
                 className="card-surface rounded-3xl border border-cosmic/40 p-6 md:p-7"
               >
                 <div className="flex items-baseline justify-between gap-3">
                   <h3 className="font-display text-xl text-ink">
+                    {i === 0 ? <span className="mr-1">🏆</span> : null}
                     {c.nameA} <span className="text-cosmic">⚯</span> {c.nameB}
                   </h3>
                   <span className="text-[11px] uppercase tracking-[0.2em] text-faint">
                     {new Date(c.savedAt).toLocaleDateString('tr-TR')}
                   </span>
                 </div>
-                <p className="mt-2 text-sm text-cosmic">
-                  Genel uyum: %{Math.round(c.scoreOverall)}
-                </p>
+                <div className="mt-3 flex items-center gap-3">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-panel">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-cosmic to-nebula"
+                      style={{ width: `${Math.round(c.scoreOverall)}%` }}
+                    />
+                  </div>
+                  <span className="shrink-0 text-sm font-bold text-cosmic">%{Math.round(c.scoreOverall)}</span>
+                </div>
+                {i === 0 ? (
+                  <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.2em] text-gold">
+                    En yüksek rezonansın
+                  </p>
+                ) : null}
               </div>
             ))}
           </div>
