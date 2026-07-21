@@ -188,6 +188,8 @@ Her tüketici uygulaması için `marketing/` altına:
 | ASC 180° yanlış (DSC veriyor) | flatlib formülü: `atan2(cos, -(sin*cos+tan*sin))` |
 | Capacitor config tsc hatası | tsconfig.json `exclude`'a ekle |
 | three.js Suspense crash | Her gezegeni ayrı `<Suspense>` ile sar |
+| iOS "Take Photo → crash" (App Store 2.1a) | `Info.plist`'te `NSCameraUsageDescription` eksik. `npm run ios:plist` (cap:sync/cap:ios otomatik çağırır) — `scripts/ios-plist-patch.mjs` zorunlu usage string'leri idempotent ekler |
+| IAP "not submitted for review" (2.1b) | App Store Connect'te her IAP'ye **App Review Screenshot** yükle + ürünü version'a bağla → binary ile birlikte submit. Detay: `docs/APP_STORE_UPLOAD.md` "RED DÜZELTMELERİ" |
 
 ## Branş kuralı
 

@@ -351,4 +351,54 @@ npx cap open ios
 
 ---
 
+## RED DÜZELTMELERİ — 2026-07-21 (Submission c6ee482f)
+
+Apple v1.0 (1) build'ini iki maddeden reddetti. Her ikisi de **kod değil, config/süreç**.
+Resubmit'ten önce bu iki bloğu bitir.
+
+### ❌ Guideline 2.1(a) — "Take Photo → Crash"
+
+**Kök sebep:** Build'in `ios/App/App/Info.plist`'inde `NSCameraUsageDescription` yoktu.
+iOS, purpose string olmayan kameraya erişimi denerken uygulamayı **native crash** ile öldürür.
+`npx cap add ios` temiz plist üretir; usage string'ler otomatik gelmez → her sync'te düşer.
+
+**Kalıcı çözüm (otomatikleştirildi):** `scripts/ios-plist-patch.mjs`
+- `npm run cap:sync` ve `npm run cap:ios` artık sync sonrası bu script'i çağırıp
+  eksik anahtarları (`NSCameraUsageDescription`, `NSPhotoLibraryUsageDescription`,
+  `NSPhotoLibraryAddUsageDescription`, `ITSAppUsesNonExemptEncryption`) idempotent ekler.
+- Manuel: `npm run ios:plist`
+- Doğrulama: `/usr/libexec/PlistBuddy -c "Print :NSCameraUsageDescription" ios/App/App/Info.plist`
+
+**Resubmit adımları:**
+1. `npm run cap:ios`  (plist otomatik yamanır, Xcode açılır)
+2. Xcode → target **App** → General → **Build** numarasını `1` → `2` yap (Apple aynı build'i reddeder)
+3. Gerçek cihaza build al → Profil → Fotoğraf → **Take Photo** → crash YOK, izin popup'ı çıkmalı
+4. Product → Archive → Distribute → Upload
+
+### ❌ Guideline 2.1(b) — IAP review'a gönderilmemiş
+
+**Kök sebep:** IAP ürünü oluşturulmuş ama (a) **App Review Screenshot** yüklenmemiş,
+(b) ürün version'a bağlanıp binary ile birlikte submit edilmemiş.
+
+**IAP App Review Screenshot NEREYE:**
+App Store Connect → **Monetization → In-App Purchases** → ilgili ürüne tıkla →
+aşağıda **"App Review Information"** bölümü → **App Review Screenshot** → yükle.
+(Her ürün için ayrı. Min 640px; premium/satın-alma ekranının görüntüsü yeterli.)
+
+**IAP resubmit yol haritası:**
+1. **Monetization → In-App Purchases → `life.soulprofile.app.unlock`**
+   - Status **"Ready to Submit"** olmalı
+   - Localization dolu (Display Name + Description, TR + EN)
+   - **App Review Screenshot** yüklü (yukarıdaki yer)
+   - Review Notes: sandbox test hesabı e-posta + şifre
+2. **iOS App → 1.0 version sayfası** → aşağı in → **"In-App Purchases"** bölümü →
+   **+** → ürünü seç (bu version ile birlikte review'a girsin)
+3. Build 2'yi version'a ata
+4. **Add for Review → Submit** → IAP + binary birlikte gider
+
+> 💡 IAP'yi version'a bağlamak sandbox "receipt is not valid" sorununu da azaltır:
+> ürün review akışına bağlı değilken sandbox doğrulaması tutarsız davranır.
+
+---
+
 *Bu doküman güncellenmeye açıktır. Submission sürecinde karşılaştığın her yeni gotcha'yı buraya ekle.*

@@ -9,9 +9,10 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "cap:sync": "npm run build:ios && npx cap sync",
-    "cap:ios": "npm run build:ios && npx cap sync ios && npx cap open ios",
-    "cap:add:ios": "npm run build:ios && npx cap add ios",
+    "ios:plist": "node scripts/ios-plist-patch.mjs",
+    "cap:sync": "npm run build:ios && npx cap sync && npm run ios:plist",
+    "cap:ios": "npm run build:ios && npx cap sync ios && npm run ios:plist && npx cap open ios",
+    "cap:add:ios": "npm run build:ios && npx cap add ios && npm run ios:plist",
     "icons:generate": "npx @capacitor/assets generate --iconBackgroundColor '#05060f' --splashBackgroundColor '#05060f'",
     "verify:submission": "node scripts/verify-submission.mjs"
   },
