@@ -190,6 +190,8 @@ Her tüketici uygulaması için `marketing/` altına:
 | three.js Suspense crash | Her gezegeni ayrı `<Suspense>` ile sar |
 | iOS "Take Photo → crash" (App Store 2.1a) | `Info.plist`'te `NSCameraUsageDescription` eksik. `npm run ios:plist` (cap:sync/cap:ios otomatik çağırır) — `scripts/ios-plist-patch.mjs` zorunlu usage string'leri idempotent ekler |
 | IAP "not submitted for review" (2.1b) | App Store Connect'te her IAP'ye **App Review Screenshot** yükle + ürünü version'a bağla → binary ile birlikte submit. Detay: `docs/APP_STORE_UPLOAD.md` "RED DÜZELTMELERİ" |
+| iOS'ta default Capacitor logosu çıkıyor | `cap add ios` taze default ikon koyar; marka ikonu ayrı üretilir. `npm run icons:generate` (`assets/icon.png` 1024² → AppIcon). cap:sync/cap:ios/cap:add:ios artık otomatik çağırır |
+| Capacitor build `/api/verify-session` static export patlatıyor | `build:ios` → `scripts/build-capacitor.mjs` orkestratörü kullanılmalı (app/api'yı build sırasında geçici taşır). Naif `BUILD_TARGET=capacitor next build` KULLANMA |
 
 ## Branş kuralı
 
