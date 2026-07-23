@@ -43,6 +43,9 @@ export default function BirthPage() {
     let cancelled = false;
     listReports().then((list) => {
       if (cancelled || !list[0]) return;
+      // Async çözülene kadar kullanıcı yazmaya başladıysa girdisini ezme (race).
+      const cur = useSoulStore.getState().birth;
+      if (cur.fullName || cur.birthDate) return;
       const b = list[0].birth;
       setBirth({
         fullName: b.fullName,

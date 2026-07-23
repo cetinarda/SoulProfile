@@ -1,5 +1,5 @@
 import type { Chart, HumanDesign } from '../types';
-import { CHANNELS, GATE_SEQUENCE, GATE_TO_CENTER, type HDCenter } from './gates';
+import { CHANNELS, GATE_SEQUENCE, type HDCenter } from './gates';
 
 const CENTERS: HDCenter[] = [
   'Head',

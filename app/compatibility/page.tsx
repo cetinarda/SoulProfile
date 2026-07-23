@@ -109,8 +109,10 @@ export default function CompatibilityPage() {
       }
 
       const res = compareReports(me, other, locale);
-      const narr = await generateCompatNarrative(me, other, res, locale);
+      // Ücretsiz uyum hakkını AI çağrısından ÖNCE tüket (hak zaten canViewCompat'tan
+      // geçti); çağrı hata verirse tekrar bedava çalıştırılamasın.
       recordCompatView(cid);
+      const narr = await generateCompatNarrative(me, other, res, locale);
       saveCompat({
         id: cid,
         nameA: res.nameA,

@@ -66,7 +66,7 @@ export default function PremiumPage() {
           setError(res.error ?? 'Purchase failed');
         }
       } else {
-        await startCheckout();
+        await startCheckout(plan.key);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error');

@@ -1,11 +1,15 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Link } from '@/components/Link';
 import { useT } from '@/lib/i18n';
 import { DevToggle } from './DevToggle';
 
 export function Footer() {
   const { t } = useT();
+  // Statik export'ta new Date() build zamanında donar → yılı client'ta hesapla.
+  const [year, setYear] = useState<number | null>(null);
+  useEffect(() => setYear(new Date().getFullYear()), []);
   const links = [
     { href: '/premium', label: t('nav.premium') },
     { href: '/glossary', label: t('nav.glossary') },
@@ -33,7 +37,7 @@ export function Footer() {
           </nav>
         </div>
         <p className="mt-5 text-[11px] leading-relaxed text-faint">
-          {t('footer.disclaimer')} © {new Date().getFullYear()} SoulProfile.
+          {t('footer.disclaimer')} © {year ?? ''} SoulProfile.
         </p>
         <DevToggle />
       </div>

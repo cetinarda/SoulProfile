@@ -1,6 +1,7 @@
 import { getSupabase } from '../supabase';
+import type { PlanKey } from './skus';
 
-export async function startCheckout(email?: string): Promise<void> {
+export async function startCheckout(planKey: PlanKey = 'lifetime', email?: string): Promise<void> {
   // Auth'lu kullanıcı varsa user_id metadata'sına ekle —
   // webhook bu ID'ye entitlement yazabilsin.
   let userId: string | undefined;
@@ -13,7 +14,7 @@ export async function startCheckout(email?: string): Promise<void> {
   const res = await fetch('/api/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userEmail: email, userId }),
+    body: JSON.stringify({ planKey, userEmail: email, userId }),
   });
   if (!res.ok) {
     const err = (await res.json().catch(() => ({}))) as { error?: string };

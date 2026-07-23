@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import type { GalacticReport } from '@/lib/types';
-import { todayTransits } from '@/lib/astrology/transits';
+import { todayTransits, moonPhase } from '@/lib/astrology/transits';
 import { useT } from '@/lib/i18n';
 
 const TONE_COLOR: Record<string, string> = {
@@ -25,6 +25,11 @@ export function TodaySky({ report }: { report: GalacticReport }) {
     return todayTransits(report, new Date());
   }, [report]);
 
+  const moon = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    return moonPhase(new Date());
+  }, []);
+
   if (insights.length === 0) return null;
 
   const today = new Date().toLocaleDateString(tr ? 'tr-TR' : 'en-US', {
@@ -43,9 +48,19 @@ export function TodaySky({ report }: { report: GalacticReport }) {
             {tr ? 'Yıldızlar bugün sana ne diyor?' : 'What do the stars say today?'}
           </h2>
         </div>
-        <span className="shrink-0 rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-bold text-gold">
-          {today}
-        </span>
+        {moon ? (
+          <div className="flex shrink-0 flex-col items-center gap-1.5">
+            <MoonDisc fraction={moon.fraction} waxing={moon.waxing} />
+            <span className="text-[10px] font-semibold tracking-wide text-gold/90">
+              {tr ? moon.name.tr : moon.name.en}
+            </span>
+            <span className="text-[10px] text-faint">{today}</span>
+          </div>
+        ) : (
+          <span className="shrink-0 rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-bold text-gold">
+            {today}
+          </span>
+        )}
       </div>
 
       <div className="mt-6 space-y-4">
@@ -75,5 +90,44 @@ export function TodaySky({ report }: { report: GalacticReport }) {
           : "Today's sky × your natal chart. Refreshed daily."}
       </p>
     </section>
+  );
+}
+
+/**
+ * Ay evresi diski — sakin, gerçek geometri. Aydınlık yarım-daire + terminatör
+ * elipsi (hilalde gölge oyar, şişkinde ışık ekler; dördünde düz). Tüm evrelerde
+ * doğru: yeni → hilal → dördün → şişkin → dolunay.
+ */
+function MoonDisc({ fraction, waxing, size = 46 }: { fraction: number; waxing: boolean; size?: number }) {
+  const R = size / 2;
+  const rxTerm = R * Math.abs(1 - 2 * fraction); // terminatör yarı-eni (dördünde 0)
+  const gibbous = fraction > 0.5;
+  const uid = `m${Math.round(fraction * 1000)}${waxing ? 'x' : 'n'}`;
+  const litX = waxing ? R : 0; // aydınlık yarım: büyürken sağ, küçülürken sol
+  const shadow = '#1a1b38';
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      aria-hidden="true"
+      style={{ filter: 'drop-shadow(0 0 8px rgba(245,208,97,0.25))' }}
+    >
+      <defs>
+        <clipPath id={`${uid}c`}>
+          <circle cx={R} cy={R} r={R - 1} />
+        </clipPath>
+        <radialGradient id={`${uid}g`} cx="38%" cy="34%" r="80%">
+          <stop offset="0%" stopColor="#fffdf3" />
+          <stop offset="100%" stopColor="#f2e3b0" />
+        </radialGradient>
+      </defs>
+      <g clipPath={`url(#${uid}c)`}>
+        <circle cx={R} cy={R} r={R} fill={shadow} />
+        <rect x={litX} y={0} width={R} height={size} fill={`url(#${uid}g)`} />
+        <ellipse cx={R} cy={R} rx={rxTerm} ry={R} fill={gibbous ? `url(#${uid}g)` : shadow} />
+      </g>
+      <circle cx={R} cy={R} r={R - 1} fill="none" stroke="rgba(245,208,97,0.4)" strokeWidth="1" />
+    </svg>
   );
 }

@@ -37,9 +37,25 @@ export async function listCompat(): Promise<StoredCompat[]> {
   return (await secureGet<StoredCompat[]>(LS_COMPAT_KEY)) ?? [];
 }
 
+// Eski/bozuk şemadaki karneler render sırasında .find()! / property erişiminde
+// çökebilir. Yüklerken minimum şema doğrulaması yap, bozuk kayıtları sessizce at.
+function isValidReport(r: unknown): r is StoredReport {
+  if (!r || typeof r !== 'object') return false;
+  const x = r as Partial<GalacticReport>;
+  return (
+    Array.isArray(x.chart?.planets) &&
+    x.chart!.planets.length > 0 &&
+    !!x.systems?.vedic?.nakshatra &&
+    !!x.numerology &&
+    !!x.humanDesign &&
+    !!x.sections
+  );
+}
+
 async function loadLocal(): Promise<StoredReport[]> {
   const data = await secureGet<StoredReport[]>(LS_KEY);
-  return data ?? [];
+  if (!Array.isArray(data)) return [];
+  return data.filter(isValidReport);
 }
 
 async function saveLocal(reports: StoredReport[]) {

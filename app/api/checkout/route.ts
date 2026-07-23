@@ -22,15 +22,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Stripe henüz yapılandırılmadı.' }, { status: 503 });
   }
 
-  let body: { userEmail?: string; userId?: string } | null = null;
+  let body: { userEmail?: string; userId?: string; planKey?: string } | null = null;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: 'Geçersiz istek' }, { status: 400 });
   }
 
-  // Web Stripe — varsayılan lifetime planı (web ödeme ikincil; iOS App Store ana).
-  const envKey = PLANS.lifetime.stripePriceEnvKey;
+  // Seçilen plan → doğru Stripe price + billing mode. Monthly = subscription,
+  // lifetime = tek seferlik payment. (Önceden ikisi de lifetime'a düşüyordu →
+  // aylık butonu $19.99 tek seferlik çekiyordu; money bug.)
+  const planKey: 'lifetime' | 'monthly' = body?.planKey === 'monthly' ? 'monthly' : 'lifetime';
+  const envKey = PLANS[planKey].stripePriceEnvKey;
   const priceId = process.env[envKey];
   if (!priceId) {
     return NextResponse.json(
@@ -57,7 +60,7 @@ export async function POST(request: Request) {
   })();
 
   const params = new URLSearchParams();
-  params.set('mode', 'payment');
+  params.set('mode', planKey === 'monthly' ? 'subscription' : 'payment');
   params.set('success_url', `${origin}/premium?session_id={CHECKOUT_SESSION_ID}`);
   params.set('cancel_url', `${origin}/premium?canceled=1`);
   params.append('line_items[0][price]', priceId);

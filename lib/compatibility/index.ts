@@ -347,7 +347,12 @@ const SYNASTRY_PAIRS: Array<{ a: PlanetName; b: PlanetName; key: PairKey }> = [
   { a: 'Vertex', b: 'Venus', key: 'vertexVenus' },
 ];
 
+// Doğum saati bilinmiyorsa saate-bağlı noktalar (Yükselen/Vertex) noon
+// varsayımından türer → anlamsız. Bu noktaları synastry'den düş (buildOutlook
+// ile tutarlı). Aksi halde sahte "Vertex kader buluşması"/Yükselen açıları çıkar.
+const TIME_DEPENDENT_POINTS: PlanetName[] = ['Ascendant', 'Vertex'];
 function planetLon(report: GalacticReport, name: PlanetName): number | null {
+  if (report.birth.birthTimeKnown === false && TIME_DEPENDENT_POINTS.includes(name)) return null;
   const p = report.chart.planets.find((pl) => pl.name === name);
   return p ? p.longitude : null;
 }

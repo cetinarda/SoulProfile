@@ -2,7 +2,7 @@
 // kıyaslayan deterministik transit motoru. Her gün değişir → geri gelme sebebi.
 // AI yok; klasik açı geometrisi + ev/temaları.
 
-import { Body, EclipticGeoMoon, GeoVector, Ecliptic, MakeTime } from 'astronomy-engine';
+import { Body, EclipticGeoMoon, GeoVector, Ecliptic, MakeTime, MoonPhase, Illumination } from 'astronomy-engine';
 import type { GalacticReport } from '../types';
 
 function norm(d: number): number {
@@ -111,31 +111,36 @@ export function todayTransits(report: GalacticReport, date: Date = new Date()): 
   const trans = transitingLongitudes(date);
   const natal = report.chart.planets;
   const natalLon = (name: string) => natal.find((p) => p.name === name)?.longitude;
+  // Doğum saati bilinmiyorsa Yükselen + ev sistemi noon varsayımından türer →
+  // "günün odağı: N. ev" ve Yükselen açıları anlamsız olur. Bunları atla.
+  const timeKnown = report.birth.birthTimeKnown !== false;
 
   const targets: { key: string; lon: number }[] = [
     { key: 'Sun', lon: natalLon('Sun') ?? 0 },
     { key: 'Moon', lon: natalLon('Moon') ?? 0 },
     { key: 'Venus', lon: natalLon('Venus') ?? 0 },
     { key: 'Mars', lon: natalLon('Mars') ?? 0 },
-    { key: 'Ascendant', lon: report.chart.ascendant },
+    ...(timeKnown ? [{ key: 'Ascendant', lon: report.chart.ascendant }] : []),
   ];
 
   const insights: TransitInsight[] = [];
 
-  // 1) Günün ana teması — transiting Moon'un natal evi
-  const tMoon = trans.find((t) => t.key === 'Moon')!;
-  const mh = moonHouse(tMoon.lon, report.chart.houses);
-  const focus = HOUSE_FOCUS[mh]!;
-  insights.push({
-    id: `moon-h${mh}`,
-    glyph: '🌙',
-    title: { tr: 'Günün Odağı', en: "Today's Focus" },
-    body: {
-      tr: `Bugün Ay senin ${mh}. evinde — dikkatin ${focus.tr} çekiliyor. Bu alanda küçük bir jest bugün büyük hissettirir.`,
-      en: `The Moon is in your ${mh}${ord(mh)} house today — your attention turns to ${focus.en}. A small gesture here lands big.`,
-    },
-    tone: 'blend',
-  });
+  // 1) Günün ana teması — transiting Moon'un natal evi (yalnız saat biliniyorsa)
+  if (timeKnown) {
+    const tMoon = trans.find((t) => t.key === 'Moon')!;
+    const mh = moonHouse(tMoon.lon, report.chart.houses);
+    const focus = HOUSE_FOCUS[mh]!;
+    insights.push({
+      id: `moon-h${mh}`,
+      glyph: '🌙',
+      title: { tr: 'Günün Odağı', en: "Today's Focus" },
+      body: {
+        tr: `Bugün Ay senin ${mh}. evinde — dikkatin ${focus.tr} çekiliyor. Bu alanda küçük bir jest bugün büyük hissettirir.`,
+        en: `The Moon is in your ${mh}${ord(mh)} house today — your attention turns to ${focus.en}. A small gesture here lands big.`,
+      },
+      tone: 'blend',
+    });
+  }
 
   // 2) En sıkı 2 açı (Moon hariç transiterlar × önemli natal noktalar)
   const found: (TransitInsight & { exact: number })[] = [];
@@ -174,13 +179,40 @@ export function todayTransits(report: GalacticReport, date: Date = new Date()): 
     }
   }
   found.sort((a, b) => a.exact - b.exact);
-  for (const f of found.slice(0, 2)) {
+  // Saat bilinmiyorsa ev insight'ı yok → yerine 1 ekstra açı göster (3 toplam).
+  for (const f of found.slice(0, timeKnown ? 2 : 3)) {
     const { exact, ...rest } = f;
     void exact;
     insights.push(rest);
   }
 
   return insights;
+}
+
+// ───────── Ay Evresi — sakin, günlük değişen kozmik hava ─────────
+// Deterministik (astronomy-engine). "Bugünün Gökyüzü" başlığında gösterilir.
+export type MoonPhaseInfo = {
+  fraction: number; // 0..1 aydınlanan oran
+  waxing: boolean; // büyüyor mu (yeni→dolunay)
+  name: { tr: string; en: string };
+};
+
+const MOON_NAMES: { tr: string; en: string }[] = [
+  { tr: 'Yeni Ay', en: 'New Moon' },
+  { tr: 'Büyüyen Hilal', en: 'Waxing Crescent' },
+  { tr: 'İlk Dördün', en: 'First Quarter' },
+  { tr: 'Büyüyen Şişkin Ay', en: 'Waxing Gibbous' },
+  { tr: 'Dolunay', en: 'Full Moon' },
+  { tr: 'Küçülen Şişkin Ay', en: 'Waning Gibbous' },
+  { tr: 'Son Dördün', en: 'Last Quarter' },
+  { tr: 'Küçülen Hilal', en: 'Waning Crescent' },
+];
+
+export function moonPhase(date: Date = new Date()): MoonPhaseInfo {
+  const angle = norm(MoonPhase(date)); // 0=yeni, 90=ilk dördün, 180=dolunay, 270=son dördün
+  const fraction = Illumination(Body.Moon, MakeTime(date)).phase_fraction;
+  const idx = Math.floor(((angle + 22.5) % 360) / 45); // 0..7
+  return { fraction, waxing: angle < 180, name: MOON_NAMES[idx] ?? MOON_NAMES[0]! };
 }
 
 function cap(s: string): string {

@@ -148,9 +148,3 @@ export function resetUsage(): void {
   localStorage.removeItem(KEY_REPORT_IDS);
   localStorage.removeItem(KEY_COMPAT_IDS);
 }
-
-// Geri uyumluluk (eski çağrı yerleri) — artık kullanılmıyor.
-export function canCreateReport(): boolean { return true; }
-export function canRunCompat(): boolean { return true; }
-export function recordReport(): void { /* id-tabanlı recordReportView kullan */ }
-export function recordCompat(): void { /* id-tabanlı recordCompatView kullan */ }
