@@ -193,31 +193,6 @@ export default function PremiumPage() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-panelBorder bg-panel p-6">
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">
-          {locale === 'tr' ? 'NELER ÜCRETSİZ' : "WHAT'S FREE"}
-        </p>
-        <p className="mt-2 text-sm leading-relaxed text-muted">
-          {locale === 'tr'
-            ? 'Doğum karnen, 9 sistem sentezi, AI Kozmik Anlatın ve sınırsız ikili uyum — hepsi ücretsiz. Sadece haritandaki yıldız/gezegen konumu ve hareketini görmek için premium: tek seferlik ya da aylık.'
-            : 'Your birth profile, 9-system synthesis, AI cosmic reading and unlimited compatibility — all free. Premium only unlocks the star/planet positions and movement in your chart: one-time or monthly.'}
-        </p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Link
-            href="/birth"
-            className="inline-block rounded-full bg-gold px-6 py-3 text-sm font-bold text-[#1a0a40] shadow-glow"
-          >
-            {t('home.path1.cta')}
-          </Link>
-          <Link
-            href="/compatibility"
-            className="inline-block rounded-full border border-panelBorder px-6 py-3 text-sm text-ink hover:border-gold"
-          >
-            {t('home.path2.cta')}
-          </Link>
-        </div>
-      </div>
-
       <p className="text-xs text-faint">
         {locale === 'tr'
           ? 'İki seçenek: tek seferlik $19.99 (ömür boyu) ya da aylık $4.99 abonelik (istediğin zaman iptal). Aylık abonelik iptal edilene dek her ay otomatik yenilenir; App Store hesabından yönetebilirsin. AB ve Türkiye’de 14 gün cayma hakkın saklıdır. '
