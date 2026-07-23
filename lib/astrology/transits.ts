@@ -194,6 +194,7 @@ export function todayTransits(report: GalacticReport, date: Date = new Date()): 
 export type MoonPhaseInfo = {
   fraction: number; // 0..1 aydınlanan oran
   waxing: boolean; // büyüyor mu (yeni→dolunay)
+  index: number; // 0..7 evre indeksi (günlük söz için)
   name: { tr: string; en: string };
 };
 
@@ -212,7 +213,7 @@ export function moonPhase(date: Date = new Date()): MoonPhaseInfo {
   const angle = norm(MoonPhase(date)); // 0=yeni, 90=ilk dördün, 180=dolunay, 270=son dördün
   const fraction = Illumination(Body.Moon, MakeTime(date)).phase_fraction;
   const idx = Math.floor(((angle + 22.5) % 360) / 45); // 0..7
-  return { fraction, waxing: angle < 180, name: MOON_NAMES[idx] ?? MOON_NAMES[0]! };
+  return { fraction, waxing: angle < 180, index: idx, name: MOON_NAMES[idx] ?? MOON_NAMES[0]! };
 }
 
 function cap(s: string): string {

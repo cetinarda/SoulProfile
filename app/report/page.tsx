@@ -12,6 +12,7 @@ import { CharacterStats } from '@/components/CharacterStats';
 import { ConceptCard } from '@/components/ConceptCard';
 import { InviteShare } from '@/components/InviteShare';
 import { CompatibilityOutlook } from '@/components/CompatibilityOutlook';
+import { ProfileCard } from '@/components/ProfileCard';
 import { TodaySky } from '@/components/TodaySky';
 import { useSoulStore } from '@/lib/store';
 import { listReports } from '@/lib/supabase/reports';
@@ -145,6 +146,12 @@ export default function ReportPage() {
             {working === 'download' ? t('report.preparing') : t('report.download')}
           </button>
         </div>
+
+        {/* Profilim — doğum bilgileri (düzenlenebilir) + temel bilgiler + Günün Pusulası */}
+        <ProfileCard report={report} />
+
+        {/* Uyum Ufku — ayna eş / kutsal birleşim / ders ortağı (en üstte, vurgulu) */}
+        <CompatibilityOutlook report={report} />
 
         {/* Bugünün Gökyüzü — günlük transit motoru (geri gelme sebebi) */}
         <TodaySky report={report} />
@@ -308,9 +315,6 @@ export default function ReportPage() {
             </div>
           ) : null}
         </section>
-
-        {/* Uyum Ufku — bu harita kimlerle rezonansa girer (deterministik) */}
-        <CompatibilityOutlook report={report} />
 
         {/* İkili uyum CTA — büyük, görsel */}
         <section className="mt-14 overflow-hidden rounded-3xl border border-cosmic/50 bg-gradient-to-br from-[#0b0524] via-[#1e1a6e] to-[#9d3cb1]/40 p-7 md:p-9">

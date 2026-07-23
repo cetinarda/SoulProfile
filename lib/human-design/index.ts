@@ -15,7 +15,7 @@ const CENTERS: HDCenter[] = [
 
 const GATE_DEGREES = 360 / 64;
 
-function longitudeToGate(longitude: number): { gate: number; line: number } {
+export function longitudeToGate(longitude: number): { gate: number; line: number } {
   const lon = ((longitude % 360) + 360) % 360;
   const idx = Math.floor(lon / GATE_DEGREES);
   const gate = GATE_SEQUENCE[idx]!;
