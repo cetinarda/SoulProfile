@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { useT } from '@/lib/i18n';
 
 // Tüm formlarda TEK etiketli-alan bileşeni. Etiket stili tek yerde.
@@ -26,7 +26,8 @@ export function LabeledField({ label, children }: { label: string; children: Rea
 /**
  * Tarih — ELLE giriş (Gün / Ay / Yıl). Native wheel picker'da tarih kolayca
  * kayıyordu (yanlış Ay burcu şikâyetinin kök sebebi). Üç ayrı numara alanı
- * hem net hem locale-bağımsız. Değer 'yyyy-mm-dd' olarak emit edilir.
+ * hem net hem locale-bağımsız. Alan dolunca imleç OTOMATİK sonraki kutuya geçer.
+ * Değer 'yyyy-mm-dd' olarak emit edilir.
  */
 export function DateField({
   label,
@@ -43,9 +44,11 @@ export function DateField({
   const [m, setM] = useState('');
   const [y, setY] = useState('');
   const applied = useRef(false);
+  const rDay = useRef<HTMLInputElement>(null);
+  const rMon = useRef<HTMLInputElement>(null);
+  const rYear = useRef<HTMLInputElement>(null);
 
-  // Prefill/düzenleme: value ilk dolduğunda alanlara bir kez yansıt (sonra
-  // yerel state sürer; kullanıcı yazınca ezme).
+  // Prefill/düzenleme: value ilk dolduğunda alanlara bir kez yansıt.
   useEffect(() => {
     if (applied.current || !value) return;
     const [py, pm, pd] = value.split('-');
@@ -66,20 +69,28 @@ export function DateField({
       di >= 1 && di <= 31 && mi >= 1 && mi <= 12 && yi >= 1900 && yi <= MAX_YEAR;
     onChange(ok ? `${ny}-${pad2(mi)}-${pad2(di)}` : '');
   }
-  const onD = (v: string) => { const s = v.replace(/\D/g, '').slice(0, 2); setD(s); emit(s, m, y); };
-  const onM = (v: string) => { const s = v.replace(/\D/g, '').slice(0, 2); setM(s); emit(d, s, y); };
+
+  // Alan dolunca görsel sıradaki kutuya geç.
+  const order: RefObject<HTMLInputElement | null>[] = tr ? [rDay, rMon, rYear] : [rMon, rDay, rYear];
+  const advance = (from: RefObject<HTMLInputElement | null>) => {
+    const i = order.indexOf(from);
+    if (i >= 0 && i < order.length - 1) order[i + 1]!.current?.focus();
+  };
+
+  const onD = (v: string) => { const s = v.replace(/\D/g, '').slice(0, 2); setD(s); emit(s, m, y); if (s.length === 2) advance(rDay); };
+  const onM = (v: string) => { const s = v.replace(/\D/g, '').slice(0, 2); setM(s); emit(d, s, y); if (s.length === 2) advance(rMon); };
   const onY = (v: string) => { const s = v.replace(/\D/g, '').slice(0, 4); setY(s); emit(d, m, s); };
 
   const dayF = (
-    <input key="d" inputMode="numeric" value={d} onChange={(e) => onD(e.target.value)}
+    <input key="d" ref={rDay} inputMode="numeric" value={d} onChange={(e) => onD(e.target.value)}
       placeholder={tr ? 'Gün' : 'Day'} aria-label={tr ? 'Gün' : 'Day'} className={NUM_INPUT} />
   );
   const monF = (
-    <input key="m" inputMode="numeric" value={m} onChange={(e) => onM(e.target.value)}
+    <input key="m" ref={rMon} inputMode="numeric" value={m} onChange={(e) => onM(e.target.value)}
       placeholder={tr ? 'Ay' : 'Mon'} aria-label={tr ? 'Ay' : 'Month'} className={NUM_INPUT} />
   );
   const yearF = (
-    <input key="y" inputMode="numeric" value={y} onChange={(e) => onY(e.target.value)}
+    <input key="y" ref={rYear} inputMode="numeric" value={y} onChange={(e) => onY(e.target.value)}
       placeholder={tr ? 'Yıl' : 'Year'} aria-label={tr ? 'Yıl' : 'Year'} className={NUM_INPUT} />
   );
 
@@ -94,8 +105,8 @@ export function DateField({
 }
 
 /**
- * Saat — ELLE giriş (Saat : Dakika) + "biliniyor" onayı. Native time picker
- * yerine manuel. Değer 'HH:MM' olarak emit edilir.
+ * Saat — ELLE giriş (Saat : Dakika) + "biliniyor" onayı. Saat dolunca imleç
+ * otomatik dakikaya geçer. Değer 'HH:MM' olarak emit edilir.
  */
 export function TimeKnownField({
   label,
@@ -115,6 +126,7 @@ export function TimeKnownField({
   const [h, setH] = useState('');
   const [min, setMin] = useState('');
   const applied = useRef(false);
+  const rMin = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (applied.current || !value) return;
@@ -132,7 +144,7 @@ export function TimeKnownField({
     const ok = nh !== '' && nm !== '' && hi >= 0 && hi <= 23 && mi >= 0 && mi <= 59;
     onChange(ok ? `${pad2(hi)}:${pad2(mi)}` : '');
   }
-  const onH = (v: string) => { const s = v.replace(/\D/g, '').slice(0, 2); setH(s); emit(s, min); };
+  const onH = (v: string) => { const s = v.replace(/\D/g, '').slice(0, 2); setH(s); emit(s, min); if (s.length === 2) rMin.current?.focus(); };
   const onMin = (v: string) => { const s = v.replace(/\D/g, '').slice(0, 2); setMin(s); emit(h, s); };
 
   return (
@@ -141,7 +153,7 @@ export function TimeKnownField({
       <div className="grid grid-cols-[1fr_1fr_auto] gap-2">
         <input inputMode="numeric" value={h} disabled={!known} onChange={(e) => onH(e.target.value)}
           placeholder="00" aria-label="Saat" className={`${NUM_INPUT} disabled:opacity-40`} />
-        <input inputMode="numeric" value={min} disabled={!known} onChange={(e) => onMin(e.target.value)}
+        <input ref={rMin} inputMode="numeric" value={min} disabled={!known} onChange={(e) => onMin(e.target.value)}
           placeholder="00" aria-label="Dakika" className={`${NUM_INPUT} disabled:opacity-40`} />
         <label className="flex h-[56px] cursor-pointer items-center gap-2 rounded-2xl border border-panelBorder px-4">
           <input type="checkbox" checked={known} onChange={(e) => onKnownChange(e.target.checked)}

@@ -12,7 +12,6 @@ import { CharacterStats } from '@/components/CharacterStats';
 import { ConceptCard } from '@/components/ConceptCard';
 import { InviteShare } from '@/components/InviteShare';
 import { CompatibilityOutlook } from '@/components/CompatibilityOutlook';
-import { ProfileCard } from '@/components/ProfileCard';
 import { TodaySky } from '@/components/TodaySky';
 import { useSoulStore } from '@/lib/store';
 import { listReports } from '@/lib/supabase/reports';
@@ -146,9 +145,6 @@ export default function ReportPage() {
             {working === 'download' ? t('report.preparing') : t('report.download')}
           </button>
         </div>
-
-        {/* Profilim — doğum bilgileri (düzenlenebilir) + temel bilgiler + Günün Pusulası */}
-        <ProfileCard report={report} />
 
         {/* Uyum Ufku — ayna eş / kutsal birleşim / ders ortağı (en üstte, vurgulu) */}
         <CompatibilityOutlook report={report} />
