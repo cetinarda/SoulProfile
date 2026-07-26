@@ -11,7 +11,7 @@ import { initIAP, buyOnNative, restorePurchases, syncEntitlement } from '@/lib/p
 import { useT } from '@/lib/i18n';
 
 export default function PremiumPage() {
-  const { t, locale } = useT();
+  const { locale } = useT();
   const [working, setWorking] = useState<Plan['key'] | null>(null);
   const [restoring, setRestoring] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -198,9 +198,12 @@ export default function PremiumPage() {
           ? 'İki seçenek: tek seferlik $19.99 (ömür boyu) ya da aylık $4.99 abonelik (istediğin zaman iptal). Aylık abonelik iptal edilene dek her ay otomatik yenilenir; App Store hesabından yönetebilirsin. AB ve Türkiye’de 14 gün cayma hakkın saklıdır. '
           : 'Two options: $19.99 one-time (lifetime) or a $4.99 monthly subscription (cancel anytime). The monthly plan auto-renews each month until cancelled; manage it in your App Store account. 14-day right of withdrawal applies in the EU and Türkiye. '}
         <Link href="/terms" className="text-gold underline">
-          {t('nav.terms')}
+          {locale === 'tr' ? 'Kullanım Koşulları (EULA)' : 'Terms of Use (EULA)'}
         </Link>
-        .
+        {' · '}
+        <Link href="/privacy" className="text-gold underline">
+          {locale === 'tr' ? 'Gizlilik Politikası' : 'Privacy Policy'}
+        </Link>
       </p>
     </PageLayout>
   );
