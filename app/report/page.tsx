@@ -9,6 +9,7 @@ import { StarTreeOfLife } from '@/components/StarTreeOfLife';
 import { BirthChartWheel } from '@/components/BirthChartWheel';
 import { SolarSystem3D } from '@/components/SolarSystem3D';
 import { CharacterStats } from '@/components/CharacterStats';
+import { HeroCardShare } from '@/components/HeroCard';
 import { ConceptCard } from '@/components/ConceptCard';
 import { InviteShare } from '@/components/InviteShare';
 import { CompatibilityOutlook } from '@/components/CompatibilityOutlook';
@@ -179,7 +180,10 @@ export default function ReportPage() {
           </article>
         ) : null}
 
-        {/* Karakter Stat Kartı */}
+        {/* Kahraman Kartı — indirilebilir RPG kartı (stat'lar oyun gibi) */}
+        <HeroCardShare report={report} />
+
+        {/* Karakter Stat Kartı — stat açıklamaları (detay) */}
         <section className="mt-10">
           <CharacterStats
             chart={report.chart}
