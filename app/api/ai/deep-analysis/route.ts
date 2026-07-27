@@ -13,7 +13,8 @@ import {
 import {
   corsResponse,
   corsPreflight,
-  getAnthropic,
+  generateText,
+  hasTextProvider,
   hasPremium,
   readCaller,
   rateLimit,
@@ -63,23 +64,28 @@ export async function POST(request: Request) {
     return corsResponse({ error: 'Eksik veri' }, { status: 400 });
   }
 
-  const client = getAnthropic();
-  if (!client) {
+  if (!hasTextProvider()) {
     return corsResponse({ error: 'AI yapılandırılmadı', useFallback: true }, { status: 503 });
   }
 
   const locale = body.locale === 'en' ? 'en' : 'tr';
   const fb = deepFallback(body.a, body.b, body.r, locale);
 
+  // Premium akış: parası ödenmiş özellik, kalite önce → Anthropic öncelikli,
+  // Groq yalnız Claude düşerse devreye girer.
   try {
-    const msg = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+    const out = await generateText({
       system: deepBuildSystem(locale),
-      messages: [{ role: 'user', content: deepBuildUser(body.a, body.b, body.r) }],
+      user: deepBuildUser(body.a, body.b, body.r),
+      maxTokens: 4000,
+      preferQuality: true,
     });
-    const text = msg.content.map((c) => (c.type === 'text' ? c.text : '')).join('\n').trim();
-    const parsed = deepParseSections(text);
+
+    if (!out) {
+      return corsResponse({ error: 'AI hatası', useFallback: true }, { status: 502 });
+    }
+
+    const parsed = deepParseSections(out.text);
 
     const merged: DeepAnalysis = {
       generatedAt: new Date().toISOString(),
@@ -101,9 +107,9 @@ export async function POST(request: Request) {
       closingBlessing: parsed.closingBlessing || fb.closingBlessing,
     };
 
-    return corsResponse({ analysis: merged });
+    return corsResponse({ analysis: merged, provider: out.provider });
   } catch (err) {
-    console.warn('[api/ai/deep-analysis] Anthropic error', err);
+    console.warn('[api/ai/deep-analysis] hata', err);
     return corsResponse({ error: 'AI hatası', useFallback: true }, { status: 502 });
   }
 }

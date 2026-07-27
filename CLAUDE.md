@@ -17,7 +17,8 @@
 - **three.js + @react-three/fiber + @react-three/drei** (3D solar sistem)
 - **html-to-image** (karne PNG export)
 - **Supabase** (auth + Postgres + RLS — opsiyonel, localStorage'a fallback var)
-- **Anthropic Claude API** model: `claude-sonnet-4-6`
+- **Groq** (ÜCRETSİZ) `llama-3.3-70b-versatile` — anlatım metinlerinde birincil sağlayıcı
+- **Anthropic Claude API** model: `claude-sonnet-4-6` — yedek + premium derin analiz
 - **Stripe Checkout** (web ödeme, Edge runtime API route)
 - **Capacitor 6** (iOS wrap için yapılandırma hazır, paketler henüz yüklenmedi)
 - **Zustand** state
@@ -145,6 +146,17 @@ Footer + karne alt köşesi + ToS — 3 yerde tekrar.
 - Rate limit token bucket Edge isolate'inde + premium gate (deep-analysis).
 - Capacitor iOS: `lib/api-base.ts` absolute URL `https://soulprofile.life`.
 - Fallback narrative her zaman olsun (yapılandırılmış 7 bölüm şeması).
+- **Sağlayıcı zinciri** `app/api/ai/_shared.ts` → `generateText()`:
+  varsayılan **Groq (ücretsiz) → Anthropic (ücretli) → statik fallback**.
+  `preferQuality: true` sırayı ters çevirir (premium `deep-analysis` bunu kullanır —
+  parası ödenmiş özellikte kalite önce).
+  `validate` callback'i çıktıyı doğrular; Llama katı bölüm formatına uymazsa
+  o çıktı REDDEDİLİR ve sıradaki sağlayıcı denenir (sessiz bozuk metin yerine).
+- Env: `GROQ_API_KEY` (ücretsiz, kredi kartsız), opsiyonel `GROQ_MODEL` ile model ez.
+- **Groq görsel ÜRETMEZ** — sadece metin/vision-input/STT/TTS. Portre için ayrı
+  görsel modeli gerekir (`OPENAI_API_KEY` → gpt-image-1, `/api/ai/portrait`).
+- Route'larda prompt üretimi de `try` İÇİNDE olmalı — dışarıda kalırsa bozuk veri
+  502+`useFallback` yerine 500 HTML döndürür ve istemci fallback sinyalini kaybeder.
 - Model: `claude-sonnet-4-6`. Ucuz için `claude-haiku-4-5-20251001`.
 
 ### 7. Paylaşılabilir görsel (viral mekanik)

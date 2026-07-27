@@ -7,7 +7,8 @@ import { isStructured, parseNarrative } from '@/lib/narrative/parse';
 import {
   corsResponse,
   corsPreflight,
-  getAnthropic,
+  generateText,
+  hasTextProvider,
   rateLimit,
   rateKey,
 } from '../_shared';
@@ -42,31 +43,35 @@ export async function POST(request: Request) {
     return corsResponse({ error: 'Eksik veri' }, { status: 400 });
   }
 
-  const client = getAnthropic();
-  if (!client) {
+  if (!hasTextProvider()) {
     return corsResponse({ error: 'AI yapılandırılmadı', useFallback: true }, { status: 503 });
   }
 
   const locale = body.locale === 'en' ? 'en' : 'tr';
 
+  // Groq (ücretsiz) → Anthropic (ücretli). Bölüm formatına uymayan çıktı
+  // reddedilir ve sıradaki sağlayıcı denenir.
+  // Prompt üretimi de try içinde: eksik/bozuk alan gelirse istemci statik
+  // fallback'e düşebilsin (500 HTML değil, 502 + useFallback).
   try {
-    const msg = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 2400,
+    const out = await generateText({
       system: buildSystemPrompt(locale),
-      messages: [{ role: 'user', content: buildUserPrompt(body.report) }],
+      user: buildUserPrompt(body.report),
+      maxTokens: 2400,
+      validate: (text) => isStructured(parseNarrative(text)),
     });
-    const text = msg.content
-      .map((b) => (b.type === 'text' ? b.text : ''))
-      .join('\n')
-      .trim();
-    const parsed = parseNarrative(text);
-    if (!isStructured(parsed)) {
-      return corsResponse({ error: 'Parse hatası', useFallback: true }, { status: 502 });
+
+    if (!out) {
+      return corsResponse({ error: 'AI hatası', useFallback: true }, { status: 502 });
     }
-    return corsResponse({ sections: parsed satisfies NarrativeSections });
+
+    const parsed = parseNarrative(out.text);
+    return corsResponse({
+      sections: parsed satisfies NarrativeSections,
+      provider: out.provider,
+    });
   } catch (err) {
-    console.warn('[api/ai/narrative] Anthropic error', err);
+    console.warn('[api/ai/narrative] hata', err);
     return corsResponse({ error: 'AI hatası', useFallback: true }, { status: 502 });
   }
 }

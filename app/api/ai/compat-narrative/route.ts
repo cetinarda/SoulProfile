@@ -9,7 +9,14 @@ import {
   compatUserPrompt,
   parseCompatNarrative,
 } from '@/lib/compatibility/narrative';
-import { corsResponse, corsPreflight, getAnthropic, rateLimit, rateKey } from '../_shared';
+import {
+  corsResponse,
+  corsPreflight,
+  generateText,
+  hasTextProvider,
+  rateLimit,
+  rateKey,
+} from '../_shared';
 
 export const runtime = 'edge';
 
@@ -43,25 +50,26 @@ export async function POST(request: Request) {
     return corsResponse({ error: 'Eksik veri' }, { status: 400 });
   }
 
-  const client = getAnthropic();
-  if (!client) {
+  if (!hasTextProvider()) {
     return corsResponse({ error: 'AI yapılandırılmadı', useFallback: true }, { status: 503 });
   }
 
   const locale = body.locale === 'en' ? 'en' : 'tr';
 
   try {
-    const msg = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1800,
+    const out = await generateText({
       system: compatSystemPrompt(locale),
-      messages: [{ role: 'user', content: compatUserPrompt(body.a, body.b, body.r) }],
+      user: compatUserPrompt(body.a, body.b, body.r),
+      maxTokens: 1800,
     });
-    const text = msg.content.map((c) => (c.type === 'text' ? c.text : '')).join('\n').trim();
-    const parsed = parseCompatNarrative(text);
-    return corsResponse({ narrative: parsed });
+
+    if (!out) {
+      return corsResponse({ error: 'AI hatası', useFallback: true }, { status: 502 });
+    }
+
+    return corsResponse({ narrative: parseCompatNarrative(out.text), provider: out.provider });
   } catch (err) {
-    console.warn('[api/ai/compat-narrative] Anthropic error', err);
+    console.warn('[api/ai/compat-narrative] hata', err);
     return corsResponse({ error: 'AI hatası', useFallback: true }, { status: 502 });
   }
 }
