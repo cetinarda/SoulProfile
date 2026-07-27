@@ -7,6 +7,7 @@ import { calculateStats, STAT_META, type StatKey } from '@/lib/stats';
 import { SIGN_GLYPHS, SIGN_NAMES_TR } from '@/lib/content/astrology-content';
 import { captureNode, downloadDataUrl, shareDataUrl } from '@/lib/share';
 import { stylizePortrait } from '@/lib/portrait/stylize';
+import { generateAiPortrait, getCachedPortrait } from '@/lib/portrait/ai';
 import { useT } from '@/lib/i18n';
 
 const GOLD = '#e8c877';
@@ -48,8 +49,8 @@ function Corner({ style }: { style: React.CSSProperties }) {
  * 10 stat oyun karakteri gibi küçük yazılarla sergilenir. En yüksek 3 stat
  * altın vurgulu. html-to-image ile PNG'ye çevrilir (photoUri data-URL → CORS yok).
  */
-export const HeroCard = forwardRef<HTMLDivElement, { report: GalacticReport }>(
-  function HeroCard({ report }, ref) {
+export const HeroCard = forwardRef<HTMLDivElement, { report: GalacticReport; portrait?: string }>(
+  function HeroCard({ report, portrait }, ref) {
     const { locale } = useT();
     const tr = locale === 'tr';
     const stats = calculateStats(report.chart, report.numerology, report.humanDesign);
@@ -61,24 +62,6 @@ export const HeroCard = forwardRef<HTMLDivElement, { report: GalacticReport }>(
     const asc = report.chart.ascendantSign;
     const sign = (s: string) => (tr ? SIGN_NAMES_TR[s as keyof typeof SIGN_NAMES_TR] : s);
 
-    // Fotoğrafı otantik boyanmış kahraman portresine çevir (cihaz üstünde;
-    // fotoğraf hiçbir sunucuya gitmez). Hazır olana dek orijinali göster.
-    const photo = report.birth.photoUri;
-    const [portrait, setPortrait] = useState<string | undefined>(photo);
-    useEffect(() => {
-      if (!photo) return;
-      let cancelled = false;
-      stylizePortrait(photo)
-        .then((out) => {
-          if (!cancelled) setPortrait(out);
-        })
-        .catch(() => {
-          /* dönüşüm başarısızsa orijinal kalır */
-        });
-      return () => {
-        cancelled = true;
-      };
-    }, [photo]);
 
     return (
       <div
@@ -365,12 +348,63 @@ function SignCell({ label, glyph, value }: { label: string; glyph: string; value
   );
 }
 
-/** Kahraman kartı + indir/paylaş butonları. */
+/** Kahraman kartı + AI portre + indir/paylaş butonları. */
 export function HeroCardShare({ report }: { report: GalacticReport }) {
   const { locale } = useT();
   const tr = locale === 'tr';
   const cardRef = useRef<HTMLDivElement>(null);
   const [working, setWorking] = useState<'share' | 'download' | null>(null);
+
+  const photo = report.birth.photoUri;
+  const [portrait, setPortrait] = useState<string | undefined>(photo);
+  const [isAi, setIsAi] = useState(false);
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiNote, setAiNote] = useState<string | null>(null);
+
+  // Önce önbellekteki AI portresi (varsa) — yoksa cihaz-üstü boyama efekti.
+  // AI dönüşümü ASLA otomatik çalışmaz: fotoğraf ancak kullanıcı butona
+  // bastığında üçüncü taraf sağlayıcıya gider.
+  useEffect(() => {
+    if (!photo) return;
+    let cancelled = false;
+    (async () => {
+      const cached = await getCachedPortrait(report.id);
+      if (cancelled) return;
+      if (cached) {
+        setPortrait(cached);
+        setIsAi(true);
+        return;
+      }
+      try {
+        const styled = await stylizePortrait(photo);
+        if (!cancelled) setPortrait(styled);
+      } catch {
+        /* orijinal foto kalır */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [photo, report.id]);
+
+  async function runAi() {
+    setAiBusy(true);
+    setAiNote(null);
+    const res = await generateAiPortrait(report);
+    if (res.ok) {
+      setPortrait(res.dataUrl);
+      setIsAi(true);
+    } else {
+      setAiNote(
+        res.fallback
+          ? tr
+            ? 'AI portre şu an kullanılamıyor — boyanmış portre gösteriliyor.'
+            : 'AI portrait unavailable right now — showing the painted portrait.'
+          : res.error,
+      );
+    }
+    setAiBusy(false);
+  }
 
   async function run(kind: 'share' | 'download') {
     if (!cardRef.current) return;
@@ -398,8 +432,43 @@ export function HeroCardShare({ report }: { report: GalacticReport }) {
       </div>
 
       <div className="flex justify-center">
-        <HeroCard ref={cardRef} report={report} />
+        <HeroCard ref={cardRef} report={report} portrait={portrait} />
       </div>
+
+      {/* AI karakter dönüşümü — yalnız kullanıcı isteğiyle */}
+      {photo ? (
+        <div className="mx-auto mt-5 max-w-md text-center">
+          {!isAi ? (
+            <>
+              <button
+                type="button"
+                onClick={runAi}
+                disabled={aiBusy}
+                className="inline-flex items-center gap-2 rounded-full border border-gold/50 bg-gold/10 px-5 py-2.5 text-sm font-bold text-gold transition-colors hover:bg-gold/20 disabled:opacity-60"
+              >
+                <span>✦</span>
+                {aiBusy
+                  ? tr
+                    ? 'Karakterin çiziliyor…'
+                    : 'Painting your character…'
+                  : tr
+                    ? 'AI ile karaktere dönüştür'
+                    : 'Turn into an AI character'}
+              </button>
+              <p className="mt-2 text-[11px] leading-relaxed text-faint">
+                {tr
+                  ? 'Fotoğrafın, karakter portresi üretilmesi için AI görsel servisine gönderilir. Sonuç cihazında saklanır.'
+                  : 'Your photo is sent to an AI image service to paint the character. The result is stored on your device.'}
+              </p>
+            </>
+          ) : (
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gold">
+              {tr ? '✦ AI karakter portresi' : '✦ AI character portrait'}
+            </p>
+          )}
+          {aiNote ? <p className="mt-2 text-[12px] text-muted">{aiNote}</p> : null}
+        </div>
+      ) : null}
 
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <button

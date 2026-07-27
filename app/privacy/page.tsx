@@ -31,6 +31,12 @@ export default function Privacy() {
           Anthropic varsayılan olarak verini eğitim için kullanmaz.
         </Bullet>
         <Bullet>
+          <strong>AI görsel servisi (OpenAI):</strong> Yalnızca &quot;AI ile karaktere dönüştür&quot;
+          butonuna bastığında profil fotoğrafın karakter portresi üretilmesi için gönderilir.
+          Bu işlem otomatik değildir; butona basmazsan fotoğrafın cihazından çıkmaz. Üretilen
+          portre cihazında saklanır.
+        </Bullet>
+        <Bullet>
           <strong>Supabase:</strong> Hesap, doğum bilgisi ve karne kayıtları için. EU bölgesinde
           barındırılır.
         </Bullet>
