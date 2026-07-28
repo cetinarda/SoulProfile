@@ -6,7 +6,7 @@ import { useT } from '@/lib/i18n';
 import { startCheckout } from '@/lib/payments/checkout';
 import { isCapacitorNative } from '@/lib/platform';
 import { buyOnNative, restorePurchases } from '@/lib/payments/iap';
-import { PLANS, PREMIUM_FEATURES, type Plan } from '@/lib/payments/skus';
+import { PLANS, premiumFeatures, iapErrorText, type Plan } from '@/lib/payments/skus';
 
 export function PremiumGate({
   kind,
@@ -31,21 +31,17 @@ export function PremiumGate({
         if (res.ok) {
           onUnlocked?.();
         } else if (res.error && res.error !== 'cancelled') {
-          const map: Record<string, string> = {
-            IAP_NOT_READY:
-              locale === 'tr'
-                ? 'Satın alma servisi hazır değil. pod install + cap sync gerekli.'
-                : 'Purchase service not ready. Needs pod install + cap sync.',
-            'No offering configured':
-              locale === 'tr' ? 'Ürün henüz mağazada tanımlı değil.' : 'Product not configured in store yet.',
-          };
-          setError(map[res.error] ?? res.error);
+          // Ham kod / geliştirici talimatı kullanıcıya GÖSTERİLMEZ (App Review
+          // ekranda 'IAP_NOT_READY' gördü) — sadece log'a.
+          console.warn('[premium-gate] purchase failed', res.error);
+          setError(iapErrorText(res.error, locale));
         }
       } else {
         await startCheckout();
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error');
+      console.warn('[premium-gate] purchase threw', e);
+      setError(iapErrorText(undefined, locale));
     } finally {
       setWorking(null);
     }
@@ -57,7 +53,7 @@ export function PremiumGate({
     try {
       const res = await restorePurchases();
       if (res.ok) onUnlocked?.();
-      else setError(locale === 'tr' ? 'Geri yüklenecek satın alım yok.' : 'No purchase to restore.');
+      else setError(iapErrorText(res.error, locale));
     } finally {
       setRestoring(false);
     }
@@ -83,7 +79,7 @@ export function PremiumGate({
         </p>
 
         <ul className="mx-auto mt-6 max-w-sm space-y-2 text-left text-sm text-ink">
-          {PREMIUM_FEATURES.map((f) => (
+          {premiumFeatures(locale).map((f) => (
             <li key={f} className="flex gap-2">
               <span className="text-gold">✦</span>
               <span>{f}</span>

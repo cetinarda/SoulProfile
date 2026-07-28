@@ -42,7 +42,13 @@ export function DeepAnalysisBox({ a, b, result }: Props) {
       const a_ = await generateDeepAnalysis(a, b, result, locale);
       setAnalysis(a_);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error');
+      // Ham hata mesajı (fetch/parse detayı) kullanıcıya gösterilmez.
+      console.warn('[deep-analysis] generate failed', e);
+      setError(
+        locale === 'tr'
+          ? 'Derin analiz şu anda oluşturulamadı. Lütfen tekrar dene.'
+          : 'The deep analysis could not be generated right now. Please try again.',
+      );
     } finally {
       setLoading(false);
     }

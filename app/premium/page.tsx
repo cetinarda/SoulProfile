@@ -3,7 +3,7 @@
 import { Link } from '@/components/Link';
 import { useEffect, useState } from 'react';
 import { PageLayout } from '@/components/PageLayout';
-import { PLANS, PREMIUM_FEATURES, type Plan } from '@/lib/payments/skus';
+import { PLANS, premiumFeatures, iapErrorText, type Plan } from '@/lib/payments/skus';
 import { startCheckout } from '@/lib/payments/checkout';
 import { isCapacitorNative } from '@/lib/platform';
 import { grantPremium, hasPremium } from '@/lib/entitlements';
@@ -63,13 +63,15 @@ export default function PremiumPage() {
         } else if (res.error === 'cancelled') {
           // sessiz iptal
         } else {
-          setError(res.error ?? 'Purchase failed');
+          console.warn('[premium] purchase failed', res.error);
+          setError(iapErrorText(res.error, locale));
         }
       } else {
         await startCheckout(plan.key);
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error');
+      console.warn('[premium] purchase threw', e);
+      setError(iapErrorText(undefined, locale));
     } finally {
       setWorking(null);
     }
@@ -85,11 +87,8 @@ export default function PremiumPage() {
         setOwned(true);
         setInfo(locale === 'tr' ? 'Önceki satın alımın geri yüklendi.' : 'Your previous purchase was restored.');
       } else {
-        setError(
-          res.error === 'No active entitlement to restore'
-            ? (locale === 'tr' ? 'Geri yüklenecek aktif bir satın alım bulunamadı.' : 'No active purchase to restore.')
-            : (res.error ?? 'Restore failed'),
-        );
+        console.warn('[premium] restore failed', res.error);
+        setError(iapErrorText(res.error, locale));
       }
     } finally {
       setRestoring(false);
@@ -125,7 +124,7 @@ export default function PremiumPage() {
         </p>
 
         <ul className="mt-5 grid gap-2">
-          {PREMIUM_FEATURES.map((f) => (
+          {premiumFeatures(locale).map((f) => (
             <li key={f} className="flex gap-2 text-sm text-ink">
               <span className="text-gold">✦</span>
               <span>{f}</span>
