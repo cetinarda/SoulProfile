@@ -35,6 +35,31 @@ if (missing.length > 0 && !process.env.ALLOW_MISSING_IAP) {
   process.exit(1);
 }
 
+// ─── Yanlış anahtar TÜRÜ kontrolü ───────────────────────────────────────────
+// RevenueCat dashboard'da iki farklı anahtar var: Test Store key (test_...)
+// ve gerçek iOS SDK key (appl_...). Test Store anahtarı satın almaları
+// RevenueCat'in SAHTE mağazasına yönlendirir, gerçek StoreKit'e hiç değmez —
+// bu yüzden production'da submit edilen build'de daha önce de aynı
+// 'IAP_NOT_READY' / satın alma hatası tekrarlandı: env VARDI ama yanlış
+// TÜRDEN bir anahtardı (test_...), üretim/App Review'da hiçbir zaman
+// çalışmayacaktı. RevenueCat kendisi de bunu üretime göndermeyi yasaklıyor.
+const iosKey = process.env.NEXT_PUBLIC_REVENUECAT_IOS_KEY;
+if (iosKey && !iosKey.startsWith('appl_')) {
+  const isTestStoreKey = iosKey.startsWith('test_');
+  console.error(`\n✗ Capacitor build durduruldu — NEXT_PUBLIC_REVENUECAT_IOS_KEY yanlış türde bir anahtar:\n`);
+  console.error(`    Verilen: ${iosKey.slice(0, 12)}…`);
+  if (isTestStoreKey) {
+    console.error('    Bu bir RevenueCat TEST STORE anahtarı (test_...) — App Store\'a ASLA gönderilemez.');
+    console.error('    Satın almalar gerçek StoreKit\'e değil RevenueCat\'in sahte mağazasına gider.');
+  } else {
+    console.error('    Beklenen ön ek: appl_ (RevenueCat iOS SDK public key)');
+  }
+  console.error('\n  Doğru anahtarı al: RevenueCat Dashboard → Project Settings → Apps → (iOS uygulaman)');
+  console.error('  → Public app-specific API key (appl_… ile başlar).');
+  console.error('  iOS App yoksa: Apps → + New → App Store, Bundle ID gir (life.soulprofile.app).\n');
+  process.exit(1);
+}
+
 if (process.env.ALLOW_MISSING_IAP && missing.length > 0) {
   console.warn('\n⚠️  ALLOW_MISSING_IAP aktif — IAP devre dışı bir binary üretiliyor.');
   console.warn('   Bu build App Store submit için KULLANILAMAZ.\n');
