@@ -3,7 +3,7 @@
 // app/api'yı geçici olarak app/_api'ya taşır (underscore prefix = private folder,
 // Next routing'e dahil değil), build sonrası geri alır.
 
-import { renameSync, existsSync } from 'fs';
+import { renameSync, existsSync, readFileSync } from 'fs';
 import { execSync } from 'child_process';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -11,6 +11,32 @@ import { fileURLToPath } from 'url';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const apiDir = join(root, 'app/api');
 const hiddenDir = join(root, 'app/_api');
+
+// ─── .env yükleme ───────────────────────────────────────────────────────────
+// Bu script `next build`'ten ÖNCE çalışıyor. Next.js kendi .env'ini doğru
+// okur ama BU dosyadaki guard kontrolleri process.env'in zaten dolu olduğunu
+// varsayıyordu — hiçbir yerde .env'i kendisi okumuyordu. Kabukta gerçek bir
+// `export` yoksa (CI secret gibi), .env'deki anahtar burada hep "eksik"
+// görünüyordu, build sebepsiz yere reddediliyordu.
+function loadDotEnv(path) {
+  if (!existsSync(path)) return;
+  for (const rawLine of readFileSync(path, 'utf8').split('\n')) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#')) continue;
+    const eq = line.indexOf('=');
+    if (eq === -1) continue;
+    const key = line.slice(0, eq).trim();
+    let value = line.slice(eq + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    // Gerçek kabuk/CI env değişkeni her zaman önceliklidir — .env sadece
+    // eksik olanı doldurur.
+    if (!(key in process.env)) process.env[key] = value;
+  }
+}
+loadDotEnv(join(root, '.env'));
+loadDotEnv(join(root, '.env.local'));
 
 // ─── Submit öncesi zorunlu env kontrolü ────────────────────────────────────
 // NEXT_PUBLIC_* değişkenleri BUILD ANINDA bundle'a gömülür. RevenueCat anahtarı
