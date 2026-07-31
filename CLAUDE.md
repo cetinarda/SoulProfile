@@ -207,6 +207,8 @@ Her tüketici uygulaması için `marketing/` altına:
 | Ham hata kodu kullanıcıya gösteriliyor | `IAP_NOT_READY` gibi geliştirici string'leri ekrana basılmamalı. `app/premium/page.tsx` → `iapErrorText()` ile lokalize, anlaşılır metne çevir; ham kodu `console.warn`'a bırak |
 | iOS'ta default Capacitor logosu çıkıyor | `cap add ios` taze default ikon koyar; marka ikonu ayrı üretilir. `npm run icons:generate` (`assets/icon.png` 1024² → AppIcon). cap:sync/cap:ios/cap:add:ios artık otomatik çağırır |
 | Capacitor build `/api/verify-session` static export patlatıyor | `build:ios` → `scripts/build-capacitor.mjs` orkestratörü kullanılmalı (app/api'yı build sırasında geçici taşır). Naif `BUILD_TARGET=capacitor next build` KULLANMA |
+| Profil oluşturulamıyor → "Create Profile" ekranına geri dönüyor (App Store 2.1a) | Doğum yeri çözümü tek dış servise (Open-Meteo) bağlıydı; review ağında yavaş/engelli olunca lat/lng boş → submit takılı kalıyordu. `lib/geocoding/cities.ts` offline gazetteer + timeout eklendi; ağ boş dönerse yerel şehir listesinden çözülür (`geocodePlace` fallback) |
+| IAP satın alma `error 8` / INVALID_RECEIPT (2.1b) | Kod değil, config. En olası: Xcode scheme'i `resources/Products.storekit`'i kullanıyor (sahte receipt). Ayrıca abonelik için App-Specific Shared Secret eksik olabilir. Tam runbook: `docs/APP_STORE_UPLOAD.md` "receipt error 8" bölümü |
 
 ## Branş kuralı
 

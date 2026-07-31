@@ -401,4 +401,54 @@ aşağıda **"App Review Information"** bölümü → **App Review Screenshot** 
 
 ---
 
+## RED DÜZELTMELERİ — Satın alma "receipt error 8" (INVALID_RECEIPT)
+
+**Belirti:** Premium ekranında satın al'a basınca ödeme akışı başlıyor ama
+RevenueCat **error 8** (`INVALID_RECEIPT` — "Error validating receipt") ile
+düşüyor. Hem sandbox testinde hem App Review'da görülebilir. **Bu bir kod bug'ı
+DEĞİL** — uygulama tarafındaki hata mesajı zaten lokalize (`iapErrorText` → ham
+"8" kullanıcıya gösterilmez, `app/premium/page.tsx`). Sorun StoreKit/RevenueCat/
+App Store Connect **config**'inde. Sebepler olasılık sırasına göre:
+
+### 1. (Senin sandbox'ında EN OLASI) Xcode scheme'i `resources/Products.storekit`'i kullanıyor
+Xcode'da **StoreKit Configuration File** seçiliyken satın alım **yerel sahte
+receipt** üretir; RevenueCat sunucusu bunu doğrulayamaz → **error 8**. Bu dosya
+(`resources/Products.storekit`) sadece **offline UI testi** içindir, gerçek
+sandbox/prod doğrulaması için ASLA kullanılmaz.
+- **Fix:** Xcode → Scheme (App) → **Edit Scheme → Run → Options →
+  StoreKit Configuration → `None`**.
+- Sonra gerçek cihazda, **Settings → App Store → Sandbox Account** ile bir
+  Sandbox Apple ID'ye girip test et (normal Apple ID ile değil).
+- `ios/` commit edilmediği için `cap add ios` scheme'i temiz üretir; bu tuzak
+  ancak scheme'i elle bu dosyaya bağladıysan oluşur.
+
+### 2. (Abonelik için) App-Specific **Shared Secret** RevenueCat'te tanımsız/yanlış
+Auto-renewable subscription (`life.soulprofile.app.monthly`) receipt'ini Apple'a
+doğrulatmak için RevenueCat'in **App-Specific Shared Secret**'e ihtiyacı var.
+Eksik/yanlışsa abonelik satın alımı receipt validation'da patlar (lifetime
+non-consumable daha toleranslı olduğundan sorun önce abonelikte görünür).
+- **Fix:** App Store Connect → **App → App Information → App-Specific Shared
+  Secret → Generate** → RevenueCat → **Project → Apple App Store → App-Specific
+  Shared Secret** alanına yapıştır. (Bkz. `docs/PAYMENT_INTEGRATION.md` satır 232.)
+
+### 3. Ürünler review akışına/version'a bağlı değil ya da "Ready to Submit" değil
+Ürün henüz version'a eklenmemişken sandbox doğrulaması tutarsız davranır (yukarıda
+2.1(b) bölümündeki not). Her iki ürün de (`.unlock` + `.monthly`) **Ready to
+Submit** olmalı ve 1.0 version sayfasındaki **In-App Purchases** bölümüne
+eklenmeli.
+
+### 4. Paid Apps Agreement aktif değil
+**Agreements, Tax, and Banking** → Paid Apps sözleşmesi "Active" değilse hiçbir
+IAP doğrulanmaz. İmzalı ve aktif olduğunu doğrula.
+
+### Doğrulama checklist'i (resubmit öncesi)
+- [ ] Xcode scheme StoreKit Configuration = **None**
+- [ ] Gerçek cihaz + **Sandbox Apple ID** ile hem lifetime hem monthly satın alım **error 8 YOK**
+- [ ] RevenueCat'te App-Specific Shared Secret dolu
+- [ ] Her iki ürün **Ready to Submit** + 1.0 version'a bağlı
+- [ ] Paid Apps Agreement **Active**
+- [ ] Satın alım başarısız olursa reviewer **ham kod değil** lokalize mesaj görüyor (kod tarafı hazır)
+
+---
+
 *Bu doküman güncellenmeye açıktır. Submission sürecinde karşılaştığın her yeni gotcha'yı buraya ekle.*
