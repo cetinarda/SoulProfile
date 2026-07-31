@@ -11,6 +11,7 @@ import { SolarSystem3D } from '@/components/SolarSystem3D';
 import { CharacterStats } from '@/components/CharacterStats';
 import { HeroCardShare } from '@/components/HeroCard';
 import { ConceptCard } from '@/components/ConceptCard';
+import { EngineMechanics } from '@/components/EngineMechanics';
 import { InviteShare } from '@/components/InviteShare';
 import { CompatibilityOutlook } from '@/components/CompatibilityOutlook';
 import { TodaySky } from '@/components/TodaySky';
@@ -311,6 +312,7 @@ export default function ReportPage() {
                       <BirthChartWheel chart={report.chart} />
                     </div>
                   </div>
+                  <EngineMechanics report={report} />
                 </div>
             </div>
           ) : null}

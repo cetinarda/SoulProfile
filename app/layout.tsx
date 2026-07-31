@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: '%s · SoulProfile',
   },
   description:
-    'Doğum tarih/saat/yerinden 9 analitik sistemi sentezleyen kişisel iç gözlem aracı. Astronomik harita hesabı, Human Design beden grafiği, numeroloji, Vedik nakshatra, Maya takvimi ve daha fazlası. 3D interaktif görselleştirme ile.',
+    'Horoscope değil — doğum verinden kozmik kimliğini hesaplayan bir iç gözlem motoru. Astronomik harita, Human Design beden grafiği, numeroloji ve Vedik nakshatra cihazında hesaplanır; gezegenlerinin ömür boyu hareketini interaktif izle, iki kişinin ilişkisini çok katmanlı yazılı bir ayna olarak gör.',
   keywords: [
     'doğum haritası', 'human design', 'numeroloji',
     'astronomik harita', 'kozmik kimlik analizi', 'doğum verisi',
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Doğduğunda yıldızlar sana ne söylüyordu?',
     description:
-      'Çok-sistem astrolojiden sentezlenen tek bir kozmik kimliğin. Batı + Vedik + Çin + Maya + Norse + Tarot + Human Design + Numeroloji + Yıldız Irkı.',
+      'Horoscope değil, bir motor: doğum verinden hesaplanan kozmik kimliğin, gezegenlerinin ömür boyu hareketi ve iki kişinin ilişkisinin çok katmanlı yazılı aynası.',
     type: 'website',
     locale: 'tr_TR',
     siteName: 'SoulProfile',
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Doğduğunda yıldızlar sana ne söylüyordu?',
-    description: 'Çok-sistem kozmik kimliğin bir karnede.',
+    description: 'Horoscope değil — doğum verinden hesaplanan kozmik kimlik motoru.',
     images: ['/og-image.svg'],
   },
 };

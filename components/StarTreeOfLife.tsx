@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { buildLifeTimeline, PLANET_COLORS } from '@/lib/astrology/timeline';
+import { useT } from '@/lib/i18n';
 
 type Props = {
   birthISO: string;
@@ -15,6 +16,29 @@ const CENTER = SIZE / 2;
 const OUTER_RADIUS = SIZE * 0.42;
 const ZODIAC_GLYPHS = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'];
 
+// Kaydırıcı okunurluğu için gezegen glifleri + burç adları (lokalize).
+const PLANET_GLYPHS: Record<string, string> = {
+  Sun: '☉',
+  Mercury: '☿',
+  Venus: '♀',
+  Mars: '♂',
+  Jupiter: '♃',
+  Saturn: '♄',
+  Uranus: '♅',
+  Neptune: '♆',
+  Pluto: '♇',
+};
+const PLANET_ORDER = ['Sun', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
+const SIGN_NAMES: Record<'tr' | 'en', string[]> = {
+  tr: ['Koç', 'Boğa', 'İkizler', 'Yengeç', 'Aslan', 'Başak', 'Terazi', 'Akrep', 'Yay', 'Oğlak', 'Kova', 'Balık'],
+  en: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'],
+};
+
+function signIndex(longitude: number): number {
+  const v = ((longitude % 360) + 360) % 360;
+  return Math.floor(v / 30) % 12;
+}
+
 function longitudeToXY(longitude: number, age: number, totalYears: number): { x: number; y: number } {
   // Spiral: yaş arttıkça merkeze yaklaşır. Açı = ekliptik boylam.
   const angle = ((longitude - 90) * Math.PI) / 180;
@@ -27,11 +51,15 @@ function longitudeToXY(longitude: number, age: number, totalYears: number): { x:
 }
 
 export function StarTreeOfLife({ birthISO, size = SIZE }: Props) {
-  const [revealStep, setRevealStep] = useState(0);
+  const { locale } = useT();
+  const tr = locale === 'tr';
+  // progress ∈ [0,1] — hem otomatik reveal animasyonunu hem manuel kaydırıcıyı sürer.
+  const [progress, setProgress] = useState(0);
+  const [scrubbing, setScrubbing] = useState(false);
   const [playKey, setPlayKey] = useState(0);
   const rafRef = useRef<number | null>(null);
 
-  const { points, lines, totalYears, lifePathPoints } = useMemo(() => {
+  const { points, lines, totalYears, lifePathPoints, snapshots } = useMemo(() => {
     const snapshots = buildLifeTimeline(birthISO, 2); // her 6 ayda bir nokta
     const totalYears = snapshots[snapshots.length - 1]?.age ?? 0;
 
@@ -57,7 +85,7 @@ export function StarTreeOfLife({ birthISO, size = SIZE }: Props) {
         const { x, y } = longitudeToXY(snap.positions[p]!, snap.age, totalYears);
         return { x, y, planet: p, age: snap.age, date: snap.date };
       });
-      // Her gezegenden 3 en yakın komşusuna bağlan (Voronoi/Delaunay benzeri ucuz)
+      // Her gezegenden 2 en yakın komşusuna bağlan (Voronoi/Delaunay benzeri ucuz)
       for (let i = 0; i < pts.length; i++) {
         const a = pts[i]!;
         const others = pts
@@ -66,45 +94,59 @@ export function StarTreeOfLife({ birthISO, size = SIZE }: Props) {
           .sort((u, v) => u.d - v.d)
           .slice(0, 2);
         for (const { b } of others) {
-          lines.push({
-            x1: a.x,
-            y1: a.y,
-            x2: b.x,
-            y2: b.y,
-            opacity: 0.18,
-            step: idx,
-          });
+          lines.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y, opacity: 0.18, step: idx });
         }
       }
     });
 
-    return { points, lines, totalYears, lifePathPoints: lifePath };
+    return { points, lines, totalYears, lifePathPoints: lifePath, snapshots };
   }, [birthISO]);
 
-  const totalSteps = useMemo(() => {
-    const steps = new Set(lines.map((l) => l.step));
-    return Math.max(steps.size, 1);
-  }, [lines]);
+  const snapCount = Math.max(snapshots.length, 1);
+  // Aktif an — kaydırıcı/animasyon konumundaki snapshot indeksi.
+  const activeIdx = Math.min(snapCount - 1, Math.max(0, Math.round(progress * (snapCount - 1))));
+  const revealStep = activeIdx;
+  const activeSnap = snapshots[activeIdx];
 
+  // Otomatik reveal: kullanıcı kaydırıcıya dokunana kadar hayat web'i 14sn'de çizilir.
   useEffect(() => {
-    setRevealStep(0);
-    let raf = 0;
+    setScrubbing(false);
+    setProgress(0);
     const start = performance.now();
-    const duration = 14000; // 14 saniyede tüm hayat web'i çizilir (yavaş + meditatif)
+    const duration = 14000;
     const tick = (now: number) => {
       const elapsed = now - start;
-      // ease-in-out cubic
       const t = Math.min(1, elapsed / duration);
+      // ease-in-out cubic
       const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      setRevealStep(Math.floor(eased * totalSteps));
-      if (t < 1) raf = requestAnimationFrame(tick);
+      setProgress(eased);
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
     };
-    raf = requestAnimationFrame(tick);
-    rafRef.current = raf;
+    rafRef.current = requestAnimationFrame(tick);
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [totalSteps, playKey]);
+    // playKey değişince (Tekrar Oynat) yeniden başlar.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playKey]);
+
+  function stopAutoplay() {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+  }
+
+  function onScrub(v: number) {
+    stopAutoplay();
+    setScrubbing(true);
+    setProgress(v);
+  }
+
+  const activeAge = activeSnap?.age ?? 0;
+  const activeYear = activeSnap?.date?.slice(0, 4) ?? '';
 
   return (
     <div className="relative mx-auto" style={{ width: size, maxWidth: '100%' }}>
@@ -165,7 +207,7 @@ export function StarTreeOfLife({ birthISO, size = SIZE }: Props) {
               stroke="rgba(255,255,255,0.35)"
               strokeWidth="0.6"
               opacity={visible ? 0.6 : 0}
-              style={{ transition: 'opacity 600ms ease-out' }}
+              style={{ transition: 'opacity 300ms ease-out' }}
             />
           );
         })}
@@ -192,7 +234,7 @@ export function StarTreeOfLife({ birthISO, size = SIZE }: Props) {
 
         {/* Yıldız noktaları */}
         {points.map((p, i) => {
-          const stepOfPoint = Math.floor(i / 9); // ~9 gezegen per snapshot
+          const stepOfPoint = Math.floor(i / PLANET_ORDER.length);
           const visible = stepOfPoint <= revealStep;
           if (!visible) return null;
           const color = PLANET_COLORS[p.planet] ?? '#fff';
@@ -204,21 +246,99 @@ export function StarTreeOfLife({ birthISO, size = SIZE }: Props) {
           );
         })}
 
+        {/* AKTİF AN — kaydırıcının bulunduğu yaştaki gezegenler (vurgulu başlar) */}
+        {activeSnap
+          ? PLANET_ORDER.map((planet) => {
+              const lon = activeSnap.positions[planet];
+              if (lon == null) return null;
+              const { x, y } = longitudeToXY(lon, activeSnap.age, totalYears);
+              const color = PLANET_COLORS[planet] ?? '#fff';
+              return (
+                <g key={`active-${planet}`}>
+                  <circle cx={x} cy={y} r={8} fill="url(#star-glow)" opacity={0.75} />
+                  <circle cx={x} cy={y} r={3.4} fill={color} opacity={1} stroke="#05060f" strokeWidth="0.6" />
+                  <text
+                    x={x}
+                    y={y - 9}
+                    fontSize="9"
+                    fill={color}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    opacity={0.9}
+                  >
+                    {PLANET_GLYPHS[planet]}
+                  </text>
+                </g>
+              );
+            })
+          : null}
+
         {/* Doğum noktası — merkez */}
         <circle cx={CENTER} cy={CENTER} r={6} fill="#f5d061" opacity="0.95" />
         <circle cx={CENTER} cy={CENTER} r={10} fill="none" stroke="#f5d061" strokeOpacity="0.4" />
       </svg>
 
+      {/* Zaman kaydırıcı — doğumdan bugüne gezegenlerini elle gez */}
+      <div className="mt-4">
+        <div className="flex items-center justify-between text-[11px] text-faint">
+          <span>{tr ? 'Doğum' : 'Birth'}</span>
+          <span className="font-bold text-gold">
+            {tr ? 'Yaş' : 'Age'} {activeAge.toFixed(1)}
+            {activeYear ? ` · ${activeYear}` : ''}
+          </span>
+          <span>{tr ? `Bugün (${totalYears.toFixed(0)} yıl)` : `Today (${totalYears.toFixed(0)} yr)`}</span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.001}
+          value={progress}
+          onChange={(e) => onScrub(parseFloat(e.target.value))}
+          onPointerDown={() => onScrub(progress)}
+          aria-label={tr ? 'Yaşam zaman çizelgesi kaydırıcısı' : 'Life timeline scrubber'}
+          className="mt-2 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-gold [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gold [&::-webkit-slider-thumb]:shadow-glow"
+        />
+      </div>
+
+      {/* Aktif andaki gezegen burçları — efemeris verisini görünür kılar */}
+      {activeSnap ? (
+        <div className="mt-3 grid grid-cols-3 gap-1.5 sm:grid-cols-5">
+          {PLANET_ORDER.map((planet) => {
+            const lon = activeSnap.positions[planet];
+            if (lon == null) return null;
+            const si = signIndex(lon);
+            const color = PLANET_COLORS[planet] ?? '#fff';
+            return (
+              <div
+                key={`read-${planet}`}
+                className="flex items-center gap-1.5 rounded-lg border border-panelBorder bg-panel/60 px-2 py-1"
+              >
+                <span style={{ color }} className="text-sm leading-none">
+                  {PLANET_GLYPHS[planet]}
+                </span>
+                <span className="text-[10px] leading-none text-muted">
+                  {ZODIAC_GLYPHS[si]} {SIGN_NAMES[tr ? 'tr' : 'en'][si]}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-[11px] text-faint">
-        <span>Doğum → Bugün ({totalYears.toFixed(1)} yıl)</span>
+        <span>
+          {tr
+            ? 'Kaydırıcıyı sürükle — gezegenlerin doğumundan bugüne nasıl hareket ettiğini gör'
+            : 'Drag the scrubber — watch your planets move from birth to today'}
+        </span>
         <button
           type="button"
           onClick={() => setPlayKey((k) => k + 1)}
           className="rounded-full border border-gold/40 bg-gold/[0.06] px-3 py-1 text-[10px] font-bold tracking-wide text-gold hover:bg-gold/[0.12]"
         >
-          ↺ Tekrar Oynat
+          {scrubbing ? (tr ? '▶ Otomatik Oynat' : '▶ Auto Play') : tr ? '↺ Tekrar Oynat' : '↺ Replay'}
         </button>
-        <span>{Math.floor((revealStep / totalSteps) * 100)}%</span>
       </div>
     </div>
   );

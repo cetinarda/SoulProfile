@@ -93,7 +93,7 @@ function MatchPage() {
       setSuggestions([]);
       return;
     }
-    const r = await geocodePlace(v);
+    const r = await geocodePlace(v, locale);
     setSuggestions(r);
   }
 
@@ -105,10 +105,32 @@ function MatchPage() {
 
   async function compare() {
     if (!inviter) return;
-    if (!name || !date || !place) {
+    if (!name || !date) {
       setError(t('compat.error'));
       return;
     }
+
+    // Yer çözümü — kullanıcı öneriden seçtiyse hazır. Seçmeden yazıp direkt
+    // gönderdiyse burada bir kez daha geocode dene (ağ boşsa offline gazetteer
+    // devreye girer). Böylece "listeden seçmedim → buton çalışmıyor" kırılır.
+    let resolved = place;
+    if (!resolved && placeQuery.trim().length >= 2) {
+      const hits = await geocodePlace(placeQuery, locale);
+      if (hits[0]) {
+        resolved = hits[0];
+        setPlace(hits[0]);
+        setPlaceQuery(`${hits[0].name}, ${hits[0].country}`);
+      }
+    }
+    if (!resolved) {
+      setError(
+        locale === 'tr'
+          ? 'Doğum yerini bulamadık. Yer kutusuna şehir adını yazıp listeden seç (örn. "İstanbul").'
+          : 'We could not find the birthplace. Type a city in the place box and pick from the list.',
+      );
+      return;
+    }
+
     setError(null);
     setLoading(true);
     try {
@@ -118,10 +140,10 @@ function MatchPage() {
           birthDate: date,
           birthTime: timeKnown ? time : '12:00',
           birthTimeKnown: timeKnown,
-          birthPlace: `${place.name}, ${place.country}`,
-          latitude: place.latitude,
-          longitude: place.longitude,
-          timezone: place.timezone,
+          birthPlace: `${resolved.name}, ${resolved.country}`,
+          latitude: resolved.latitude,
+          longitude: resolved.longitude,
+          timezone: resolved.timezone,
         },
         locale,
       );
