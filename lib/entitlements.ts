@@ -11,6 +11,7 @@
 // webhook sonrası yazar. hasPremium() her iki platformda localStorage okur.
 
 import { getSupabase } from './supabase';
+import { FREE_MODE } from './feature-flags';
 
 const KEY_PREMIUM = 'soulprofile.premium';
 const KEY_PREMIUM_TS = 'soulprofile.premium.checkedAt';
@@ -18,6 +19,8 @@ const KEY_PREMIUM_TS = 'soulprofile.premium.checkedAt';
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 export function hasPremium(): boolean {
+  // Lansman: mağazalarda yayınlanana kadar her şey ücretsiz → herkes premium.
+  if (FREE_MODE) return true;
   if (typeof localStorage === 'undefined') return false;
   return localStorage.getItem(KEY_PREMIUM) === '1';
 }

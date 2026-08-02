@@ -44,14 +44,19 @@ export async function POST(request: Request) {
     );
   }
 
-  // Entitlement gate — auth zorunlu, premium zorunlu
-  const caller = readCaller(request);
-  if (!caller.userId) {
-    return corsResponse({ error: 'Giriş gerekli' }, { status: 401 });
-  }
-  const isPremium = await hasPremium(caller.userId);
-  if (!isPremium) {
-    return corsResponse({ error: 'Premium gerekli' }, { status: 403 });
+  // Entitlement gate — auth + premium zorunlu. ANCAK lansman FREE_MODE'unda
+  // (mağazalara girene kadar her şey ücretsiz) bu gate atlanır; kötüye kullanımı
+  // yukarıdaki rate limit sınırlar. NEXT_PUBLIC_FREE_MODE=0 ile eski gate döner.
+  const FREE_MODE = process.env.NEXT_PUBLIC_FREE_MODE !== '0';
+  if (!FREE_MODE) {
+    const caller = readCaller(request);
+    if (!caller.userId) {
+      return corsResponse({ error: 'Giriş gerekli' }, { status: 401 });
+    }
+    const isPremium = await hasPremium(caller.userId);
+    if (!isPremium) {
+      return corsResponse({ error: 'Premium gerekli' }, { status: 403 });
+    }
   }
 
   let body: Body;

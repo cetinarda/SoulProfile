@@ -17,6 +17,7 @@ import type { BirthInput, GalacticReport } from '@/lib/types';
 import { useT } from '@/lib/i18n';
 import { FORM_INPUT, BTN_PRIMARY } from '@/lib/ui';
 import { IS_CAPACITOR } from '@/lib/nav';
+import { WEB_APP_OPEN } from '@/lib/feature-flags';
 import { AppOnlyGate } from '@/components/AppOnlyGate';
 import { LabeledField, DateField, TimeKnownField } from '@/components/LabeledField';
 
@@ -163,7 +164,7 @@ function MatchPage() {
     }
   }
 
-  if (!IS_CAPACITOR) return <AppOnlyGate />;
+  if (!IS_CAPACITOR && !WEB_APP_OPEN) return <AppOnlyGate />;
 
   // Geçersiz davet
   if (inviteValid === false) {

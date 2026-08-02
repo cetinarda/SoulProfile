@@ -19,6 +19,7 @@ import { canViewCompat, recordCompatView, compatId, hasPremium } from '@/lib/ent
 import { PremiumGate } from '@/components/PremiumGate';
 import { FORM_INPUT, BTN_COSMIC } from '@/lib/ui';
 import { IS_CAPACITOR } from '@/lib/nav';
+import { WEB_APP_OPEN } from '@/lib/feature-flags';
 import { AppOnlyGate } from '@/components/AppOnlyGate';
 import { LabeledField, DateField, TimeKnownField } from '@/components/LabeledField';
 
@@ -156,7 +157,7 @@ export default function CompatibilityPage() {
     }
   }
 
-  if (!IS_CAPACITOR) return <AppOnlyGate />;
+  if (!IS_CAPACITOR && !WEB_APP_OPEN) return <AppOnlyGate />;
 
   // İlk uyum ücretsiz. Hak dolduysa (canRunCompat=false) submit'te setGated → satın al.
   if (gated) {

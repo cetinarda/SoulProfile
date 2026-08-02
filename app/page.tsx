@@ -5,6 +5,7 @@ import { CosmicBackground } from '@/components/CosmicBackground';
 import { NowSkyChip } from '@/components/NowSkyChip';
 import { StoreBadges } from '@/components/StoreBadges';
 import { IS_CAPACITOR } from '@/lib/nav';
+import { WEB_APP_OPEN } from '@/lib/feature-flags';
 import { useT } from '@/lib/i18n';
 
 export default function Welcome() {
@@ -61,7 +62,7 @@ export default function Welcome() {
             {t('home.subtitle')}
           </p>
 
-          {IS_CAPACITOR ? (
+          {IS_CAPACITOR || WEB_APP_OPEN ? (
             <>
               <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Link

@@ -4,6 +4,7 @@ import { useNav } from '@/lib/nav';
 import { setActiveReportId } from '@/lib/active-report';
 import { FORM_INPUT, BTN_PRIMARY } from '@/lib/ui';
 import { IS_CAPACITOR } from '@/lib/nav';
+import { WEB_APP_OPEN } from '@/lib/feature-flags';
 import { AppOnlyGate } from '@/components/AppOnlyGate';
 import { LabeledField, DateField, TimeKnownField } from '@/components/LabeledField';
 import Image from 'next/image';
@@ -236,7 +237,7 @@ export default function BirthPage() {
     }
   }
 
-  if (!IS_CAPACITOR) return <AppOnlyGate />;
+  if (!IS_CAPACITOR && !WEB_APP_OPEN) return <AppOnlyGate />;
 
   if (gated) {
     return <PremiumGate kind="report" onBack={() => setGated(false)} />;

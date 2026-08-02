@@ -28,7 +28,7 @@ const tr: Dict = {
     'Astroloji synastry, Human Design tanımlı–açık merkez dansı, numeroloji ritmi ve Vedik Ashtakuta kader dokusunun sentezi. 4 pencere, 5 ayna, 1 pusula — birbirinize ne yansıttığınızı sakin bir biçimde görün.',
   'home.cta.primary': 'İkili Uyumu Aç',
   'home.cta.secondary': 'Önce Kendi Karnen',
-  'home.cta.note': '✦ İlk karnen ve uyumun ücretsiz · 5 dakika sürer · Verin sende kalır',
+  'home.cta.note': '✦ Şimdilik her şey ücretsiz · 5 dakika sürer · Verin sende kalır',
   'home.how.kicker': 'NASIL ÇALIŞIR',
   'home.how.title': '3 adımda kozmik kimliğin',
   'home.step1.title': 'Doğum Bilgini Gir',
@@ -137,7 +137,7 @@ const tr: Dict = {
   'loader.title': 'Kozmik kimliğin hesaplanıyor...',
 
   // Free tier + gate
-  'free.banner': 'İlk karnen ve ilk uyumun ücretsiz ✦ Sınırsız erişim için premium: $19.99 tek seferlik ya da $4.99/ay',
+  'free.banner': 'Mağazalarda yayınlanana kadar her şey ÜCRETSİZ ✦ Tüm özellikler açık — hemen dene',
   'gate.report.title': 'Sınırsız erişim',
   'gate.report.desc': 'İlk karnen ücretsizdi. Farklı kişilerin karnesine bakmak ve tüm özelliklere sınırsız erişim için premium.',
   'gate.compat.title': 'Sınırsız erişim',
@@ -197,7 +197,7 @@ const en: Dict = {
     'A synthesis of astrology synastry, the Human Design defined–open center dance, numerology rhythm and the Vedic Ashtakuta fate weave. 4 windows, 5 mirrors, 1 compass — see what you reflect in each other, calmly.',
   'home.cta.primary': 'Open Dual Compatibility',
   'home.cta.secondary': 'Start with Your Own Profile',
-  'home.cta.note': '✦ Your first profile and compatibility are free · takes 5 minutes · Your data stays with you',
+  'home.cta.note': '✦ Everything is free for now · takes 5 minutes · Your data stays with you',
   'home.how.kicker': 'HOW IT WORKS',
   'home.how.title': 'Your cosmic identity in 3 steps',
   'home.step1.title': 'Enter Your Birth Data',
@@ -306,7 +306,7 @@ const en: Dict = {
   'loader.title': 'Computing your cosmic identity...',
 
   // Free tier + gate
-  'free.banner': 'Your first profile and compatibility are free ✦ Unlimited access: $19.99 one-time or $4.99/mo',
+  'free.banner': 'Everything is FREE until we launch in the stores ✦ All features unlocked — try it now',
   'gate.report.title': 'Unlimited access',
   'gate.report.desc': 'Your first profile was free. For other people’s profiles and unlimited access to all features, go premium.',
   'gate.compat.title': 'Unlimited access',
